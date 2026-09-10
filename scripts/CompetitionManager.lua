@@ -247,6 +247,12 @@ function CompetitionManager:getTeamPlayerRows(team)
 	if farm ~= nil then
 		for _, activeUser in ipairs(farm.activeUsers or {}) do
 			table.insert(rows, {userId = activeUser.userId, name = CompetitionUtils.getUserNickname(activeUser.userId), ready = self.readyByUserId[activeUser.userId] == true})
+			CompetitionUtils.info(
+				"EXPECTED HARVEST DEBUG farmId=%s fruit=%s liters=%s",
+				tostring(farmId),
+				tostring(fruitName),
+				tostring(expectedLiters)
+			)
 		end
 	end
 	table.sort(rows, function(a, b) return string.lower(a.name) < string.lower(b.name) end)
@@ -991,6 +997,15 @@ function CompetitionManager:calculateExpectedFruitOnFarmland(ctx, config, fruitD
 		local baleCapacity, baleSource = self:resolveRoundBale125Capacity(FillType.STRAW)
 		result.roundBale125Capacity = baleCapacity
 		if baleCapacity ~= nil and baleCapacity > 0 then result.fullRoundBales125 = math.floor(result.expectedStrawLiters / baleCapacity) end
+		CompetitionUtils.info(
+			"BALE COUNT DEBUG fillType=%s liters=%s capacity=%s fullBales=%s remainder=%s result.fullRoundBales125=%s",
+			tostring(fillType),
+			tostring(expectedLiters),
+			tostring(baleCapacity),
+			tostring(math.floor(expectedLiters / baleCapacity)),
+			tostring(expectedLiters % baleCapacity),
+			tostring(result.fullRoundBales125)
+		)
 	end
 
 	if string.upper(result.fruitName) == "GRASS" and fruitDesc.windrowLiterPerSqm ~= nil then
