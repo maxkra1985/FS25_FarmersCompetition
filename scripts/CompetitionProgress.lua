@@ -145,9 +145,18 @@ function CompetitionProgress:scanBalesAndHoney()
 						tostring(item.diameter),
 						tostring(item.wrappingState)
 					)
+					CompetitionUtils.info(
+						"GRASS FILTER itemSystem DEBUG fillName=%s fillType=%s",
+						tostring(fillName),
+						tostring(item.fillType)
+					)
 					if fillName == "STRAW" then
 						teamCounts[farmId].strawTotal = teamCounts[farmId].strawTotal + 1
-					elseif fillName == "DRYGRASS" or fillName == "GRASS" or fillName == "SILAGE" then
+					elseif fillName == "GRASS_WINDROW"
+						or fillName == "DRYGRASS_WINDROW"
+						or fillName == "DRYGRASS"
+						or fillName == "GRASS"
+						or fillName == "SILAGE" then
 						teamCounts[farmId].grassTotal = teamCounts[farmId].grassTotal + 1
 
 						if (item.wrappingState or 0) > 0 then
@@ -201,12 +210,21 @@ function CompetitionProgress:scanBalesAndHoney()
 					end
 
 					if is125 then
+						CompetitionUtils.info(
+							"GRASS FILTER ObjectStorage DEBUG fillName=%s fillType=%s",
+							tostring(fillName),
+							tostring(item.fillType)
+						)
 						if fillName == "STRAW" then
 							-- Stored bale is no longer a physical ItemSystem bale,
 							-- so include it in total produced and in stored count.
 							teamCounts[farmId].strawTotal = teamCounts[farmId].strawTotal + 1
 							teamCounts[farmId].strawStored = teamCounts[farmId].strawStored + 1
-						elseif fillName == "DRYGRASS" or fillName == "GRASS" or fillName == "SILAGE" then
+						elseif fillName == "GRASS_WINDROW"
+							or fillName == "DRYGRASS_WINDROW"
+							or fillName == "DRYGRASS"
+							or fillName == "GRASS"
+							or fillName == "SILAGE" then
 							teamCounts[farmId].grassTotal = teamCounts[farmId].grassTotal + 1
 							teamCounts[farmId].grassStored = teamCounts[farmId].grassStored + 1
 
