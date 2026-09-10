@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="iso-8859-1"?>
+<i3D name="carp.i3d" version="1.6" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://i3d.giants.ch/schema/i3d-1.6.xsd">
+	<Asset>
+		<Export program="GIANTS Editor 64bit" version="10.0.10"/>
+	</Asset>
+	<Files>
+		<File fileId="3" filename="$data/shared/window02_specular.dds"/>
+		<File fileId="1" filename="carp_diffuse.dds"/>
+		<File fileId="2" filename="carp_normal.dds"/>
+	</Files>
+	<Materials>
+		<Material name="Material.001" materialId="12671">
+			<Texture fileId="1"/>
+			<Normalmap fileId="2"/>
+			<Glossmap fileId="3"/>
+		</Material>
+	</Materials>
+	<Shapes externalShapesFile="carp.i3d.shapes"/>
+	<Scene>
+		<TransformGroup name="carp" nodeId="20980">
+			<Shape name="splineCarp" translation="950.93 52.8 146.615" rotation="0 -54.9803 0" shapeId="1" visibility="false" nodeId="20981" castsShadows="false" receiveShadows="false" distanceBlending="false"/>
+			<Shape name="carp" translation="953.192 53.346 146.57" shapeId="2" clipDistance="30" nodeId="20982" castsShadows="true" receiveShadows="true" distanceBlending="false" materialIds="12671">
+				<Shape name="carp" translation="0 0.43988 -1.22784" shapeId="3" clipDistance="30" nodeId="20983" castsShadows="true" receiveShadows="true" distanceBlending="false" materialIds="12671"/>
+				<Shape name="carp" translation="-1.79285e-31 0.701316 -0.266434" shapeId="4" clipDistance="30" nodeId="20984" castsShadows="true" receiveShadows="true" distanceBlending="false" materialIds="12671"/>
+			</Shape>
+		</TransformGroup>
+	</Scene>
+	<UserAttributes>
+		<UserAttribute nodeId="20980">
+			<Attribute name="numShips" type="integer" value="10"/>
+			<Attribute name="onCreate" type="scriptCallback" value="Ship.onCreate"/>
+			<Attribute name="speed" type="float" value="2"/>
+		</UserAttribute>
+	</UserAttributes>
+</i3D>

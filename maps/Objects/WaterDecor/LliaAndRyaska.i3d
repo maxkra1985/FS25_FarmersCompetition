@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="iso-8859-1"?>
+<i3D name="LliaAndRyaska.i3d" version="1.6" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://i3d.giants.ch/schema/i3d-1.6.xsd">
+    <Asset>
+        <Export program="GIANTS Editor 64bit" version="10.0.10"/>
+    </Asset>
+    <Files>
+        <File fileId="5" filename="$data/foliage/waterPlants/lemnaMinor/lemnaMinor_alpha.png"/>
+        <File fileId="1" filename="$data/foliage/waterPlants/lemnaMinor/lemnaMinor_diffuse.png"/>
+        <File fileId="3" filename="$data/foliage/waterPlants/lemnaMinor/lemnaMinor_fmask.png"/>
+        <File fileId="2" filename="$data/foliage/waterPlants/lemnaMinor/lemnaMinor_normal.png"/>
+        <File fileId="9" filename="$data/foliage/waterPlants/nymphaeaAdorata/nymphaeaAdorata_alpha.png"/>
+        <File fileId="6" filename="$data/foliage/waterPlants/nymphaeaAdorata/nymphaeaAdorata_diffuse.png"/>
+        <File fileId="8" filename="$data/foliage/waterPlants/nymphaeaAdorata/nymphaeaAdorata_fmask.png"/>
+        <File fileId="7" filename="$data/foliage/waterPlants/nymphaeaAdorata/nymphaeaAdorata_normal.png"/>
+        <File fileId="4" filename="$data/shaders/windShader.xml"/>
+    </Files>
+    <Materials>
+        <Material name="lemnaMinor_mat" materialId="462" customShaderId="4" customShaderVariation="secondUV_alphaMap">
+            <Texture fileId="1"/>
+            <Normalmap fileId="2"/>
+            <Glossmap fileId="3"/>
+            <Custommap name="alphaMap" fileId="5"/>
+            <CustomParameter name="directionAndFrequency" value="0.4 0.1 0.4 1.6"/>
+        </Material>
+        <Material name="nymphaeaAdorata_mat" materialId="714" customShaderId="4" customShaderVariation="secondUV_alphaMap">
+            <Texture fileId="6"/>
+            <Normalmap fileId="7"/>
+            <Glossmap fileId="8"/>
+            <Custommap name="alphaMap" fileId="9"/>
+            <CustomParameter name="directionAndFrequency" value="0.4 0.1 0.4 1.6"/>
+        </Material>
+    </Materials>
+    <Shapes externalShapesFile="LliaAndRyaska.i3d.shapes"/>
+    <Scene>
+        <Shape name="lemnaMinor5" translation="741.402 119.375 -1224.56" rotation="-5.97377e-06 61.1556 -5.24737e-06" shapeId="1" clipDistance="145" nodeId="7273" castsShadows="true" receiveShadows="true" materialIds="462"/>
+        <Shape name="nymphaeaAdorata1" translation="737.69 119.34 -1220.04" rotation="180 -10.7393 180" shapeId="2" clipDistance="145" nodeId="7275" castsShadows="true" receiveShadows="true" materialIds="714"/>
+    </Scene>
+</i3D>

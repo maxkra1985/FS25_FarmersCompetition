@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<placeable type="silo" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../shared/xml/schema/placeable.xsd">
+	<annotation>Modified By Scandinavian Vikings Mod-Rebuilds Team for FS25.</annotation>
+	<storeData>
+		<name>$l10n_modName1</name>
+		<functions>
+			<function>$l10n_function_rootcropsStorage</function>
+		</functions>
+		<image>maps/placeables/RootcropsStorage/store_quonsetStorages_pack.dds</image>
+		<price>248000</price>
+		<dailyUpkeep>7</dailyUpkeep>
+		<lifetime>1000</lifetime>
+		<rotation>0</rotation>
+		<brand customIcon="$data/store/brands/brand_lizardMotors.dds">LIZARDSTORAGE</brand>
+		<canBeSold>true</canBeSold>
+		<showInStore>true</showInStore>
+		<species>placeable</species>
+		<category>silos</category>
+		<brush>
+			<type>placeable</type>
+			<category>buildings</category>
+			<tab>silos</tab>
+		</brush>
+		<vertexBufferMemoryUsage>2782208</vertexBufferMemoryUsage>
+		<indexBufferMemoryUsage>998656</indexBufferMemoryUsage>
+		<textureMemoryUsage>12976128</textureMemoryUsage>
+		<audioMemoryUsage>0</audioMemoryUsage>
+		<instanceVertexBufferMemoryUsage>0</instanceVertexBufferMemoryUsage>
+		<instanceIndexBufferMemoryUsage>0</instanceIndexBufferMemoryUsage>
+	</storeData>
+
+	<base>
+		<filename>maps/placeables/RootcropsStorage/i3d/rootcropsStorage.i3d</filename>
+		<canBeRenamed>true</canBeRenamed>
+		<boughtWithFarmland>true</boughtWithFarmland>
+	</base>
+
+	<placement useRandomYRotation="false" useManualYRotation="true" >
+		<testAreas>
+			<testArea startNode="testArea1Start" endNode="testArea1End" />
+		</testAreas>
+		<sounds>
+			<place template="siloImp" />
+		</sounds>
+	</placement>
+
+	<clearAreas>
+		<clearArea startNode="clearArea1Start" widthNode="clearArea1Width" heightNode="clearArea1Height"/>
+	</clearAreas>
+
+	<leveling requireLeveling="true" maxSmoothDistance="1" maxSlope="75" maxEdgeAngle="30">
+		<levelAreas>
+			<levelArea startNode="levelArea1Start" widthNode="levelArea1Width" heightNode="levelArea1Height" groundType="asphalt"/>
+		</levelAreas>
+		<paintAreas>
+			<paintArea startNode="paintArea1Start" widthNode="paintArea1Width" heightNode="paintArea1Height" groundType="asphalt"/>
+		</paintAreas>
+	</leveling>
+
+	<indoorAreas>
+		<indoorArea startNode="indoorArea1Start" widthNode="indoorArea1Width" heightNode="indoorArea1Height" />
+	</indoorAreas>
+
+	<tipOcclusionUpdateAreas>
+		<tipOcclusionUpdateArea startNode="tipOcclusionUpdateArea1Start" endNode="tipOcclusionUpdateArea1End" />
+	</tipOcclusionUpdateAreas>
+
+	<ai>
+		<updateAreas>
+			<updateArea startNode="tipOcclusionUpdateArea1Start" endNode="tipOcclusionUpdateArea1End" />
+		</updateAreas>
+		<splines>
+			<spline node="aiSpline" />
+		</splines>
+	</ai>
+
+	<hotspots>
+		<hotspot type="UNLOADING" linkNode="mapPosition" teleportNode="teleportNode"/>
+	</hotspots>
+
+	<triggerMarkers>
+		<triggerMarker node="markerLoading" filename="$data/shared/assets/marker/markerIconLoad.i3d" />
+		<triggerMarker node="markerUnloading" filename="$data/shared/assets/marker/markerIconUnload.i3d" />
+	</triggerMarkers>
+	
+	<dynamicallyLoadedParts>
+		<dynamicallyLoadedPart filename="maps/placeables/RootcropsStorage/i3d/props1.i3d" linkNode="linkNode_props" />
+	</dynamicallyLoadedParts>
+
+	<infoTrigger triggerNode="infoTrigger"/>
+
+	<lights>
+		<realLights>
+			<low>
+				<light node="realLightsLow" groupIndex="1"/>
+			</low>
+			<high>
+				<light node="realLightsHigh" groupIndex="1"/>
+			</high>
+		</realLights>
+
+		<sharedLight filename="$data/shared/assets/lights/terraLed/spotlight20W.xml" linkNode="linkedLight01" groupIndex="1" />
+		<sharedLight filename="$data/shared/assets/lights/terraLed/spotlight20W.xml" linkNode="linkedLight02" groupIndex="1" />
+		<sharedLight filename="$data/shared/assets/lights/terraLed/spotlight20W.xml" linkNode="linkedLight03" groupIndex="1" />
+		<sharedLight filename="$data/shared/assets/lights/terraLed/spotlight20W.xml" linkNode="linkedLight04" groupIndex="1" />
+		<sharedLight filename="$data/shared/assets/lights/lizard/buildings/industrialWallLight.xml" linkNode="linkedLight05" groupIndex="1" />
+		<sharedLight filename="$data/shared/assets/lights/lizard/buildings/industrialWallLight.xml" linkNode="linkedLight06" groupIndex="1" />
+		<sharedLight filename="$data/shared/assets/lights/lizard/buildings/industrialWallLight.xml" linkNode="linkedLight07" groupIndex="1" />
+		<sharedLight filename="$data/shared/assets/lights/lizard/buildings/industrialWallLight.xml" linkNode="linkedLight08" groupIndex="1" />
+		<sharedLight filename="$data/shared/assets/lights/lizard/buildings/industrialWallLight.xml" linkNode="linkedLight09" groupIndex="1" />
+
+		<group name="$l10n_action_placeableLightShed" activateTime="17:30" deactivateTime="8:30">
+			<sounds>
+				<toggle template="lizardFloodLight" innerRadius="50" outerRadius="100" volumeScale="0.2"/>
+			</sounds>
+		</group>
+	</lights>
+
+	<silo>
+		<loadingStation node="loadingTrigger" supportsExtension="false" storageRadius="50">
+			<loadTrigger triggerNode="loadingTrigger" fillLitersPerSecond="2000" dischargeNode="dischargeNode" fillTypes="POTATO SUGARBEET CARROT PARSNIP BEETROOT" aiNode="aiLoadingNode">
+				<effectNode effectClass="TipEffect">
+				<effectNode effectClass="PipeEffect" effectNode="pipeUnloadEffect" materialType="pipe" delay="0" maxBending="1" positionUpdateNodes="pipeSmokeEffect" shapeScaleSpread="1 1 0 0" />
+				<effectNode effectNode="pipeUnloadEmitter" effectClass="ParticleEffect" materialType="unloadingParticle" emitCountScale="2"/>
+				</effectNode>
+				<effectNode effectNode="pipeSmokeEffect" materialType="unloadingSmoke" delay="0"  alignToWorldY="true"/>		
+				<effectNode effectClass="ConveyorBeltEffect" effectNode="effectBeltTop" materialType="belt" delay="5.5" fadeTime="5"   speed="0.7" scrollLength="10" scrollSpeed="0.8" />			
+			<animationNodes>
+				<animationNode class="ScrollingAnimation" node="beltTop" shaderParameterComponent="2" scrollSpeed="-0.3" turnOnFadeTime="0.1" turnOffFadeTime="0.1" />
+			</animationNodes>
+			</loadTrigger>
+			
+			<sounds>
+				<belt template="rollbeltLoop"/>
+			</sounds>
+		</loadingStation>
+
+		<unloadingStation supportsExtension="false" >
+			<effectNodes>
+					<effectNode effectClass="MorphPositionEffect" effectNode="unloadingEffect" materialType="belt" delay="0" fadeTime="0" speed="0" scrollLength="1" scrollSpeed="0.3"/>
+			</effectNodes>
+			<animationNodes>
+				<animationNode node="roll01" rotSpeed="-200" rotAxis="1"/>
+				<animationNode node="roll02" rotSpeed="-200" rotAxis="1"/>
+				<animationNode node="roll03" rotSpeed="-200" rotAxis="1"/>
+				<animationNode node="roll04" rotSpeed="-200" rotAxis="1"/>
+				<animationNode node="roll05" rotSpeed="-200" rotAxis="1"/>
+				<animationNode node="roll06" rotSpeed="-200" rotAxis="1"/>
+				<animationNode node="roll07" rotSpeed="-200" rotAxis="1"/>
+				<animationNode node="roll08" rotSpeed="-200" rotAxis="1"/>
+				<animationNode node="roll09" rotSpeed="-200" rotAxis="1"/>
+				<animationNode node="roll10" rotSpeed="-200" rotAxis="1"/>
+				<animationNode node="roll11" rotSpeed="-200" rotAxis="1"/>
+				<animationNode node="roll12" rotSpeed="-200" rotAxis="1"/>
+				<animationNode node="roll13" rotSpeed="-200" rotAxis="1"/>
+				<animationNode node="roll14" rotSpeed="-200" rotAxis="1"/>
+				<animationNode node="belts" class="ScrollingAnimation" scrollSpeed="-0.1" scrollLength="1" shaderParameterName="offsetUV" shaderParameterComponent="2"/>
+			</animationNodes>
+			<unloadTrigger exactFillRootNode="exactFillRootNode" fillTypes="POTATO SUGARBEET CARROT PARSNIP BEETROOT" aiNode="aiUnloadingNode"/>
+			<palletTrigger triggerNode="palletTrigger" aiNode="aiUnloadingNode" fillTypes="POTATO SUGARBEET CARROT PARSNIP BEETROOT"/>
+
+			<sounds>
+				<belt template="rollbeltLoop"/>
+				<active template="silosActive" linkNode="fanSoundNode"/>
+			</sounds>
+		</unloadingStation>
+
+		<storages supportsMultipleFillTypes="true">
+			<storage node="mapPosition" isExtension="false" >
+				<capacity fillType="POTATO" capacity="100000000" />
+				<fillPlane fillType="POTATO" node="fillPlane_potatoe" minY="-4.807" maxY="0.053" />	
+
+				<capacity fillType="SUGARBEET" capacity="100000000" />
+				<fillPlane fillType="SUGARBEET" node="fillPlane_sugarbeet" minY="-4.807" maxY="0.053" />
+
+				<capacity fillType="CARROT" capacity="100000000" />
+				<fillPlane fillType="CARROT" node="fillPlane_carrot" minY="-4.807" maxY="0.053" />
+
+				<capacity fillType="PARSNIP" capacity="100000000" />
+				<fillPlane fillType="PARSNIP" node="fillPlane_parsnip" minY="-4.807" maxY="0.053" />
+
+				<capacity fillType="BEETROOT" capacity="100000000" />
+				<fillPlane fillType="BEETROOT" node="fillPlane_beetroot" minY="-4.807" maxY="0.053" />
+			</storage>
+		</storages>
+	</silo>
+
+	<animatedObjects>
+		<animatedObject saveId="markerSwitch" >
+			<animation duration="0.5">
+				<part node="knob">
+					<keyFrame time="0.00" rotation="-51 0 0" />
+					<keyFrame time="1" rotation="90 0 0" />
+				</part>
+				<part node="warningStripes">
+					<keyFrame time="0.0" visibility="true"/>
+					<keyFrame time="1.0" visibility="false"/>
+				</part>
+			</animation>
+			<controls triggerNode="playerTrigger" posAction="ACTIVATE_HANDTOOL" posText="action_closeWarningStripes" negText="action_openWarningStripes" />
+			<sounds>
+				<moving template="lizardFloodLight" linkNode="knob" />
+				<posEnd template="lizardFloodLight" linkNode="knob" />
+				<negEnd template="lizardFloodLight" linkNode="knob" />
+			</sounds>
+		</animatedObject>
+	</animatedObjects>
+
+	<i3dMappings>
+		<i3dMapping id="quonsetHuts_main_component1" node="0>" />
+		<i3dMapping id="silo_vis" node="0>0" />
+		<i3dMapping id="linkNode_props" node="0>0|0" />
+		<i3dMapping id="winter0" node="0>0|1|0|0|3" />
+		<i3dMapping id="snow0" node="0>0|1|0|0|3|0" />
+		<i3dMapping id="electricSwitch" node="0>0|1|0|0|4" />
+		<i3dMapping id="knob" node="0>0|1|0|0|4|0" />
+		<i3dMapping id="playerTrigger" node="0>0|1|0|0|5" />
+		<i3dMapping id="winter_1" node="0>0|2|0|0|2" />
+		<i3dMapping id="snow_1" node="0>0|2|0|0|2|0" />
+		<i3dMapping id="winter_2" node="0>0|2|1|0|3" />
+		<i3dMapping id="snow_2" node="0>0|2|1|0|3|0" />
+		<i3dMapping id="icicles" node="0>0|2|1|0|3|1" />
+		<i3dMapping id="snow1" node="0>0|2|1|0|3|2" />
+		<i3dMapping id="snow2" node="0>0|2|1|0|3|3" />
+		<i3dMapping id="warningStripes" node="0>0|3" />
+		<i3dMapping id="mapPosition" node="0>1|0" />
+		<i3dMapping id="storage" node="0>1|1" />
+		<i3dMapping id="aiLoadingNode" node="0>1|2|0|0" />
+		<i3dMapping id="dischargeNode" node="0>1|2|0|1" />
+		<i3dMapping id="loadingTrigger" node="0>1|2|0|2" />
+		<i3dMapping id="beltTop" node="0>1|2|1|0|0" />
+		<i3dMapping id="pipeUnloadEffect" node="0>1|2|1|0|0|0|0" />
+		<i3dMapping id="pipeUnloadEmitter" node="0>1|2|1|0|0|0|1" />
+		<i3dMapping id="pipeSmokeEffect" node="0>1|2|1|0|0|0|2" />
+		<i3dMapping id="effectBeltTop" node="0>1|2|1|0|0|0|3" />
+		<i3dMapping id="effectBeltTop_target" node="0>1|2|1|0|0|0|4" />
+		<i3dMapping id="unloadingStation" node="0>1|3" />
+		<i3dMapping id="grainGutterLinkNode" node="0>1|3|0" />
+		<i3dMapping id="aiUnloadingNode" node="0>1|3|1" />
+		<i3dMapping id="fillVolume" node="0>1|3|2|0|0" />
+		<i3dMapping id="unloadNode" node="0>1|3|2|0|1" />
+		<i3dMapping id="dischargeNode1" node="0>1|3|2|0|2" />
+		<i3dMapping id="dischargeActivationTrigger" node="0>1|3|2|1" />
+		<i3dMapping id="unloadingEffect" node="0>1|3|2|2|0" />
+		<i3dMapping id="particleEmitterShape" node="0>1|3|2|2|1" />
+		<i3dMapping id="exactFillRootNode" node="0>1|3|2|2|2" />
+		<i3dMapping id="belts" node="0>1|3|2|3" />
+		<i3dMapping id="animationNodes" node="0>1|3|2|5" />
+		<i3dMapping id="roll01" node="0>1|3|2|5|0" />
+		<i3dMapping id="roll02" node="0>1|3|2|5|1" />
+		<i3dMapping id="roll03" node="0>1|3|2|5|2" />
+		<i3dMapping id="roll04" node="0>1|3|2|5|3" />
+		<i3dMapping id="roll05" node="0>1|3|2|5|4" />
+		<i3dMapping id="roll06" node="0>1|3|2|5|5" />
+		<i3dMapping id="roll07" node="0>1|3|2|5|6" />
+		<i3dMapping id="roll08" node="0>1|3|2|5|7" />
+		<i3dMapping id="roll09" node="0>1|3|2|5|8" />
+		<i3dMapping id="roll10" node="0>1|3|2|5|9" />
+		<i3dMapping id="roll11" node="0>1|3|2|5|10" />
+		<i3dMapping id="roll12" node="0>1|3|2|5|11" />
+		<i3dMapping id="roll13" node="0>1|3|2|5|12" />
+		<i3dMapping id="roll14" node="0>1|3|2|5|13" />
+		<i3dMapping id="palletTrigger" node="0>1|3|4" />
+		<i3dMapping id="exactFillRootNode1" node="0>1|3|5" />
+		<i3dMapping id="fillPlane_potatoe" node="0>1|3|6" />
+		<i3dMapping id="fillPlane_sugarbeet" node="0>1|3|7" />
+		<i3dMapping id="fillPlane_carrot" node="0>1|3|8" />
+		<i3dMapping id="fillPlane_parsnip" node="0>1|3|9" />
+		<i3dMapping id="fillPlane_beetroot" node="0>1|3|10" />
+		<i3dMapping id="fanSoundNode" node="0>1|3|11" />
+		<i3dMapping id="aiSpline" node="0>1|4" />
+		<i3dMapping id="lights" node="0>2" />
+		<i3dMapping id="realLights" node="0>2|0" />
+		<i3dMapping id="realLightsLow" node="0>2|0|0" />
+		<i3dMapping id="pointLight1" node="0>2|0|0|0" />
+		<i3dMapping id="realLightsHigh" node="0>2|0|1" />
+		<i3dMapping id="pointLight2" node="0>2|0|1|2" />
+		<i3dMapping id="linkedLights" node="0>2|1" />
+		<i3dMapping id="linkedLight01" node="0>2|1|0" />
+		<i3dMapping id="linkedLight02" node="0>2|1|1" />
+		<i3dMapping id="linkedLight03" node="0>2|1|2" />
+		<i3dMapping id="linkedLight04" node="0>2|1|3" />
+		<i3dMapping id="linkedLight05" node="0>2|1|4" />
+		<i3dMapping id="linkedLight06" node="0>2|1|5" />
+		<i3dMapping id="linkedLight07" node="0>2|1|6" />
+		<i3dMapping id="linkedLight08" node="0>2|1|7" />
+		<i3dMapping id="linkedLight09" node="0>2|1|8" />
+		<i3dMapping id="testArea1Start" node="0>3" />
+		<i3dMapping id="testArea1End" node="0>3|0" />
+		<i3dMapping id="clearArea1Start" node="0>4" />
+		<i3dMapping id="clearArea1Width" node="0>4|0" />
+		<i3dMapping id="clearArea1Height" node="0>4|1" />
+		<i3dMapping id="levelArea1Start" node="0>5" />
+		<i3dMapping id="levelArea1Width" node="0>5|0" />
+		<i3dMapping id="levelArea1Height" node="0>5|1" />
+		<i3dMapping id="paintArea1Start" node="0>6" />
+		<i3dMapping id="paintArea1Width" node="0>6|0" />
+		<i3dMapping id="paintArea1Height" node="0>6|1" />
+		<i3dMapping id="indoorArea1Start" node="0>7" />
+		<i3dMapping id="indoorArea1Width" node="0>7|0" />
+		<i3dMapping id="indoorArea1Height" node="0>7|1" />
+		<i3dMapping id="tipOcclusionUpdateArea1Start" node="0>8" />
+		<i3dMapping id="tipOcclusionUpdateArea1End" node="0>8|0" />
+		<i3dMapping id="teleportNode" node="0>9" />
+		<i3dMapping id="markerLoading" node="0>10" />
+		<i3dMapping id="markerUnloading" node="0>11" />
+		<i3dMapping id="infoTrigger" node="0>12" />  
+	</i3dMappings>
+
+</placeable>

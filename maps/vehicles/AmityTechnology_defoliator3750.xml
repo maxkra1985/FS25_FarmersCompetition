@@ -1,0 +1,677 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<vehicle type="fruitPreparer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../shared/xml/schema/vehicle.xsd">
+	<annotation>Copyright (C) GIANTS Software GmbH, All Rights Reserved.</annotation>
+
+	<storeData>
+		<name>3750 Defoliator</name>
+		<specs>
+			<neededPower>215</neededPower>
+			<workingWidth>6.0</workingWidth>
+		</specs>
+		<functions>
+			<function>$l10n_function_haulmTopperSugarbeet</function>
+		</functions>
+		<storePacks>
+			<storePack>STARTER_SUGARBEET</storePack>
+		</storePacks>
+		<image>$data/vehicles/amityTechnology/defoliator3750/store_defoliator3750.png</image>
+		<price>97000</price>
+		<lifetime>600</lifetime>
+		<rotation>0</rotation>
+		<brand>AMITYTECH</brand>
+		<category>beetHarvesters</category>
+		<shopTranslationOffset>0 -0.015 0</shopTranslationOffset>
+		<shopRotationOffset>-0.98 0 0</shopRotationOffset>
+		<vertexBufferMemoryUsage>3807232</vertexBufferMemoryUsage>
+		<indexBufferMemoryUsage>1660672</indexBufferMemoryUsage>
+		<textureMemoryUsage>524288</textureMemoryUsage>
+		<instanceVertexBufferMemoryUsage>0</instanceVertexBufferMemoryUsage>
+		<instanceIndexBufferMemoryUsage>0</instanceIndexBufferMemoryUsage>
+		<audioMemoryUsage>0</audioMemoryUsage>
+	</storeData>
+
+	<base>
+		<typeDesc>$l10n_typeDesc_haulmTopper</typeDesc>
+		<filename>$data/vehicles/amityTechnology/defoliator3750/defoliator3750.i3d</filename>
+		<size width="4.9" length="7.15" height="2.05" widthOffset="-0.1" lengthOffset="-1"/>
+		<speedLimit value="10"/>
+		<components>
+			<component centerOfMass="0 0.55 -0.3" solverIterationCount="10" mass="5370"/>
+			<component centerOfMass="0 0 0" solverIterationCount="10" mass="1000"/>
+			<joint component1="1" component2="2" node="componentJointDrawbar" rotLimit="0 0 0" transLimit="0 0 0"/>
+		</components>
+		<schemaOverlay attacherJointPosition="0 0" name="TOOL"/>
+		<mapHotspot type="TOOL"/>
+	</base>
+
+	<wheels>
+		<wheelConfigurations tireCategories="TRACTOR">
+			<wheelConfiguration name="$l10n_configuration_valueDefault" price="0" saveId="DEFAULT" numDynamicConfigurations="1">
+				<wheels isCareWheelConfiguration="true">
+					<wheel dimensions="280_85R24" isLeft="true"  hasTireTracks="true" hasParticles="true" configId="rim1">
+						<physics tipOcclusionAreaGroupId="1" restLoad="2.5" repr="wheelLeftBack"  forcePointRatio="0.15" initialCompression="20" suspTravel="0.06" spring="190" damper="25" yOffset="0.035" supportsWheelSink="false" useReprDirection="true"/>
+						<tire isInverted="true"/>
+						<additionalWheel offset="0.92" isLeft="false">
+							<tire isInverted="true"/>
+						</additionalWheel>
+					</wheel>
+					<wheel dimensions="280_85R24" isLeft="false" hasTireTracks="true" hasParticles="true" configId="rim1">
+						<physics tipOcclusionAreaGroupId="1" restLoad="2.5" repr="wheelRightBack" forcePointRatio="0.15" initialCompression="20" suspTravel="0.06" spring="190" damper="25" yOffset="0.035" supportsWheelSink="false" useReprDirection="true"/>
+						<tire isInverted="true"/>
+						<additionalWheel offset="0.92" isLeft="true">
+							<tire isInverted="true"/>
+						</additionalWheel>
+					</wheel>
+					<wheel filename="$data/shared/wheels/tires/bkt/AS504/7_5L__15.xml" isLeft="true" hasTireTracks="false" hasParticles="true">
+						<physics restLoad="1.8" repr="wheelLeftFrontRepr"  driveNode="wheelLeftFront"  forcePointRatio="0.15" brakeFactor="0.01" frictionScale="0.8" initialCompression="30" suspTravel="0.06" spring="100" damper="20" rotationDamping="0.002" versatileYRot="true" yOffset="0.03" supportsWheelSink="false" useReprDirection="true"/>
+						<tire isInverted="true"/>
+					</wheel>
+					<wheel filename="$data/shared/wheels/tires/bkt/AS504/7_5L__15.xml" isLeft="true" hasTireTracks="false" hasParticles="true">
+						<physics restLoad="1.8" repr="wheelRightFrontRepr" driveNode="wheelRightFront" forcePointRatio="0.15" brakeFactor="0.01" frictionScale="0.8" initialCompression="30" suspTravel="0.06" spring="100" damper="20" rotationDamping="0.002" versatileYRot="true" yOffset="0.03" supportsWheelSink="false" useReprDirection="true"/>
+						<tire isInverted="true"/>
+					</wheel>
+				</wheels>
+			</wheelConfiguration>
+		</wheelConfigurations>
+
+
+		<hubs>
+			<hub linkNode="wheelLeftBack"  filename="$data/shared/wheels/hubs/hub_n8_6.xml" isLeft="true"  scale="0.21 0.21 0.21"/>
+			<hub linkNode="wheelRightBack" filename="$data/shared/wheels/hubs/hub_n8_6.xml" isLeft="false" scale="0.21 0.21 0.21"/>
+			<hub linkNode="wheelLeftBackHubRight" filename="$data/shared/wheels/hubs/hub_n8_6.xml" isLeft="false" scale="0.21 0.21 0.21"/>
+			<hub linkNode="wheelRightBackHubLeft" filename="$data/shared/wheels/hubs/hub_n8_6.xml" isLeft="true" scale="0.21 0.21 0.21"/>
+			<hub linkNode="wheelLeftFront"  filename="$data/shared/wheels/hubs/hub_n6_1.xml" isLeft="false" scale="0.21 0.21 0.21" offset="-0.015"/>
+			<hub linkNode="wheelRightFront" filename="$data/shared/wheels/hubs/hub_n6_1.xml" isLeft="true" scale="0.21 0.21 0.21" offset="-0.015"/>
+		</hubs>
+	</wheels>
+
+	<attachable>
+		<inputAttacherJoints>
+			<inputAttacherJoint node="attacherJoint" rootNode="defoliator3750_drawbar_component2" jointType="trailer" attacherHeight="0.75"/>
+		</inputAttacherJoints>
+		<steeringAngleNodes>
+			<steeringAngleNode node="wheelLeftBackSteering" scale="-0.5" />
+			<steeringAngleNode node="wheelRightBackSteering" scale="-0.5" />
+		</steeringAngleNodes>
+		<brakeForce force="0.5"/>
+		<support animationName="moveSupport" delayedOnLoad="true"/>
+	</attachable>
+
+	<connectionHoses>
+		<hose inputAttacherJointIndices="1" type="hydraulicIn"  node="hydraulicIn01" adapterNode="hydraulicIn01_connector" length="0.9" diameter="0.02" straighteningFactor="0.5">
+			<objectChange node="hydraulicIn01_detached" visibilityActive="false" visibilityInactive="true"/>
+		</hose>
+		<hose inputAttacherJointIndices="1" type="hydraulicOut" node="hydraulicOut01" adapterNode="hydraulicOut01_connector" length="0.9" diameter="0.02" straighteningFactor="0.5">
+			<objectChange node="hydraulicOut01_detached" visibilityActive="false" visibilityInactive="true"/>
+		</hose>
+		<hose inputAttacherJointIndices="1" type="hydraulicIn"  node="hydraulicIn02" adapterNode="hydraulicIn02_connector" length="0.9" diameter="0.02" straighteningFactor="0.5">
+			<objectChange node="hydraulicIn02_detached" visibilityActive="false" visibilityInactive="true"/>
+		</hose>
+		<hose inputAttacherJointIndices="1" type="hydraulicOut" node="hydraulicOut02" adapterNode="hydraulicOut02_connector" length="0.9" diameter="0.02" straighteningFactor="0.5">
+			<objectChange node="hydraulicOut02_detached" visibilityActive="false" visibilityInactive="true"/>
+		</hose>
+		<hose inputAttacherJointIndices="1" type="hydraulicIn"  node="hydraulicIn03" adapterNode="hydraulicIn03_connector" length="0.9" diameter="0.02" straighteningFactor="0.5">
+			<objectChange node="hydraulicIn03_detached" visibilityActive="false" visibilityInactive="true"/>
+		</hose>
+		<hose inputAttacherJointIndices="1" type="hydraulicOut" node="hydraulicOut03" adapterNode="hydraulicOut03_connector" length="0.9" diameter="0.02" straighteningFactor="0.5">
+			<objectChange node="hydraulicOut03_detached" visibilityActive="false" visibilityInactive="true"/>
+		</hose>
+		<hose inputAttacherJointIndices="1" type="hydraulicIn"  node="hydraulicIn04" adapterNode="hydraulicIn04_connector" length="0.9" diameter="0.02" straighteningFactor="0.5">
+			<objectChange node="hydraulicIn04_detached" visibilityActive="false" visibilityInactive="true"/>
+		</hose>
+		<hose inputAttacherJointIndices="1" type="hydraulicOut" node="hydraulicOut04" adapterNode="hydraulicOut04_connector" length="0.9" diameter="0.02" straighteningFactor="0.5">
+			<objectChange node="hydraulicOut04_detached" visibilityActive="false" visibilityInactive="true"/>
+		</hose>
+		<hose inputAttacherJointIndices="1" type="electric" node="electric" adapterNode="electric_connector" length="0.9" diameter="0.01" straighteningFactor="0.5">
+			<objectChange node="electric_detached" visibilityActive="false" visibilityInactive="true"/>
+		</hose>
+	</connectionHoses>
+
+	<powerTakeOffs>
+		<input inputAttacherJointIndices="1" inputNode="ptoInputNode" detachNode="ptoDetachNode" materialTemplateName="WALTERSCHEID_BLACK1" decalMaterialTemplateName="WALTERSCHEID_YELLOW1" aboveAttacher="true"/>
+		<sounds>
+			<turnedOn template="tractorPTO" volumeScale="0.5" linkNode="attacherJoint"/>
+		</sounds>
+	</powerTakeOffs>
+
+	<powerConsumer ptoRpm="470" neededMinPtoPower="100" neededMaxPtoPower="100"/>
+
+	<lights>
+		<sharedLight linkNode="workingLight28_01" filename="$data/shared/assets/lights/lizard/workingLight28.xml">
+			<rotationNode name="rotationNode1" rotation="15 0 0"/>
+		</sharedLight>
+		<sharedLight linkNode="workingLight28_02" filename="$data/shared/assets/lights/lizard/workingLight28.xml">
+			<rotationNode name="rotationNode1" rotation="15 0 0"/>
+		</sharedLight>
+		<sharedLight linkNode="workingLight28_03" filename="$data/shared/assets/lights/lizard/workingLight28.xml">
+			<rotationNode name="rotationNode1" rotation="15 0 0"/>
+		</sharedLight>
+		<sharedLight linkNode="workingLight28_04" filename="$data/shared/assets/lights/lizard/workingLight28.xml">
+			<rotationNode name="rotationNode1" rotation="15 0 0"/>
+		</sharedLight>
+
+		<sharedLight linkNode="turnLight01_left_01" filename="$data/shared/assets/lights/lizard/rearLight18Orange_left.xml" />
+		<sharedLight linkNode="turnLight01_left_02" filename="$data/shared/assets/lights/lizard/rearLight18Orange_left.xml" />
+		<sharedLight linkNode="turnLight01_right_01" filename="$data/shared/assets/lights/lizard/rearLight18Orange_right.xml" />
+		<sharedLight linkNode="turnLight01_right_02" filename="$data/shared/assets/lights/lizard/rearLight18Orange_right.xml" />
+
+		<realLights>
+			<high>
+				<light node="workLightBackHigh" lightTypes="1"/>
+				<turnLightLeft  node="turnLightLeftFront"/>
+				<turnLightLeft  node="turnLightLeftBack"/>
+				<turnLightRight node="turnLightRightFront"/>
+				<turnLightRight node="turnLightRightBack"/>
+			</high>
+		</realLights>
+
+	</lights>
+
+	<groundReferenceNodes>
+		<groundReferenceNode node="groundReferenceNode" threshold="0.25"/>
+	</groundReferenceNodes>
+
+	<workAreas>
+		<workArea type="fruitPreparer" functionName="processFruitPreparerArea" disableBackwards="false">
+			<area startNode="workAreaStart" widthNode="workAreaWidth" heightNode="workAreaHeight"/>
+			<groundReferenceNode index="1"/>
+			<onlyActiveWhenLowered value="true"/>
+		</workArea>
+	</workAreas>
+
+	<foldable>
+		<foldingConfigurations>
+			<foldingConfiguration>
+				<foldingParts startMoveDirection="1" foldMiddleAnimTime="1" unfoldWarning="$l10n_warning_liftImplementFirst">
+					<foldingPart animationName="folding" speedScale="0.7"/>
+				</foldingParts>
+			</foldingConfiguration>
+		</foldingConfigurations>
+	</foldable>
+
+	<animations>
+		<animation name="moveSupport">
+			<!-- lowered -->
+			<part node="armSupportBolt" startTime="0.00" endTime="0.01" visibility="true" requiredAnimation="folding" requiredAnimationRange="0 0.99"/>
+			<part node="armSupportBolt" startTime="0.01" endTime="0.99" visibility="false" requiredAnimation="folding" requiredAnimationRange="0 0.99"/>
+			<part node="armSupportBolt" startTime="0.99" endTime="1.00" visibility="true" requiredAnimation="folding" requiredAnimationRange="0 0.99"/>
+			<part node="armSupport"     startTime="0.01" endTime="0.99" startTrans="0 0.42 0" endTrans="0 0 0" requiredAnimation="folding" requiredAnimationRange="0 0.99"/>
+			<part node="cutterMainArm"  startTime="0.01" endTime="1.00" startRot="3 0 0" endRot="15 0 0" requiredAnimation="folding" requiredAnimationRange="0 0.99"/>
+
+			<!-- lifted -->
+			<part node="armSupportBolt" startTime="0.00" endTime="0.01" visibility="true" requiredAnimation="folding" requiredAnimationRange="0.99 1"/>
+			<part node="armSupportBolt" startTime="0.01" endTime="0.99" visibility="false" requiredAnimation="folding" requiredAnimationRange="0.99 1"/>
+			<part node="armSupportBolt" startTime="0.99" endTime="1.00" visibility="true" requiredAnimation="folding" requiredAnimationRange="0.99 1"/>
+			<part node="armSupport"     startTime="0.01" endTime="0.99" startTrans="0 0.42 0" endTrans="0 0 0" requiredAnimation="folding" requiredAnimationRange="0.99 1"/>
+
+			<part node="wheelLeftBackRot" startTime="0.01" endTime="0.99" startRot="45 0 0" endRot="-15 0 0" requiredAnimation="folding" requiredAnimationRange="0.99 1"/>
+			<part node="wheelRightBackRot" startTime="0.01" endTime="0.99" startRot="45 0 0" endRot="-15 0 0" requiredAnimation="folding" requiredAnimationRange="0.99 1"/>
+			<part node="wheelLeftBackArm" startTime="0.01" endTime="0.99" startRot="-45 0 0" endRot="15 0 0" requiredAnimation="folding" requiredAnimationRange="0.99 1"/>
+			<part node="wheelRightBackArm" startTime="0.01" endTime="0.99" startRot="-45 0 0" endRot="15 0 0" requiredAnimation="folding" requiredAnimationRange="0.99 1"/>
+			<part node="wheelArmFrontBottom" startTime="0.01" endTime="0.99" startRot="10 0 0" endRot="10 0 0" requiredAnimation="folding" requiredAnimationRange="0.99 1"/>
+
+			<sound template="hydraulicOpen02"  startTime="0.01" endTime="0.99" direction="1"     volumeScale="1.2" pitchScale="1.2" fadeIn="0.1" fadeOut="0.1" />
+			<sound template="hydraulicOpen06"  startTime="0.01" endTime="0.99" direction="1"     volumeScale="0.6" pitchScale="0.5" fadeIn="0.1" fadeOut="0.1" />
+			<sound template="hydraulicClose01" startTime="0.01" endTime="0.99" direction="-1"    volumeScale="3.6" pitchScale="0.6" fadeIn="0.1" fadeOut="0.1" />
+			<sound template="hydraulicOpen04"  startTime="0.01" endTime="0.99" direction="-1"    volumeScale="1.6" pitchScale="1.2" fadeIn="0.1" fadeOut="0.1" />
+			<sound template="foldStartMed02"   startTime="0.99" direction="1"  volumeScale="3"   pitchScale="0.7" />
+			<sound template="vibratingImp"     startTime="0.99" direction="1"  volumeScale="1"   pitchScale="1.1" />
+			<sound template="cylinderPunch"    startTime="0.99" direction="1"  volumeScale="0.5" pitchScale="1.6" />
+			<sound template="foldStartMed02"   startTime="0.01" direction="-1" volumeScale="3"   pitchScale="0.6" />
+			<sound template="vibratingImp"     startTime="0.01" direction="-1" volumeScale="1"   pitchScale="0.9" />
+			<sound template="cylinderPunch"    startTime="0.01" direction="-1" volumeScale="0.5" pitchScale="1.8" />
+			<sound template="clackVar4"        startTime="0.01" direction="-1" volumeScale="1.5" pitchScale="0.6" />
+		</animation>
+
+		<animation name="folding">
+			<part node="componentJointDrawbar" startTime="0.0" endTime="1.0" startRot="-10 0 0" endRot="15 0 0" />
+			<part componentJointIndex="1"      startTime="0.0" endTime="1.0" startRotLimit="25 0 0" endRotLimit="0 0 0"/>
+			<part node="wheelLeftBackArm"      startTime="0.0" endTime="1.0" startRot="15 0 0" endRot="-45 0 0" />
+			<part node="wheelRightBackArm"     startTime="0.0" endTime="1.0" startRot="15 0 0" endRot="-45 0 0" />
+
+			<part node="wheelLeftBackRot"     startTime="0.0" endTime="1.0" startRot="-15 0 0" endRot="45 0 0" />
+			<part node="wheelRightBackRot"     startTime="0.0" endTime="1.0" startRot="-15 0 0" endRot="45 0 0" />
+
+			<part node="wheelArmFrontBottom"   startTime="0.0" endTime="1.0" startRot="10 0 0" endRot="10 0 0" />
+			<part node="cutterMainArm"         startTime="0.0" endTime="1.0" startRot="3 0 0" endRot="15 0 0" />
+
+			<sound template="hydraulicOpen02"  startTime="0.01" endTime="0.99" direction="1"     volumeScale="1.2" pitchScale="1.2" fadeIn="0.1" fadeOut="0.1" />
+			<sound template="hydraulicOpen06"  startTime="0.01" endTime="0.99" direction="1"     volumeScale="0.6" pitchScale="0.5" fadeIn="0.1" fadeOut="0.1" />
+			<sound template="hydraulicClose01" startTime="0.01" endTime="0.99" direction="-1"    volumeScale="3.6" pitchScale="0.6" fadeIn="0.1" fadeOut="0.1" />
+			<sound template="hydraulicOpen04"  startTime="0.01" endTime="0.99" direction="-1"    volumeScale="1.6" pitchScale="1.2" fadeIn="0.1" fadeOut="0.1" />
+			<sound template="foldStartMed02"   startTime="0.99" direction="1"  volumeScale="3"   pitchScale="0.7" />
+			<sound template="vibratingImp"     startTime="0.99" direction="1"  volumeScale="1"   pitchScale="1.1" />
+			<sound template="cylinderPunch"    startTime="0.99" direction="1"  volumeScale="0.5" pitchScale="1.6" />
+			<sound template="foldStartMed02"   startTime="0.01" direction="-1" volumeScale="3"   pitchScale="0.6" />
+			<sound template="vibratingImp"     startTime="0.01" direction="-1" volumeScale="1"   pitchScale="0.9" />
+			<sound template="cylinderPunch"    startTime="0.01" direction="-1" volumeScale="0.5" pitchScale="1.8" />
+			<sound template="clackVar4"        startTime="0.01" direction="-1" volumeScale="1.5" pitchScale="0.6" />
+		</animation>
+	</animations>
+
+	<cylindered>
+		<movingTools>
+			<movingTool node="componentJointDrawbar">
+				<componentJoint index="1" />
+			</movingTool>
+
+			<!-- wheelArms -->
+			<movingTool node="wheelArmFrontBottom">
+				<dependentPart node="wheelArmFrontTop"/>
+				<dependentPart node="wheelArmFrontFrame"/>
+			</movingTool>
+
+			<movingTool node="wheelLeftBackRot" wheelNodes="wheelLeftBack"/>
+			<movingTool node="wheelRightBackRot" wheelNodes="wheelRightBack"/>
+
+			<movingTool node="wheelLeftBackSteering" wheelNodes="wheelLeftBack"/>
+			<movingTool node="wheelRightBackSteering" wheelNodes="wheelRightBack"/>
+			<movingTool node="wheelLeftBackArm" wheelNodes="wheelLeftBack">
+				<dependentPart node="wheelLeftBackArmHydraulic" />
+			</movingTool>
+			<movingTool node="wheelRightBackArm" wheelNodes="wheelRightBack">
+				<dependentPart node="wheelRightBackArmHydraulic" />
+			</movingTool>
+
+			<!-- cutterArms -->
+			<movingTool node="cutterMainArm">
+				<dependentPart node="cutterMainArmHydraulic" />
+			</movingTool>
+
+			<movingTool node="groundAdjustNodeCutterUnitLeft01" >
+				<dependentPart node="cutterUnitLeft01Bottom"/>
+			</movingTool>
+			<movingTool node="groundAdjustNodeCutterUnitLeft02" >
+				<dependentPart node="cutterUnitLeft02Bottom"/>
+			</movingTool>
+			<movingTool node="groundAdjustNodeCutterUnitLeft03" >
+				<dependentPart node="cutterUnitLeft03Bottom"/>
+			</movingTool>
+			<movingTool node="groundAdjustNodeCutterUnitLeft04" >
+				<dependentPart node="cutterUnitLeft04Bottom"/>
+			</movingTool>
+			<movingTool node="groundAdjustNodeCutterUnitLeft05" >
+				<dependentPart node="cutterUnitLeft05Bottom"/>
+			</movingTool>
+			<movingTool node="groundAdjustNodeCutterUnitLeft06" >
+				<dependentPart node="cutterUnitLeft06Bottom"/>
+			</movingTool>
+
+			<movingTool node="groundAdjustNodeCutterUnitRight01" >
+				<dependentPart node="cutterUnitRight01Bottom"/>
+			</movingTool>
+			<movingTool node="groundAdjustNodeCutterUnitRight02" >
+				<dependentPart node="cutterUnitRight02Bottom"/>
+			</movingTool>
+			<movingTool node="groundAdjustNodeCutterUnitRight03" >
+				<dependentPart node="cutterUnitRight03Bottom"/>
+			</movingTool>
+			<movingTool node="groundAdjustNodeCutterUnitRight04" >
+				<dependentPart node="cutterUnitRight04Bottom"/>
+			</movingTool>
+			<movingTool node="groundAdjustNodeCutterUnitRight05" >
+				<dependentPart node="cutterUnitRight05Bottom"/>
+			</movingTool>
+			<movingTool node="groundAdjustNodeCutterUnitRight06" >
+				<dependentPart node="cutterUnitRight06Bottom"/>
+			</movingTool>
+		</movingTools>
+
+		<movingParts>
+			<movingPart node="drawbar" referencePoint="drawbarRef" referenceFrame="drawbarRefFrame" isActiveDirty="true" limitedAxis="1" maxUpdateDistance="300">
+				<dependentPart node="drawbarHydraulic" maxUpdateDistance="50"/>
+			</movingPart>
+			<movingPart node="drawbarHydraulic" referencePoint="drawbarHydraulicRef" referenceFrame="drawbarHydraulicRef">
+				<translatingPart node="drawbarHydraulicPunch" />
+			</movingPart>
+
+			<movingPart node="steeringBar" referencePoint="steeringBarRef" referenceFrame="steeringBarRefFrame" limitedAxis="2" isActiveDirty="true" maxUpdateDistance="50">
+				<dependentPart node="wheelRightBackHydraulic" maxUpdateDistance="50"/>
+			</movingPart>
+			<movingPart node="wheelRightBackHydraulic" referencePoint="wheelRightBackHydraulicRef" referenceFrame="wheelRightBackHydraulicRef">
+				<translatingPart node="wheelRightBackHydraulicPunch" />
+			</movingPart>
+
+			<movingPart node="wheelArmFrontTop" referenceFrame="wheelArmFrontBottom" doDirectionAlignment="false" doRotationAlignment="true" rotMultiplier="1">
+				<dependentPart node="wheelArmFrontHydraulic"/>
+			</movingPart>
+			<movingPart node="wheelArmFrontFrame" referenceFrame="wheelArmFrontBottom" doDirectionAlignment="false" doRotationAlignment="true" rotMultiplier="-1" wheelNodes="wheelLeftFrontRepr wheelRightFrontRepr"/>
+			<movingPart node="wheelArmFrontHydraulic" referencePoint="wheelArmFrontHydraulicRef" referenceFrame="wheelArmFrontHydraulicRef">
+				<translatingPart node="wheelArmFrontHydraulicPunch" />
+			</movingPart>
+
+			<movingPart node="wheelLeftBackArmHydraulic" referencePoint="wheelLeftBackArmHydraulicRef" referenceFrame="wheelLeftBackArmHydraulicRef">
+				<translatingPart node="wheelLeftBackArmHydraulicPunch" />
+			</movingPart>
+			<movingPart node="wheelRightBackArmHydraulic" referencePoint="wheelRightBackArmHydraulicRef" referenceFrame="wheelRightBackArmHydraulicRef">
+				<translatingPart node="wheelRightBackArmHydraulicPunch" />
+			</movingPart>
+
+			<!-- cutterArms Left -->
+			<movingPart node="cutterMainArmHydraulic" referencePoint="cutterMainArmHydraulicRef" referenceFrame="cutterMainArmHydraulicRef">
+				<translatingPart node="cutterMainArmHydraulicPunch" />
+			</movingPart>
+			<movingPart node="cutterUnitLeft01Bottom" referencePoint="cutterUnitLeft01BottomRef" referenceFrame="cutterArmRefFrame" limitedAxis="1">
+				<dependentPart node="cutterUnitLeft01Top"/>
+				<dependentPart node="cutterUnitLeft01"/>
+			</movingPart>
+			<movingPart node="cutterUnitLeft01Top" referenceFrame="cutterUnitLeft01Bottom" doDirectionAlignment="false" doRotationAlignment="true" rotMultiplier="1"/>
+			<movingPart node="cutterUnitLeft01" referenceFrame="cutterUnitLeft01Bottom" doDirectionAlignment="false" doRotationAlignment="true" rotMultiplier="-1"/>
+
+			<movingPart node="cutterUnitLeft02Bottom" referencePoint="cutterUnitLeft02BottomRef" referenceFrame="cutterArmRefFrame" limitedAxis="1">
+				<dependentPart node="cutterUnitLeft02Top"/>
+				<dependentPart node="cutterUnitLeft02"/>
+			</movingPart>
+			<movingPart node="cutterUnitLeft02Top" referenceFrame="cutterUnitLeft02Bottom" doDirectionAlignment="false" doRotationAlignment="true" rotMultiplier="1"/>
+			<movingPart node="cutterUnitLeft02" referenceFrame="cutterUnitLeft02Bottom" doDirectionAlignment="false" doRotationAlignment="true" rotMultiplier="-1"/>
+
+			<movingPart node="cutterUnitLeft03Bottom" referencePoint="cutterUnitLeft03BottomRef" referenceFrame="cutterArmRefFrame" limitedAxis="1">
+				<dependentPart node="cutterUnitLeft03Top"/>
+				<dependentPart node="cutterUnitLeft03"/>
+			</movingPart>
+			<movingPart node="cutterUnitLeft03Top" referenceFrame="cutterUnitLeft03Bottom" doDirectionAlignment="false" doRotationAlignment="true" rotMultiplier="1"/>
+			<movingPart node="cutterUnitLeft03" referenceFrame="cutterUnitLeft03Bottom" doDirectionAlignment="false" doRotationAlignment="true" rotMultiplier="-1"/>
+
+			<movingPart node="cutterUnitLeft04Bottom" referencePoint="cutterUnitLeft04BottomRef" referenceFrame="cutterArmRefFrame" limitedAxis="1">
+				<dependentPart node="cutterUnitLeft04Top"/>
+				<dependentPart node="cutterUnitLeft04"/>
+			</movingPart>
+			<movingPart node="cutterUnitLeft04Top" referenceFrame="cutterUnitLeft04Bottom" doDirectionAlignment="false" doRotationAlignment="true" rotMultiplier="1"/>
+			<movingPart node="cutterUnitLeft04" referenceFrame="cutterUnitLeft04Bottom" doDirectionAlignment="false" doRotationAlignment="true" rotMultiplier="-1"/>
+
+			<movingPart node="cutterUnitLeft05Bottom" referencePoint="cutterUnitLeft05BottomRef" referenceFrame="cutterArmRefFrame" limitedAxis="1">
+				<dependentPart node="cutterUnitLeft05Top"/>
+				<dependentPart node="cutterUnitLeft05"/>
+			</movingPart>
+			<movingPart node="cutterUnitLeft05Top" referenceFrame="cutterUnitLeft05Bottom" doDirectionAlignment="false" doRotationAlignment="true" rotMultiplier="1"/>
+			<movingPart node="cutterUnitLeft05" referenceFrame="cutterUnitLeft05Bottom" doDirectionAlignment="false" doRotationAlignment="true" rotMultiplier="-1"/>
+
+			<movingPart node="cutterUnitLeft06Bottom" referencePoint="cutterUnitLeft06BottomRef" referenceFrame="cutterArmRefFrame" limitedAxis="1">
+				<dependentPart node="cutterUnitLeft06Top"/>
+				<dependentPart node="cutterUnitLeft06"/>
+			</movingPart>
+			<movingPart node="cutterUnitLeft06Top" referenceFrame="cutterUnitLeft06Bottom" doDirectionAlignment="false" doRotationAlignment="true" rotMultiplier="1"/>
+			<movingPart node="cutterUnitLeft06" referenceFrame="cutterUnitLeft06Bottom" doDirectionAlignment="false" doRotationAlignment="true" rotMultiplier="-1"/>
+
+			<!-- cutterArms Right -->
+			<movingPart node="cutterUnitRight01Bottom" referencePoint="cutterUnitRight01BottomRef" referenceFrame="cutterArmRefFrame" limitedAxis="1">
+				<dependentPart node="cutterUnitRight01Top"/>
+				<dependentPart node="cutterUnitRight01"/>
+			</movingPart>
+			<movingPart node="cutterUnitRight01Top" referenceFrame="cutterUnitRight01Bottom" doDirectionAlignment="false" doRotationAlignment="true" rotMultiplier="1"/>
+			<movingPart node="cutterUnitRight01" referenceFrame="cutterUnitRight01Bottom" doDirectionAlignment="false" doRotationAlignment="true" rotMultiplier="-1"/>
+
+			<movingPart node="cutterUnitRight02Bottom" referencePoint="cutterUnitRight02BottomRef" referenceFrame="cutterArmRefFrame" limitedAxis="1">
+				<dependentPart node="cutterUnitRight02Top"/>
+				<dependentPart node="cutterUnitRight02"/>
+			</movingPart>
+			<movingPart node="cutterUnitRight02Top" referenceFrame="cutterUnitRight02Bottom" doDirectionAlignment="false" doRotationAlignment="true" rotMultiplier="1"/>
+			<movingPart node="cutterUnitRight02" referenceFrame="cutterUnitRight02Bottom" doDirectionAlignment="false" doRotationAlignment="true" rotMultiplier="-1"/>
+
+			<movingPart node="cutterUnitRight03Bottom" referencePoint="cutterUnitRight03BottomRef" referenceFrame="cutterArmRefFrame" limitedAxis="1">
+				<dependentPart node="cutterUnitRight03Top"/>
+				<dependentPart node="cutterUnitRight03"/>
+			</movingPart>
+			<movingPart node="cutterUnitRight03Top" referenceFrame="cutterUnitRight03Bottom" doDirectionAlignment="false" doRotationAlignment="true" rotMultiplier="1"/>
+			<movingPart node="cutterUnitRight03" referenceFrame="cutterUnitRight03Bottom" doDirectionAlignment="false" doRotationAlignment="true" rotMultiplier="-1"/>
+
+			<movingPart node="cutterUnitRight04Bottom" referencePoint="cutterUnitRight04BottomRef" referenceFrame="cutterArmRefFrame" limitedAxis="1">
+				<dependentPart node="cutterUnitRight04Top"/>
+				<dependentPart node="cutterUnitRight04"/>
+			</movingPart>
+			<movingPart node="cutterUnitRight04Top" referenceFrame="cutterUnitRight04Bottom" doDirectionAlignment="false" doRotationAlignment="true" rotMultiplier="1"/>
+			<movingPart node="cutterUnitRight04" referenceFrame="cutterUnitRight04Bottom" doDirectionAlignment="false" doRotationAlignment="true" rotMultiplier="-1"/>
+
+			<movingPart node="cutterUnitRight05Bottom" referencePoint="cutterUnitRight05BottomRef" referenceFrame="cutterArmRefFrame" limitedAxis="1">
+				<dependentPart node="cutterUnitRight05Top"/>
+				<dependentPart node="cutterUnitRight05"/>
+			</movingPart>
+			<movingPart node="cutterUnitRight05Top" referenceFrame="cutterUnitRight05Bottom" doDirectionAlignment="false" doRotationAlignment="true" rotMultiplier="1"/>
+			<movingPart node="cutterUnitRight05" referenceFrame="cutterUnitRight05Bottom" doDirectionAlignment="false" doRotationAlignment="true" rotMultiplier="-1"/>
+
+			<movingPart node="cutterUnitRight06Bottom" referencePoint="cutterUnitRight06BottomRef" referenceFrame="cutterArmRefFrame" limitedAxis="1">
+				<dependentPart node="cutterUnitRight06Top"/>
+				<dependentPart node="cutterUnitRight06"/>
+			</movingPart>
+			<movingPart node="cutterUnitRight06Top" referenceFrame="cutterUnitRight06Bottom" doDirectionAlignment="false" doRotationAlignment="true" rotMultiplier="1"/>
+			<movingPart node="cutterUnitRight06" referenceFrame="cutterUnitRight06Bottom" doDirectionAlignment="false" doRotationAlignment="true" rotMultiplier="-1"/>
+		</movingParts>
+	</cylindered>
+
+	<groundAdjustedNodes>
+		<groundAdjustedNode activationTime="2">
+			<adjustNode node="groundAdjustNodeCutterUnitLeft01" minY="-0.75" maxY="-0.45" moveSpeed="0.5" moveSpeedStateChange="0.3" resetIfNotActive="true" inActiveY="-0.8"/>
+			<adjustNode node="groundAdjustNodeCutterUnitLeft02" minY="-0.75" maxY="-0.45" moveSpeed="0.5" moveSpeedStateChange="0.3" resetIfNotActive="true" inActiveY="-0.8"/>
+			<adjustNode node="groundAdjustNodeCutterUnitLeft03" minY="-0.75" maxY="-0.45" moveSpeed="0.5" moveSpeedStateChange="0.3" resetIfNotActive="true" inActiveY="-0.8"/>
+			<adjustNode node="groundAdjustNodeCutterUnitLeft04" minY="-0.75" maxY="-0.45" moveSpeed="0.5" moveSpeedStateChange="0.3" resetIfNotActive="true" inActiveY="-0.8"/>
+			<adjustNode node="groundAdjustNodeCutterUnitLeft05" minY="-0.75" maxY="-0.45" moveSpeed="0.5" moveSpeedStateChange="0.3" resetIfNotActive="true" inActiveY="-0.8"/>
+			<adjustNode node="groundAdjustNodeCutterUnitLeft06" minY="-0.75" maxY="-0.45" moveSpeed="0.5" moveSpeedStateChange="0.3" resetIfNotActive="true" inActiveY="-0.8"/>
+
+			<raycastNode distance="1" node="groundAdjustNodeCutterUnitLeftRaycast" updateFrame="4"/>
+			<raycastNode distance="1" node="groundAdjustNodeCutterUnitMiddleRaycast" updateFrame="4"/>
+
+			<foldable minLimit="0" maxLimit="0.5" />
+		</groundAdjustedNode>
+
+		<groundAdjustedNode activationTime="2">
+			<adjustNode node="groundAdjustNodeCutterUnitRight01" minY="-0.75" maxY="-0.45" moveSpeed="0.5" moveSpeedStateChange="0.3" resetIfNotActive="true" inActiveY="-0.8"/>
+			<adjustNode node="groundAdjustNodeCutterUnitRight02" minY="-0.75" maxY="-0.45" moveSpeed="0.5" moveSpeedStateChange="0.3" resetIfNotActive="true" inActiveY="-0.8"/>
+			<adjustNode node="groundAdjustNodeCutterUnitRight03" minY="-0.75" maxY="-0.45" moveSpeed="0.5" moveSpeedStateChange="0.3" resetIfNotActive="true" inActiveY="-0.8"/>
+			<adjustNode node="groundAdjustNodeCutterUnitRight04" minY="-0.75" maxY="-0.45" moveSpeed="0.5" moveSpeedStateChange="0.3" resetIfNotActive="true" inActiveY="-0.8"/>
+			<adjustNode node="groundAdjustNodeCutterUnitRight05" minY="-0.75" maxY="-0.45" moveSpeed="0.5" moveSpeedStateChange="0.3" resetIfNotActive="true" inActiveY="-0.8"/>
+			<adjustNode node="groundAdjustNodeCutterUnitRight06" minY="-0.75" maxY="-0.45" moveSpeed="0.5" moveSpeedStateChange="0.3" resetIfNotActive="true" inActiveY="-0.8"/>
+
+			<raycastNode distance="1" node="groundAdjustNodeCutterUnitMiddleRaycast" updateFrame="4"/>
+			<raycastNode distance="1" node="groundAdjustNodeCutterUnitRightRaycast" updateFrame="4"/>
+
+			<foldable minLimit="0" maxLimit="0.5" />
+		</groundAdjustedNode>
+	</groundAdjustedNodes>
+
+	<fruitPreparer fruitTypes="sugarBeet beetroot potato">
+		<animationNodes>
+			<animationNode node="drum01" rotAxis="1" rotSpeed="1200" turnOnFadeTime="2" turnOffFadeTime="5"/>
+			<animationNode node="drum02" rotAxis="1" rotSpeed="600" turnOnFadeTime="2" turnOffFadeTime="5"/>
+			<animationNode node="drum03" rotAxis="1" rotSpeed="-600" turnOnFadeTime="2" turnOffFadeTime="5"/>
+		</animationNodes>
+		<sounds>
+			<work template="defoliator01" fadeIn="0.3" fadeOut="0.5"/>
+		</sounds>
+	</fruitPreparer>
+
+	<workParticles>
+		<particle>
+			<node node="prepareFruitEmitter" refNodeIndex="1" particleType="PREPARE_FRUIT" fillType="sugarBeet" emitCountScale="0.5"/>
+		</particle>
+	</workParticles>
+
+	<ai>
+		<areaMarkers leftNode="aiMarkerLeft" rightNode="aiMarkerRight" backNode="aiMarkerBack"/>
+		<sizeMarkers leftNode="sizeMarkerLeft" rightNode="sizeMarkerRight" backNode="sizeMarkerBack"/>
+		<allowTurnBackward value="false"/>
+		<toolReverserDirectionNode node="aiMarkerBack"/>
+		<collisionTrigger node="aiCollisionNode" width="3.2" height="2.0"/>
+		<agentAttachment width="7.5" height="1.7" length="6.9" lengthOffset="-1.1"/>
+	</ai>
+
+	<foliageBending>
+		<bendingNode minX="-3.85" maxX="3.6" minZ="-4.5" maxZ="1.3" yOffset="0.35"/>
+		<bendingNode minX="-0.3" maxX="0.3" minZ="-0.55" maxZ="0.6" yOffset="-0.1" node="defoliator3750_drawbar_component2"/>
+	</foliageBending>
+
+	<wearable wearDuration="480" workMultiplier="5" fieldMultiplier="2"/>
+	<washable dirtDuration="90" washDuration="1" workMultiplier="6" fieldMultiplier="2"/>
+
+	<i3dMappings>
+		<i3dMapping id="defoliator3750_main_component1" node="0>" />
+		<i3dMapping id="wheelLeftBackSteering" node="0>0|0|0|0" />
+		<i3dMapping id="wheelLeftBackArm" node="0>0|0|0|0|0|0" />
+		<i3dMapping id="wheelLeftBackRot" node="0>0|0|0|0|0|0|0|0" />
+		<i3dMapping id="wheelLeftBack" node="0>0|0|0|0|0|0|0|0|0" />
+		<i3dMapping id="wheelLeftBackHubRight" node="0>0|0|0|0|0|0|0|0|0|1" />
+		<i3dMapping id="wheelLeftBackArmHydraulicRef" node="0>0|0|0|0|0|0|1" />
+		<i3dMapping id="wheelLeftBackArmHydraulic" node="0>0|0|0|0|1" />
+		<i3dMapping id="wheelLeftBackArmHydraulicPunch" node="0>0|0|0|0|1|0" />
+		<i3dMapping id="steeringBarRef" node="0>0|0|0|0|2" />
+		<i3dMapping id="wheelRightBackSteering" node="0>0|0|1|0" />
+		<i3dMapping id="wheelRightBackArm" node="0>0|0|1|0|0" />
+		<i3dMapping id="wheelRightBackRot" node="0>0|0|1|0|0|0|0" />
+		<i3dMapping id="wheelRightBack" node="0>0|0|1|0|0|0|0|0" />
+		<i3dMapping id="wheelRightBackWheelPart" node="0>0|0|1|0|0|0|0|0|0" />
+		<i3dMapping id="wheelRightBackHubLeft" node="0>0|0|1|0|0|0|0|0|1" />
+		<i3dMapping id="wheelRightBackArmHydraulicRef" node="0>0|0|1|0|0|1" />
+		<i3dMapping id="wheelRightBackArmHydraulic" node="0>0|0|1|0|1" />
+		<i3dMapping id="wheelRightBackArmHydraulicPunch" node="0>0|0|1|0|1|0" />
+		<i3dMapping id="wheelRightBackHydraulicRef" node="0>0|0|1|0|2" />
+		<i3dMapping id="steeringBarRefFrame" node="0>0|0|1|0|3" />
+		<i3dMapping id="steeringBar" node="0>0|0|1|0|3|0" />
+		<i3dMapping id="turnLight01_left_01" node="0>0|1|0|0" />
+		<i3dMapping id="turnLight01_left_02" node="0>0|1|0|1" />
+		<i3dMapping id="turnLight01_right_01" node="0>0|1|0|2" />
+		<i3dMapping id="turnLight01_right_02" node="0>0|1|0|3" />
+		<i3dMapping id="workingLight28_01" node="0>0|1|0|4" />
+		<i3dMapping id="workingLight28_02" node="0>0|1|0|5" />
+		<i3dMapping id="workingLight28_03" node="0>0|1|0|6" />
+		<i3dMapping id="workingLight28_04" node="0>0|1|0|7" />
+		<i3dMapping id="workLightBackHigh" node="0>0|1|1|0" />
+		<i3dMapping id="turnLightLeftFront" node="0>0|1|2|0" />
+		<i3dMapping id="turnLightLeftBack" node="0>0|1|2|1" />
+		<i3dMapping id="turnLightRightFront" node="0>0|1|2|2" />
+		<i3dMapping id="turnLightRightBack" node="0>0|1|2|3" />
+		<i3dMapping id="armSupport" node="0>0|2|0|0|0" />
+		<i3dMapping id="armSupportBolt" node="0>0|2|0|1" />
+		<i3dMapping id="hydraulicIn01" node="0>0|2|1|0" />
+		<i3dMapping id="hydraulicIn01_detached" node="0>0|2|1|0|0" />
+		<i3dMapping id="hydraulicIn01_connector" node="0>0|2|1|0|0|0" />
+		<i3dMapping id="hydraulicOut01" node="0>0|2|1|1" />
+		<i3dMapping id="hydraulicOut01_detached" node="0>0|2|1|1|0" />
+		<i3dMapping id="hydraulicOut01_connector" node="0>0|2|1|1|0|0" />
+		<i3dMapping id="hydraulicIn02" node="0>0|2|1|2" />
+		<i3dMapping id="hydraulicIn02_detached" node="0>0|2|1|2|0" />
+		<i3dMapping id="hydraulicIn02_connector" node="0>0|2|1|2|0|0" />
+		<i3dMapping id="hydraulicOut02" node="0>0|2|1|3" />
+		<i3dMapping id="hydraulicOut02_detached" node="0>0|2|1|3|0" />
+		<i3dMapping id="hydraulicOut02_connector" node="0>0|2|1|3|0|0" />
+		<i3dMapping id="hydraulicIn03" node="0>0|2|1|4" />
+		<i3dMapping id="hydraulicIn03_detached" node="0>0|2|1|4|0" />
+		<i3dMapping id="hydraulicIn03_connector" node="0>0|2|1|4|0|0" />
+		<i3dMapping id="hydraulicOut03" node="0>0|2|1|5" />
+		<i3dMapping id="hydraulicOut03_detached" node="0>0|2|1|5|0" />
+		<i3dMapping id="hydraulicOut03_connector" node="0>0|2|1|5|0|0" />
+		<i3dMapping id="hydraulicIn04" node="0>0|2|1|6" />
+		<i3dMapping id="hydraulicIn04_detached" node="0>0|2|1|6|0" />
+		<i3dMapping id="hydraulicIn04_connector" node="0>0|2|1|6|0|0" />
+		<i3dMapping id="hydraulicOut04" node="0>0|2|1|7" />
+		<i3dMapping id="hydraulicOut04_detached" node="0>0|2|1|7|0" />
+		<i3dMapping id="hydraulicOut04_connector" node="0>0|2|1|7|0|0" />
+		<i3dMapping id="electric" node="0>0|2|1|8" />
+		<i3dMapping id="electric_detached" node="0>0|2|1|8|0" />
+		<i3dMapping id="electric_connector" node="0>0|2|1|8|0|0" />
+		<i3dMapping id="ptoInputNode" node="0>0|2|2|0" />
+		<i3dMapping id="ptoDetachNode" node="0>0|2|2|1" />
+		<i3dMapping id="drawbarRefFrame" node="0>0|3|0" />
+		<i3dMapping id="drawbar" node="0>0|3|0|0" />
+		<i3dMapping id="drawbarHydraulicRef" node="0>0|3|0|0|0" />
+		<i3dMapping id="drawbarHydraulic" node="0>0|3|1" />
+		<i3dMapping id="drawbarHydraulicPunch" node="0>0|3|1|0" />
+		<i3dMapping id="wheelArmFrontTop" node="0>0|3|2|0" />
+		<i3dMapping id="wheelArmFrontFrame" node="0>0|3|2|0|0" />
+		<i3dMapping id="wheelLeftFrontRepr" node="0>0|3|2|0|0|0|0" />
+		<i3dMapping id="wheelLeftFront" node="0>0|3|2|0|0|0|0|0|0" />
+		<i3dMapping id="wheelRightFrontRepr" node="0>0|3|2|0|0|1|0" />
+		<i3dMapping id="wheelRightFront" node="0>0|3|2|0|0|1|0|0|0" />
+		<i3dMapping id="wheelArmFrontHydraulic" node="0>0|3|2|0|1" />
+		<i3dMapping id="wheelArmFrontHydraulicPunch" node="0>0|3|2|0|1|0" />
+		<i3dMapping id="wheelArmFrontBottom" node="0>0|3|3|0" />
+		<i3dMapping id="wheelArmFrontHydraulicRef" node="0>0|3|3|0|0" />
+		<i3dMapping id="wheelRightBackHydraulic" node="0>0|3|4" />
+		<i3dMapping id="wheelRightBackHydraulicPunch" node="0>0|3|4|0" />
+		<i3dMapping id="drum01" node="0>0|3|5|0" />
+		<i3dMapping id="drum02" node="0>0|3|5|1" />
+		<i3dMapping id="drum03" node="0>0|3|5|2" />
+		<i3dMapping id="cutterMainArm" node="0>0|3|6" />
+		<i3dMapping id="cutterArmRefFrame" node="0>0|3|6|0|0" />
+		<i3dMapping id="cutterUnitLeft01Top" node="0>0|3|6|0|0|0" />
+		<i3dMapping id="cutterUnitLeft01" node="0>0|3|6|0|0|0|0" />
+		<i3dMapping id="cutterUnitLeft01Bottom" node="0>0|3|6|0|0|1" />
+		<i3dMapping id="cutterUnitLeft02Top" node="0>0|3|6|0|0|2" />
+		<i3dMapping id="cutterUnitLeft02" node="0>0|3|6|0|0|2|0" />
+		<i3dMapping id="cutterUnitLeft02Bottom" node="0>0|3|6|0|0|3" />
+		<i3dMapping id="cutterUnitLeft03Top" node="0>0|3|6|0|0|4" />
+		<i3dMapping id="cutterUnitLeft03" node="0>0|3|6|0|0|4|0" />
+		<i3dMapping id="cutterUnitLeft03Bottom" node="0>0|3|6|0|0|5" />
+		<i3dMapping id="cutterUnitLeft04Top" node="0>0|3|6|0|0|6" />
+		<i3dMapping id="cutterUnitLeft04" node="0>0|3|6|0|0|6|0" />
+		<i3dMapping id="cutterUnitLeft04Bottom" node="0>0|3|6|0|0|7" />
+		<i3dMapping id="cutterUnitLeft05Top" node="0>0|3|6|0|0|8" />
+		<i3dMapping id="cutterUnitLeft05" node="0>0|3|6|0|0|8|0" />
+		<i3dMapping id="cutterUnitLeft05Bottom" node="0>0|3|6|0|0|9" />
+		<i3dMapping id="cutterUnitLeft06Top" node="0>0|3|6|0|0|10" />
+		<i3dMapping id="cutterUnitLeft06" node="0>0|3|6|0|0|10|0" />
+		<i3dMapping id="cutterUnitLeft06Bottom" node="0>0|3|6|0|0|11" />
+		<i3dMapping id="cutterUnitRight01Top" node="0>0|3|6|0|0|12" />
+		<i3dMapping id="cutterUnitRight01" node="0>0|3|6|0|0|12|0" />
+		<i3dMapping id="cutterUnitRight01Bottom" node="0>0|3|6|0|0|13" />
+		<i3dMapping id="cutterUnitRight02Top" node="0>0|3|6|0|0|14" />
+		<i3dMapping id="cutterUnitRight02" node="0>0|3|6|0|0|14|0" />
+		<i3dMapping id="cutterUnitRight02Bottom" node="0>0|3|6|0|0|15" />
+		<i3dMapping id="cutterUnitRight03Top" node="0>0|3|6|0|0|16" />
+		<i3dMapping id="cutterUnitRight03" node="0>0|3|6|0|0|16|0" />
+		<i3dMapping id="cutterUnitRight03Bottom" node="0>0|3|6|0|0|17" />
+		<i3dMapping id="cutterUnitRight04Top" node="0>0|3|6|0|0|18" />
+		<i3dMapping id="cutterUnitRight04" node="0>0|3|6|0|0|18|0" />
+		<i3dMapping id="cutterUnitRight04Bottom" node="0>0|3|6|0|0|19" />
+		<i3dMapping id="cutterUnitRight05Top" node="0>0|3|6|0|0|20" />
+		<i3dMapping id="cutterUnitRight05" node="0>0|3|6|0|0|20|0" />
+		<i3dMapping id="cutterUnitRight05Bottom" node="0>0|3|6|0|0|21" />
+		<i3dMapping id="cutterUnitRight06Top" node="0>0|3|6|0|0|22" />
+		<i3dMapping id="cutterUnitRight06" node="0>0|3|6|0|0|22|0" />
+		<i3dMapping id="cutterUnitRight06Bottom" node="0>0|3|6|0|0|23" />
+		<i3dMapping id="groundAdjustNodeCutterUnitLeft01" node="0>0|3|6|1|0" />
+		<i3dMapping id="cutterUnitLeft01BottomRef" node="0>0|3|6|1|0|0" />
+		<i3dMapping id="groundAdjustNodeCutterUnitLeft02" node="0>0|3|6|1|1" />
+		<i3dMapping id="cutterUnitLeft02BottomRef" node="0>0|3|6|1|1|0" />
+		<i3dMapping id="groundAdjustNodeCutterUnitLeft03" node="0>0|3|6|1|2" />
+		<i3dMapping id="cutterUnitLeft03BottomRef" node="0>0|3|6|1|2|0" />
+		<i3dMapping id="groundAdjustNodeCutterUnitLeft04" node="0>0|3|6|1|3" />
+		<i3dMapping id="cutterUnitLeft04BottomRef" node="0>0|3|6|1|3|0" />
+		<i3dMapping id="groundAdjustNodeCutterUnitLeft05" node="0>0|3|6|1|4" />
+		<i3dMapping id="cutterUnitLeft05BottomRef" node="0>0|3|6|1|4|0" />
+		<i3dMapping id="groundAdjustNodeCutterUnitLeft06" node="0>0|3|6|1|5" />
+		<i3dMapping id="cutterUnitLeft06BottomRef" node="0>0|3|6|1|5|0" />
+		<i3dMapping id="groundAdjustNodeCutterUnitRight01" node="0>0|3|6|1|6" />
+		<i3dMapping id="cutterUnitRight01BottomRef" node="0>0|3|6|1|6|0" />
+		<i3dMapping id="groundAdjustNodeCutterUnitRight02" node="0>0|3|6|1|7" />
+		<i3dMapping id="cutterUnitRight02BottomRef" node="0>0|3|6|1|7|0" />
+		<i3dMapping id="groundAdjustNodeCutterUnitRight03" node="0>0|3|6|1|8" />
+		<i3dMapping id="cutterUnitRight03BottomRef" node="0>0|3|6|1|8|0" />
+		<i3dMapping id="groundAdjustNodeCutterUnitRight04" node="0>0|3|6|1|9" />
+		<i3dMapping id="cutterUnitRight04BottomRef" node="0>0|3|6|1|9|0" />
+		<i3dMapping id="groundAdjustNodeCutterUnitRight05" node="0>0|3|6|1|10" />
+		<i3dMapping id="cutterUnitRight05BottomRef" node="0>0|3|6|1|10|0" />
+		<i3dMapping id="groundAdjustNodeCutterUnitRight06" node="0>0|3|6|1|11" />
+		<i3dMapping id="cutterUnitRight06BottomRef" node="0>0|3|6|1|11|0" />
+		<i3dMapping id="groundAdjustNodeCutterUnitLeftRaycast" node="0>0|3|6|1|12" />
+		<i3dMapping id="groundAdjustNodeCutterUnitMiddleRaycast" node="0>0|3|6|1|13" />
+		<i3dMapping id="groundAdjustNodeCutterUnitRightRaycast" node="0>0|3|6|1|14" />
+		<i3dMapping id="cutterMainArmHydraulicRef" node="0>0|3|6|2" />
+		<i3dMapping id="cutterMainArmHydraulic" node="0>0|3|7" />
+		<i3dMapping id="cutterMainArmHydraulicPunch" node="0>0|3|7|0" />
+		<i3dMapping id="workAreaStart" node="0>0|4|0" />
+		<i3dMapping id="workAreaWidth" node="0>0|4|1" />
+		<i3dMapping id="workAreaHeight" node="0>0|4|2" />
+		<i3dMapping id="groundReferenceNode" node="0>0|4|3" />
+		<i3dMapping id="prepareFruitEmitter" node="0>0|5|0" />
+		<i3dMapping id="aiMarkerLeft" node="0>0|6|0" />
+		<i3dMapping id="aiMarkerRight" node="0>0|6|1" />
+		<i3dMapping id="aiMarkerBack" node="0>0|6|2" />
+		<i3dMapping id="sizeMarkerLeft" node="0>0|6|3" />
+		<i3dMapping id="sizeMarkerRight" node="0>0|6|4" />
+		<i3dMapping id="sizeMarkerBack" node="0>0|6|5" />
+		<i3dMapping id="aiCollisionNode" node="0>0|6|6" />
+		<i3dMapping id="componentJointDrawbar" node="0>0|8" />
+		<i3dMapping id="defoliator3750_drawbar_component2" node="1>" />
+		<i3dMapping id="attacherJoint" node="1>0" />
+		<i3dMapping id="drawbarRef" node="1>1" />
+	</i3dMappings>
+</vehicle>

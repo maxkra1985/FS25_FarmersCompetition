@@ -1,0 +1,599 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<vehicle type="attachableCombine" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../shared/xml/schema/vehicle.xsd">
+	<annotation>Copyright (C) GIANTS Software GmbH, All Rights Reserved.</annotation>
+
+	<storeData>
+		<name>2720 Harvester Scrub</name>
+		<specs>
+			<neededPower>280</neededPower>
+			<workingWidth>6.4</workingWidth>
+		</specs>
+		<functions>
+			<function>$l10n_function_harvestingSugarbeet</function>
+		</functions>
+		<storePacks>
+			<storePack>STARTER_SUGARBEET</storePack>
+		</storePacks>
+		<image>$data/vehicles/amityTechnology/hrv12R/store_hrv12R.png</image>
+		<price>175500</price>
+		<lifetime>600</lifetime>
+		<rotation>0</rotation>
+		<brand>AMITYTECH</brand>
+		<category>beetHarvesters</category>
+		<shopTranslationOffset>0 0.181 0</shopTranslationOffset>
+		<shopRotationOffset>-0.524 0 0</shopRotationOffset>
+		<vertexBufferMemoryUsage>4376832</vertexBufferMemoryUsage>
+		<indexBufferMemoryUsage>1741312</indexBufferMemoryUsage>
+		<textureMemoryUsage>1310720</textureMemoryUsage>
+		<instanceVertexBufferMemoryUsage>0</instanceVertexBufferMemoryUsage>
+		<instanceIndexBufferMemoryUsage>0</instanceIndexBufferMemoryUsage>
+		<audioMemoryUsage>0</audioMemoryUsage>
+	</storeData>
+
+	<base>
+		<typeDesc>$l10n_typeDesc_harvester</typeDesc>
+		<filename>$data/vehicles/amityTechnology/hrv12R/hrv12R.i3d</filename>
+		<size width="7.5" length="10" height="4.2" lengthOffset="-0.04"/>
+		<speedLimit value="10"/>
+		<components maxMass="25000">
+			<component centerOfMass="0 0.5 -0.2" solverIterationCount="10" mass="19580"/>
+		</components>
+		<schemaOverlay attacherJointPosition="0 0" name="IMPLEMENT"/>
+		<mapHotspot type="TOOL_TRAILED"/>
+	</base>
+
+	<wheels>
+		<wheelConfigurations tireCategories="TRACTOR HARVESTER">
+			<wheelConfiguration name="$l10n_configuration_valueDefault" price="0" saveId="DEFAULT" numDynamicConfigurations="1">
+				<wheels>
+					<wheel dimensions="900_60R32" isLeft="true"  hasTireTracks="true" hasParticles="true">
+						<physics tipOcclusionAreaGroupId="1" restLoad="9.1" repr="wheelLeft"  forcePointRatio="0.4" initialCompression="35" suspTravel="0.15" spring="162" damper="110" yOffset="0.035"/>
+						<tire isInverted="true"/>
+					</wheel>
+					<wheel dimensions="900_60R32" isLeft="false" hasTireTracks="true" hasParticles="true">
+						<physics tipOcclusionAreaGroupId="1" restLoad="9.1" repr="wheelRight" forcePointRatio="0.4" initialCompression="35" suspTravel="0.15" spring="162" damper="110" yOffset="0.035"/>
+						<tire isInverted="true"/>
+					</wheel>
+				</wheels>
+			</wheelConfiguration>
+		</wheelConfigurations>
+
+		<hubs>
+			<hub linkNode="wheelLeft"  filename="$data/shared/wheels/hubs/hub_n8_10.xml" isLeft="true"  scale="0.3 0.3 0.3" offset="-0.01"/>
+			<hub linkNode="wheelRight" filename="$data/shared/wheels/hubs/hub_n8_10.xml" isLeft="false" scale="0.3 0.3 0.3" offset="-0.01"/>
+		</hubs>
+
+		<rimMaterial materialTemplateName="RIM_CONFIGURATION_BLACK" />
+	</wheels>
+
+	<speedRotatingParts>
+		<speedRotatingPart shaderNode="discs" radius="0.4" groundReferenceNodeIndex="1"/>
+	</speedRotatingParts>
+
+	<attachable>
+		<inputAttacherJoints>
+			<inputAttacherJoint node="attacherJoint" jointType="trailer" attacherHeight="0.6" drawbarNode="drawbar"/>
+		</inputAttacherJoints>
+		<support animationName="moveSupport" delayedOnAttach="false"/>
+		<brakeForce force="7" maxForce="8.5" maxForceMass="25000"/>
+	</attachable>
+
+	<licensePlates>
+		<licensePlate node="licensePlateNodeBack" position="BACK" preferedType="SQUARISH" placementArea="0.07 0.2 0.12 0.2"/>
+	</licensePlates>
+
+	<connectionHoses>
+		<hose inputAttacherJointIndices="1" type="hydraulicIn"  node="hydraulicIn01" adapterNode="hydraulicIn01_detached" adapterMaterialTemplateName="SHARED_BLACK0" length="1.2" diameter="0.02" straighteningFactor="2">
+			<objectChange node="hydraulicIn01_detached" visibilityActive="false" visibilityInactive="true"/>
+		</hose>
+		<hose inputAttacherJointIndices="1" type="hydraulicOut" node="hydraulicOut01" adapterNode="hydraulicOut01_detached" adapterMaterialTemplateName="SHARED_YELLOW2" length="1.2" diameter="0.02" straighteningFactor="2">
+			<objectChange node="hydraulicOut01_detached" visibilityActive="false" visibilityInactive="true"/>
+		</hose>
+		<hose inputAttacherJointIndices="1" type="hydraulicIn"  node="hydraulicIn02" adapterNode="hydraulicIn02_detached" adapterMaterialTemplateName="SHARED_BLUE1" length="1.2" diameter="0.02" straighteningFactor="2">
+			<objectChange node="hydraulicIn02_detached" visibilityActive="false" visibilityInactive="true"/>
+		</hose>
+		<hose inputAttacherJointIndices="1" type="hydraulicOut" node="hydraulicOut02" adapterNode="hydraulicOut02_detached" adapterMaterialTemplateName="SHARED_YELLOW2" length="1.2" diameter="0.02" straighteningFactor="2">
+			<objectChange node="hydraulicOut02_detached" visibilityActive="false" visibilityInactive="true"/>
+		</hose>
+		<hose inputAttacherJointIndices="1" type="hydraulicIn"  node="hydraulicIn03" adapterNode="hydraulicIn03_detached" adapterMaterialTemplateName="SHARED_BLACK0" length="1.2" diameter="0.02" straighteningFactor="2">
+			<objectChange node="hydraulicIn03_detached" visibilityActive="false" visibilityInactive="true"/>
+		</hose>
+		<hose inputAttacherJointIndices="1" type="hydraulicOut" node="hydraulicOut03" adapterNode="hydraulicOut03_detached" adapterMaterialTemplateName="SHARED_BLUE1" length="1.2" diameter="0.02" straighteningFactor="2">
+			<objectChange node="hydraulicOut03_detached" visibilityActive="false" visibilityInactive="true"/>
+		</hose>
+		<hose inputAttacherJointIndices="1" type="electric" node="electricOut" adapterNode="electricOut_detached" length="1.2" diameter="0.01" straighteningFactor="2">
+			<objectChange node="electricOut_detached" visibilityActive="false" visibilityInactive="true"/>
+		</hose>
+	</connectionHoses>
+
+	<powerTakeOffs>
+		<input inputNode="ptoInput" inputAttacherJointIndices="1" detachNode="ptoDetachNode" filename="$data/shared/assets/powerTakeOffs/walterscheidW.xml"/>
+
+		<sounds>
+			<turnedOn template="tractorPTO" volumeScale="0.5" linkNode="attacherJoint"/>
+		</sounds>
+	</powerTakeOffs>
+
+	<powerConsumer ptoRpm="450" neededMaxPtoPower="120"/>
+
+	<lights>
+		<sharedLight linkNode="rearLight18_left"   filename="$data/shared/assets/lights/lizard/rearLight18Red.xml" />
+		<sharedLight linkNode="rearLight18_right"  filename="$data/shared/assets/lights/lizard/rearLight18Red.xml" />
+		<sharedLight linkNode="turnLight01_left"   filename="$data/shared/assets/lights/lizard/rearLight18Orange_left.xml" />
+		<sharedLight linkNode="turnLight01_right"  filename="$data/shared/assets/lights/lizard/rearLight18Orange_right.xml" />
+		<sharedLight linkNode="turnLight01_left1"  filename="$data/shared/assets/lights/lizard/rearLight18Orange_left.xml" />
+		<sharedLight linkNode="turnLight01_right1" filename="$data/shared/assets/lights/lizard/rearLight18Orange_right.xml" />
+		<sharedLight linkNode="turnLight01_right2" filename="$data/shared/assets/lights/lizard/rearLight18Orange_right.xml" />
+
+		<realLights>
+			<high>
+				<light node="backLightsHigh" lightTypes="0"/>
+				<turnLightLeft node="turnLightLeftFront"/>
+				<turnLightRight node="turnLightRightFront"/>
+				<brakeLight node="backLightsHigh"/>
+				<light node="workLightBackHigh"     lightTypes="1"/>
+			</high>
+		</realLights>
+
+		<staticLightCompounds>
+			<staticLightCompound>
+				<node node="lightinterior_static" intensity="5"/>
+				<node node="lightexterior_static" intensity="5"/>
+			</staticLightCompound>
+		</staticLightCompounds>
+	</lights>
+
+	<groundReferenceNodes>
+		<groundReferenceNode node="groundReferenceNode" threshold="0.25"/>
+	</groundReferenceNodes>
+
+	<workAreas>
+		<workArea type="cutter" functionName="processCutterArea">
+			<area startNode="workAreaStart" widthNode="workAreaWidth" heightNode="workAreaHeight" />
+			<folding minLimit="0" maxLimit="0.2"/>
+			<groundReferenceNode index="1" />
+			<onlyActiveWhenLowered value="true"/>
+		</workArea>
+
+		<workArea type="haulmDrop" functionName="processHaulmDropArea" requiresGroundContact="false" disableBackwards="false" needsSetIsTurnedOn="false" requiresOwnedFarmland="false">
+			<area startNode="workAreaStart" widthNode="workAreaWidth" heightNode="workAreaHeight"/>
+		</workArea>
+	</workAreas>
+
+	<foldable>
+		<foldingConfigurations>
+			<foldingConfiguration>
+				<foldingParts startMoveDirection="1" turnOnFoldDirection="-1" foldMiddleAnimTime="1" detachingMinLimit="1" detachingMaxLimit="1" unfoldWarning="$l10n_warning_liftImplementFirst">
+					<foldingPart animationName="folding" speedScale="1" />
+				</foldingParts>
+			</foldingConfiguration>
+		</foldingConfigurations>
+	</foldable>
+
+	<animations>
+		<animation name="folding">
+			<part node="axle"                   startTime="0.0" endTime="1.5" startRot="0 0 0" endRot="-15 0 0"/>
+			<part node="wheels"                 startTime="0.0" endTime="1.5" startRot="0 0 0" endRot="15 0 0"/>
+			<part node="drawbarPhysRot"         startTime="0.0" endTime="1.5" startRot="-13 0 0" endRot="5 0 0"/>
+			<part node="rowAdjustmentGroundArm" startTime="0.0" endTime="0.5" startRot="10 0 0" endRot="0 0 0"/>
+			<part node="beltStretcher"          startTime="0.0" endTime="1.5" startRot="-35 0 0" endRot="0 0 0"/>
+
+			<sound template="hydraulicOpen06"  startTime="0.01" endTime="1.49" direction="-1"    volumeScale="0.8" pitchScale="0.5" fadeIn="0.1" fadeOut="0.1"/>
+			<sound template="hydraulicOpen02"  startTime="0.01" endTime="1.49" direction="-1"    volumeScale="1.2" pitchScale="1.6" fadeIn="0.1" fadeOut="0.1"/>
+			<sound template="hydraulicClose01" startTime="0.01" endTime="1.49" direction="1"     volumeScale="2.5" pitchScale="0.6" fadeIn="0.1" fadeOut="0.1"/>
+			<sound template="hydraulicClose03" startTime="0.01" endTime="1.49" direction="1"     volumeScale="2.5" pitchScale="1.6" fadeIn="0.1" fadeOut="0.1"/>
+			<sound template="vibratingImp"     startTime="0.01" direction="-1" volumeScale="1.3" pitchScale="0.8" />
+			<sound template="foldStartMed02"   startTime="0.01" direction="-1" volumeScale="3.3" pitchScale="0.7" />
+			<sound template="cylinderPunch"    startTime="0.01" direction="-1" volumeScale="0.5" pitchScale="1.4" />
+			<sound template="vibratingImp"     startTime="1.49" direction="1"  volumeScale="1.3" pitchScale="0.8" />
+			<sound template="foldStartMed02"   startTime="1.49" direction="1"  volumeScale="3.3" pitchScale="0.9" />
+			<sound template="clackVar4"        startTime="1.49" direction="1"  volumeScale="3.3" pitchScale="0.6" />
+		</animation>
+		<animation name="moveSupport">
+			<part node="supportArm"             startTime="0" endTime="0.5" startTrans="0 0.426 0" endTrans="0 -0.21 0" />
+
+			<sound template="slideOpen"    startTime="0.01" endTime="0.49" volumeScale="2"   pitchScale="2" linkNode="attacherJoint"/>
+			<sound template="hingeImp"     startTime="0.1"  direction="-1" volumeScale="0.7" pitchScale="1" linkNode="attacherJoint"/>
+			<sound template="vibratingImp" startTime="0.01" direction="-1" volumeScale="0.7" pitchScale="1.5" linkNode="attacherJoint"/>
+		</animation>
+		<animation name="pipeAnimation">
+			<part node="unloadingArm"           startTime="0.0" endTime="5" startRot="0 0 105" endRot="0 0 0"/>
+
+			<sound template="hydraulicClose01" startTime="0.01" endTime="4.99" direction="1"     volumeScale="2.7" pitchScale="0.7"      fadeIn="0.1" fadeOut="0.1" linkNode="unloadingArm"/>
+			<sound template="hydraulicOpen06"  startTime="0.01" endTime="4.99" direction="-1"    volumeScale="0.6" startPitchScale="0.6" endPitchScale="0.8" fadeIn="0.1" fadeOut="0.1" linkNode="unloadingArm"/>
+			<sound template="hydraulicOpen05"  startTime="0.01" endTime="4.99" direction="-1"    volumeScale="1.2" startPitchScale="1.6" endPitchScale="1.8" fadeIn="0.1" fadeOut="0.1" linkNode="unloadingArm"/>
+			<sound template="vibratingImp"     startTime="4.99" direction="1"  volumeScale="1.2" pitchScale="1"    linkNode="unloadingArm"/>
+			<sound template="cylinderPunch"    startTime="4.99" direction="1"  volumeScale="0.4" pitchScale="2"    linkNode="unloadingArm"/>
+			<sound template="vibratingImp"     startTime="0.01" direction="-1" volumeScale="1.2" pitchScale="1"    linkNode="unloadingArm"/>
+			<sound template="cylinderPunch"    startTime="0.01" direction="-1" volumeScale="0.4" pitchScale="1.6"  linkNode="unloadingArm"/>
+			<sound template="hingeImp"         startTime="0.1"  direction="-1" volumeScale="0.7" pitchScale="0.8"  linkNode="unloadingArm"/>
+		</animation>
+	</animations>
+
+	<cylindered>
+		<movingTools>
+			<movingTool node="wheels" playSound="false" wheelIndices="1 2"/>
+			<movingTool node="axle" playSound="true" wheelIndices="1 2">
+				<dependentPart node="axleHydraulic" />
+			</movingTool>
+			<movingTool node="drawbarPhysRot" playSound="true">
+				<dependentPart node="drawbar" />
+				<dependentPart node="drawbarHydraulic" />
+				<inputAttacherJoint value="true" />
+			</movingTool>
+			<movingTool node="unloadingArm" playSound="true">
+				<dependentPart node="unloadingArmHydraulic" />
+				<dependentPart node="unloadingArmPart01" />
+			</movingTool>
+			<movingTool node="drawbarRowAdjustment" playSound="true">
+				<dependentPart node="drawbarRowAdjustmentHydraulic" />
+			</movingTool>
+			<movingTool node="rowAdjustment" playSound="true">
+				<dependentPart node="rowAdjustmentArm" />
+			</movingTool>
+			<movingTool node="beltStretcher" playSound="true">
+				<dependentPart node="beltStretcherHydraulic" />
+			</movingTool>
+		</movingTools>
+
+		<movingParts>
+			<movingPart node="drawbar" referencePoint="drawbarRef" referenceFrame="drawbarPhysRot" limitedAxis="1" maxUpdateDistance="300"/>
+			<movingPart node="axleHydraulic" referencePoint="axleHydraulicRef" referenceFrame="axleHydraulicRef">
+				<translatingPart node="axleHydraulicPunch" />
+			</movingPart>
+			<movingPart node="drawbarHydraulic" referencePoint="drawbarHydraulicRef" referenceFrame="drawbarHydraulicRef">
+				<translatingPart node="drawbarHydraulicPunch" />
+			</movingPart>
+			<movingPart node="unloadingArmHydraulic" referencePoint="unloadingArmHydraulicRef" referenceFrame="unloadingArmHydraulicRefFrame">
+				<translatingPart node="unloadingArmHydraulicPunch" />
+			</movingPart>
+			<movingPart node="unloadingArmPart01" referencePoint="unloadingArmPart01Ref" referenceFrame="unloadingArmPart01RefFrame" doDirectionAlignment="false" doInversedLineAlignment="true">
+				<orientationLine>
+					<lineNode node="unloadingArmPart01LineStart"/>
+					<lineNode node="unloadingArmPart01LineEnd"/>
+				</orientationLine>
+				<dependentPart node="unloadingArmPart02"/>
+			</movingPart>
+			<movingPart node="unloadingArmPart02" referencePoint="unloadingArmPart02Ref" referenceFrame="unloadingArmPart02Ref"/>
+			<movingPart node="drawbarRowAdjustmentHydraulic" referencePoint="drawbarRowAdjustmentHydraulicRef" referenceFrame="drawbarRowAdjustmentHydraulicRef">
+				<translatingPart node="drawbarRowAdjustmentHydraulicPunch" />
+			</movingPart>
+			<movingPart node="rowAdjustmentArm" referencePoint="rowAdjustmentArmRef" referenceFrame="rowAdjustmentArmRef"/>
+			<movingPart node="beltStretcherHydraulic" referencePoint="beltStretcherHydraulicRef" referenceFrame="beltStretcherHydraulicRef">
+				<translatingPart node="beltStretcherHydraulicPunch" />
+			</movingPart>
+		</movingParts>
+	</cylindered>
+
+	<fillUnit>
+		<fillUnitConfigurations>
+			<fillUnitConfiguration>
+				<fillUnits>
+					<fillUnit shopDisplayUnit="CUBICMETER" fillTypes="sugarBeet beetroot potato" capacity="6450">
+						<exactFillRootNode node="exactFillRootNode" />
+					</fillUnit>
+				</fillUnits>
+			</fillUnitConfiguration>
+		</fillUnitConfigurations>
+	</fillUnit>
+
+	<fillVolume>
+		<fillVolumeConfigurations>
+			<fillVolumeConfiguration>
+				<volumes>
+					<volume node="fillVolume" fillUnitIndex="1" maxAllowedHeapAngle="20"/>
+				</volumes>
+			</fillVolumeConfiguration>
+		</fillVolumeConfigurations>
+
+		<unloadInfos>
+			<unloadInfo>
+				<node node="fillVolumeUnloadNode" width="0.4" length="1.0" />
+			</unloadInfo>
+		</unloadInfos>
+
+		<loadInfos>
+			<loadInfo>
+				<node node="fillVolumeLoadNode" width="0.4" length="0.2" />
+			</loadInfo>
+		</loadInfos>
+	</fillVolume>
+
+	<pipe aiFoldedPipeUsesTrailerSpace="true">
+		<unloadingTriggers>
+			<unloadingTrigger node="unloadingTrigger"/>
+		</unloadingTriggers>
+		<states num="2" unloading="2"/>
+		<animation name="pipeAnimation" speedScale="1"/>
+		<animationNodes>
+			<animationNode node="roller13" rotSpeed="200" rotAxis="3" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="roller16" rotSpeed="-200" rotAxis="3" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="roller17" rotSpeed="200" rotAxis="3" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="beltsUnloading" shaderParameterName="offsetUV" shaderComponentScale="0 1 0 0" rotSpeed="65" turnOnFadeTime="2" turnOffFadeTime="3" scrollLength="8"/>
+			<animationNode node="beltsChainUnloading" shaderParameterName="offsetUV" shaderComponentScale="0 1 0 0" rotSpeed="40" turnOnFadeTime="2" turnOffFadeTime="2"/>
+		</animationNodes>
+	</pipe>
+
+	<combine allowThreshingDuringRain="true">
+		<buffer loadingDelay="3.5"/>
+
+		<fillEffect>
+			<effectNode effectNode="effectBelt1" effectClass="MorphPositionEffect" materialType="belt_cropDirt"  delay="0.00" fadeTime="1.2" scrollLength="12" scrollSpeed="0.3"/>
+			<effectNode effectNode="effectBelt2" effectClass="MorphPositionEffect" materialType="belt_cropDirt"  delay="1.2" fadeTime="1.2" scrollLength="12" scrollSpeed="0.3"/>
+			<effectNode effectNode="effectBelt3" effectClass="MorphPositionEffect" materialType="belt_cropClean" delay="2.4" fadeTime="2.4" scrollLength="12" scrollSpeed="0.2"/>
+
+			<effectNode effectNode="effectParticleSoilHarvesting" effectClass="ParticleEffect" particleType="SOIL_HARVESTING" emitCountScale="0.35" worldSpace="false"/>
+			<effectNode effectNode="effectParticleCleaningSoil1" effectClass="ParticleEffect" particleType="CLEANING_SOIL" emitCountScale="0.2" worldSpace="false"/>
+			<effectNode effectNode="effectParticleCleaningSoil2" effectClass="ParticleEffect" particleType="CLEANING_SOIL" emitCountScale="0.2" worldSpace="false"/>
+			<effectNode effectNode="effectParticleCleaningDust" effectClass="ParticleEffect" particleType="CLEANING_DUST" emitCountScale="0.35"/>
+			<effectNode effectClass="ParticleEffect" effectNode="effectParticleBunker" materialType="unloadingParticle" particleType="unloading" emitCountScale="1" delay="4.8" lifespan="0.3" />
+		</fillEffect>
+
+		<animationNodes>
+			<animationNode node="pto01" rotSpeed="-1500" rotAxis="3" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="pto02" rotSpeed="-1500" rotAxis="3" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="pto03" rotSpeed="1500" rotAxis="3" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="pto04" rotSpeed="1500" rotAxis="1" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="pto05" rotSpeed="-1500" rotAxis="3" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="pto06" rotSpeed="-1500" rotAxis="3" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="pto07" rotSpeed="-1500" rotAxis="3" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="pto08" rotSpeed="-1500" rotAxis="1" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="pto09" rotSpeed="1500" rotAxis="1" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="roller01" rotSpeed="-1000" rotAxis="1" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="roller02" rotSpeed="-1000" rotAxis="1" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="roller03" rotSpeed="-1000" rotAxis="1" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="roller04" rotSpeed="-1000" rotAxis="1" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="roller05" rotSpeed="-1000" rotAxis="1" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="roller06" rotSpeed="-1000" rotAxis="1" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="roller07" rotSpeed="-1000" rotAxis="1" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="roller08" rotSpeed="-1000" rotAxis="1" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="roller09" rotSpeed="-1000" rotAxis="1" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="roller10" rotSpeed="-1000" rotAxis="1" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="roller11" rotSpeed="-200" rotAxis="1" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="roller12" rotSpeed="-200" rotAxis="1" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="roller14" rotSpeed="1000" rotAxis="1" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="roller15" rotSpeed="-1000" rotAxis="1" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="roller18" rotSpeed="-1000" rotAxis="1" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="roller19" rotSpeed="1000" rotAxis="1" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="roller20" rotSpeed="-1000" rotAxis="1" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="roller21" rotSpeed="1000" rotAxis="1" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="roller22" rotSpeed="-1000" rotAxis="1" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="roller23" rotSpeed="-1000" rotAxis="1" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="roller24" rotSpeed="1000" rotAxis="1" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="roller25" rotSpeed="1000" rotAxis="1" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="roller26" rotSpeed="1000" rotAxis="1" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="roller27" rotSpeed="1000" rotAxis="1" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="roller28" rotSpeed="1000" rotAxis="1" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="roller29" rotSpeed="1000" rotAxis="1" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="roller30" rotSpeed="1000" rotAxis="1" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="roller31" rotSpeed="1000" rotAxis="1" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="roller32" rotSpeed="1000" rotAxis="1" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="roller33" rotSpeed="1000" rotAxis="1" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="roller34" rotSpeed="1000" rotAxis="1" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="roller35" rotSpeed="1000" rotAxis="1" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="roller36" rotSpeed="1000" rotAxis="1" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="roller37" rotSpeed="1000" rotAxis="1" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="roller38" rotSpeed="1000" rotAxis="1" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="roller39" rotSpeed="1000" rotAxis="1" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="roller40" rotSpeed="1000" rotAxis="1" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="roller41" rotSpeed="1000" rotAxis="1" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="roller42" rotSpeed="1000" rotAxis="1" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="roller43" rotSpeed="1000" rotAxis="1" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="roller44" rotSpeed="200" rotAxis="1" turnOnFadeTime="2" turnOffFadeTime="2" />
+			<animationNode node="beltsHarvesting" shaderParameterName="offsetUV" shaderComponentScale="0 1 0 0" rotSpeed="40" turnOnFadeTime="2" turnOffFadeTime="2" scrollLength="6.933"/>
+			<animationNode node="beltsChainHarvesting" shaderParameterName="offsetUV" shaderComponentScale="0 1 0 0" rotSpeed="-200" turnOnFadeTime="2" turnOffFadeTime="2"/>
+		</animationNodes>
+	</combine>
+
+	<cutter fruitTypes="sugarBeet beetroot potato"/>
+
+	<dischargeable>
+		<dischargeNode node="dischargeNode" emptySpeed="500" fillUnitIndex="1" maxDistance="15" canStartDischargeAutomatically="true">
+			<info width="1.0" length="0.4" useRaycastHitPosition="true"/>
+			<effects>
+				<effectNode effectClass="MorphPositionEffect" effectNode="effectUnloadBelt" materialType="belt" delay="0" fadeTime="4" speed="1" scrollLength="4" scrollSpeed="0.5"/>
+				<effectNode effectClass="ParticleEffect" effectNode="effectParticleUnloadingBelt" materialType="unloadingParticle" particleType="unloading" emitCountScale="2.5" delay="4" lifespan="0.11" />
+			</effects>
+			<dischargeStateSound template="rollbeltLoop" pitchScale="0.7" fadeIn="0.5"         linkNode="unloadingArm"/>
+			<dischargeStateSound template="harvesterToolGrimmeWork" fadeIn="0.1" fadeOut="0.1" linkNode="unloadingArm"/>
+		</dischargeNode>
+	</dischargeable>
+
+	<turnOnVehicle turnOffIfNotAllowed="true">
+		<sounds>
+			<start template="harvesterToolGrimmeStart" linkNode="hrv12R_main_component1" />
+			<work template="harvesterToolGrimmeWork" linkNode="hrv12R_main_component1" />
+			<stop template="harvesterToolGrimmeStop" linkNode="hrv12R_main_component1" />
+		</sounds>
+	</turnOnVehicle>
+
+	<ai>
+		<needsLowering value="true"/>
+		<areaMarkers leftNode="aiMarkerLeft" rightNode="aiMarkerRight" backNode="aiMarkerBack"/>
+		<sizeMarkers leftNode="sizeMarkerLeft" rightNode="sizeMarkerRight" backNode="sizeMarkerBack"/>
+		<collisionTrigger node="aiCollisionNode" width="7.5" height="4.35"/>
+		<allowTurnBackward value="false"/>
+		<toolReverserDirectionNode node="sizeMarkerBack"/>
+		<turningRadiusLimitation rotationJointNode="attacherJoint" wheelIndices="1 2"/>
+		<overlap value="0"/>
+		<agentAttachment jointNode="attacherJoint" rotCenterWheelIndices="1 2" width="7.55" height="4.25" length="8.4"/>
+	</ai>
+
+	<foliageBending>
+		<bendingNode minX="-3.8" maxX="3.8" minZ="0.1" maxZ="3.3" yOffset="0.45"/>
+		<bendingNode wheelIndices="1 2" minZ="-1.8" maxZ="0.1" yOffset="0.45"/>
+		<bendingNode minX="-1.8" maxX="1.8" minZ="-3.35" maxZ="-1.8" yOffset="0.8"/>
+		<bendingNode minX="-0.95" maxX="0.95" minZ="-4.4" maxZ="-3.35" yOffset="0.8"/>
+		<bendingNode minX="-0.25" maxX="0.25" minZ="0.1" maxZ="1.45" yOffset="-0.1" node="drawbar"/>
+	</foliageBending>
+
+	<tipOccluder>
+		<occlusionArea start="tipOcclusionAreaStart" width="tipOcclusionAreaWidth" height="tipOcclusionAreaHeight"/>
+	</tipOccluder>
+
+	<wearable wearDuration="480" workMultiplier="5" fieldMultiplier="2"/>
+	<washable dirtDuration="90" washDuration="1" workMultiplier="6" fieldMultiplier="2"/>
+
+	<i3dMappings>
+		<i3dMapping id="hrv12R_main_component1" node="0>" />
+		<i3dMapping id="hrv12R_vis" node="0>0" />
+		<i3dMapping id="axle" node="0>0|0|0" />
+		<i3dMapping id="wheels" node="0>0|0|0|0" />
+		<i3dMapping id="wheelLeft" node="0>0|0|0|0|0" />
+		<i3dMapping id="wheelRight" node="0>0|0|0|0|1" />
+		<i3dMapping id="axleHydraulic" node="0>0|0|0|1" />
+		<i3dMapping id="axleHydraulicPunch" node="0>0|0|0|1|0" />
+		<i3dMapping id="axleHydraulicRef" node="0>0|0|1" />
+		<i3dMapping id="discs" node="0>0|1|0" />
+		<i3dMapping id="licensePlateNodeBack" node="0>0|2|0" />
+		<i3dMapping id="hydraulicIn03" node="0>0|3|0" />
+		<i3dMapping id="hydraulicOut01" node="0>0|3|1" />
+		<i3dMapping id="hydraulicOut03" node="0>0|3|2" />
+		<i3dMapping id="hydraulicIn02" node="0>0|3|3" />
+		<i3dMapping id="electricOut" node="0>0|3|4" />
+		<i3dMapping id="hydraulicOut02" node="0>0|3|5" />
+		<i3dMapping id="hydraulicIn01" node="0>0|3|6" />
+		<i3dMapping id="hydraulicIn01_detached" node="0>0|3|7" />
+		<i3dMapping id="hydraulicOut01_detached" node="0>0|3|8" />
+		<i3dMapping id="hydraulicIn02_detached" node="0>0|3|9" />
+		<i3dMapping id="hydraulicOut02_detached" node="0>0|3|10" />
+		<i3dMapping id="hydraulicIn03_detached" node="0>0|3|11" />
+		<i3dMapping id="hydraulicOut03_detached" node="0>0|3|12" />
+		<i3dMapping id="electricOut_detached" node="0>0|3|13" />
+		<i3dMapping id="ptoInput" node="0>0|4|0" />
+		<i3dMapping id="ptoDetachNode" node="0>0|4|1" />
+		<i3dMapping id="rearLight18_right" node="0>0|5|0|0" />
+		<i3dMapping id="rearLight18_left" node="0>0|5|0|1" />
+		<i3dMapping id="turnLight01_left" node="0>0|5|0|2" />
+		<i3dMapping id="turnLight01_right" node="0>0|5|0|3" />
+		<i3dMapping id="turnLight01_left1" node="0>0|5|0|4" />
+		<i3dMapping id="turnLight01_right1" node="0>0|5|0|5" />
+		<i3dMapping id="turnLight01_right2" node="0>0|5|0|6" />
+		<i3dMapping id="bigTriangle" node="0>0|5|0|7" />
+		<i3dMapping id="lightinterior_static" node="0>0|5|1|0" />
+		<i3dMapping id="lightexterior_static" node="0>0|5|1|1" />
+		<i3dMapping id="backLightsHigh" node="0>0|5|2|0" />
+		<i3dMapping id="turnLightLeftFront" node="0>0|5|3|0" />
+		<i3dMapping id="turnLightRightFront" node="0>0|5|3|1" />
+		<i3dMapping id="workLightBackHigh" node="0>0|5|4" />
+		<i3dMapping id="groundReferenceNode" node="0>0|6|0" />
+		<i3dMapping id="workAreaStart" node="0>0|7|0" />
+		<i3dMapping id="workAreaWidth" node="0>0|7|1" />
+		<i3dMapping id="workAreaHeight" node="0>0|7|2" />
+		<i3dMapping id="supportArm" node="0>0|8|0" />
+		<i3dMapping id="drawbarPhysRot" node="0>0|8|1|0|0" />
+		<i3dMapping id="attacherJoint" node="0>0|8|1|0|0|0" />
+		<i3dMapping id="drawbar" node="0>0|8|1|1" />
+		<i3dMapping id="drawbarRowAdjustment" node="0>0|8|1|1|0" />
+		<i3dMapping id="drawbarRowAdjustmentHydraulicRef" node="0>0|8|1|1|0|0" />
+		<i3dMapping id="drawbarRowAdjustmentHydraulic" node="0>0|8|1|1|1" />
+		<i3dMapping id="drawbarRowAdjustmentHydraulicPunch" node="0>0|8|1|1|1|0" />
+		<i3dMapping id="drawbarHydraulicRef" node="0>0|8|1|1|2" />
+		<i3dMapping id="rowAdjustment" node="0>0|8|1|1|3" />
+		<i3dMapping id="rowAdjustmentArm" node="0>0|8|1|1|3|0" />
+		<i3dMapping id="rowAdjustmentGroundArm" node="0>0|8|1|1|3|1" />
+		<i3dMapping id="rowAdjustmentArmRef" node="0>0|8|1|1|4" />
+		<i3dMapping id="drawbarRef" node="0>0|8|1|1|5" />
+		<i3dMapping id="drawbarHydraulic" node="0>0|8|1|2" />
+		<i3dMapping id="drawbarHydraulicPunch" node="0>0|8|1|2|0" />
+		<i3dMapping id="unloadingArm" node="0>0|8|2|0" />
+		<i3dMapping id="unloadingArmPart02" node="0>0|8|2|0|0" />
+		<i3dMapping id="roller13" node="0>0|8|2|0|1" />
+		<i3dMapping id="unloadingArmHydraulicRef" node="0>0|8|2|0|2" />
+		<i3dMapping id="unloadingArmPart01Ref" node="0>0|8|2|0|3" />
+		<i3dMapping id="dischargeNode" node="0>0|8|2|0|4|0" />
+		<i3dMapping id="effectParticleUnloadingBelt" node="0>0|8|2|0|4|1" />
+		<i3dMapping id="beltsChainUnloading" node="0>0|8|2|0|6|0" />
+		<i3dMapping id="roller16" node="0>0|8|2|0|10" />
+		<i3dMapping id="unloadingArmHydraulicRefFrame" node="0>0|8|2|1" />
+		<i3dMapping id="unloadingArmHydraulic" node="0>0|8|2|1|0" />
+		<i3dMapping id="unloadingArmHydraulicPunch" node="0>0|8|2|1|0|0" />
+		<i3dMapping id="unloadingArmPart01RefFrame" node="0>0|8|2|2" />
+		<i3dMapping id="unloadingArmPart01" node="0>0|8|2|2|0" />
+		<i3dMapping id="unloadingArmPart01LineStart" node="0>0|8|2|2|0|0" />
+		<i3dMapping id="unloadingArmPart01LineEnd" node="0>0|8|2|2|0|0|0" />
+		<i3dMapping id="unloadingArmPart02Ref" node="0>0|8|2|2|0|1" />
+		<i3dMapping id="roller17" node="0>0|8|2|3" />
+		<i3dMapping id="beltStretcher" node="0>0|8|3|0" />
+		<i3dMapping id="beltStretcherHydraulicRef" node="0>0|8|3|0|0" />
+		<i3dMapping id="beltStretcherHydraulic" node="0>0|8|3|1" />
+		<i3dMapping id="beltStretcherHydraulicPunch" node="0>0|8|3|1|0" />
+		<i3dMapping id="exactFillRootNode" node="0>0|9|0" />
+		<i3dMapping id="fillVolume" node="0>0|10|0" />
+		<i3dMapping id="fillVolumeUnloadNode" node="0>0|10|1" />
+		<i3dMapping id="fillVolumeLoadNode" node="0>0|10|2" />
+		<i3dMapping id="unloadingTrigger" node="0>0|11|0" />
+		<i3dMapping id="pto01" node="0>0|12|0|0" />
+		<i3dMapping id="pto02" node="0>0|12|1|0" />
+		<i3dMapping id="pto03" node="0>0|12|2|0" />
+		<i3dMapping id="pto04" node="0>0|12|3|0" />
+		<i3dMapping id="pto05" node="0>0|12|4|0" />
+		<i3dMapping id="pto06" node="0>0|12|5|0" />
+		<i3dMapping id="pto07" node="0>0|12|6|0" />
+		<i3dMapping id="pto08" node="0>0|12|7|0" />
+		<i3dMapping id="pto09" node="0>0|12|8" />
+		<i3dMapping id="roller01" node="0>0|12|9" />
+		<i3dMapping id="roller02" node="0>0|12|10" />
+		<i3dMapping id="roller03" node="0>0|12|11" />
+		<i3dMapping id="roller04" node="0>0|12|12" />
+		<i3dMapping id="roller05" node="0>0|12|13" />
+		<i3dMapping id="roller06" node="0>0|12|14" />
+		<i3dMapping id="roller07" node="0>0|12|15" />
+		<i3dMapping id="roller08" node="0>0|12|16" />
+		<i3dMapping id="roller09" node="0>0|12|17" />
+		<i3dMapping id="roller10" node="0>0|12|18" />
+		<i3dMapping id="roller11" node="0>0|12|19" />
+		<i3dMapping id="roller12" node="0>0|12|20" />
+		<i3dMapping id="roller14" node="0>0|12|21" />
+		<i3dMapping id="roller15" node="0>0|12|22" />
+		<i3dMapping id="roller23" node="0>0|12|23" />
+		<i3dMapping id="roller18" node="0>0|12|24" />
+		<i3dMapping id="roller19" node="0>0|12|25" />
+		<i3dMapping id="roller20" node="0>0|12|26" />
+		<i3dMapping id="roller21" node="0>0|12|27" />
+		<i3dMapping id="roller22" node="0>0|12|28" />
+		<i3dMapping id="roller33" node="0>0|12|29" />
+		<i3dMapping id="roller32" node="0>0|12|30" />
+		<i3dMapping id="roller31" node="0>0|12|31" />
+		<i3dMapping id="roller30" node="0>0|12|32" />
+		<i3dMapping id="roller29" node="0>0|12|33" />
+		<i3dMapping id="roller28" node="0>0|12|34" />
+		<i3dMapping id="roller27" node="0>0|12|35" />
+		<i3dMapping id="roller26" node="0>0|12|36" />
+		<i3dMapping id="roller25" node="0>0|12|37" />
+		<i3dMapping id="roller24" node="0>0|12|38" />
+		<i3dMapping id="roller42" node="0>0|12|39" />
+		<i3dMapping id="roller41" node="0>0|12|40" />
+		<i3dMapping id="roller40" node="0>0|12|41" />
+		<i3dMapping id="roller39" node="0>0|12|42" />
+		<i3dMapping id="roller38" node="0>0|12|43" />
+		<i3dMapping id="roller37" node="0>0|12|44" />
+		<i3dMapping id="roller36" node="0>0|12|45" />
+		<i3dMapping id="roller35" node="0>0|12|46" />
+		<i3dMapping id="roller34" node="0>0|12|47" />
+		<i3dMapping id="roller43" node="0>0|12|48" />
+		<i3dMapping id="roller44" node="0>0|12|49" />
+		<i3dMapping id="beltsChainHarvesting" node="0>0|12|50" />
+		<i3dMapping id="effectBelt1" node="0>0|12|51|0" />
+		<i3dMapping id="effectBelt2" node="0>0|12|51|1" />
+		<i3dMapping id="effectBelt3" node="0>0|12|51|2" />
+		<i3dMapping id="effectUnloadBelt" node="0>0|12|51|3" />
+		<i3dMapping id="effectParticleCleaningDust" node="0>0|12|51|4" />
+		<i3dMapping id="effectParticleCleaningSoil2" node="0>0|12|51|5" />
+		<i3dMapping id="effectParticleCleaningSoil1" node="0>0|12|51|6" />
+		<i3dMapping id="effectParticleSoilHarvesting" node="0>0|12|51|7" />
+		<i3dMapping id="effectParticleBunker" node="0>0|12|51|8" />
+		<i3dMapping id="aiMarkerLeft" node="0>0|13|0" />
+		<i3dMapping id="aiMarkerRight" node="0>0|13|1" />
+		<i3dMapping id="aiMarkerBack" node="0>0|13|2" />
+		<i3dMapping id="sizeMarkerLeft" node="0>0|13|3" />
+		<i3dMapping id="sizeMarkerRight" node="0>0|13|4" />
+		<i3dMapping id="sizeMarkerBack" node="0>0|13|5" />
+		<i3dMapping id="aiCollisionNode" node="0>0|13|6" />
+		<i3dMapping id="tipOcclusionAreaStart" node="0>0|14|0" />
+		<i3dMapping id="tipOcclusionAreaWidth" node="0>0|14|1" />
+		<i3dMapping id="tipOcclusionAreaHeight" node="0>0|14|2" />
+		<i3dMapping id="beltsUnloading" node="0>1|1" />
+		<i3dMapping id="beltsHarvesting" node="0>1|2" />
+	</i3dMappings>
+</vehicle>

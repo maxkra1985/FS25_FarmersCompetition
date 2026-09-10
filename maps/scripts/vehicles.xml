@@ -1,0 +1,1277 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<vehicles>
+	<!-- ===================================================================================================================== -->
+	<!-- ФЕРМА 1 -->
+	<vehicle filename="data/vehicles/quicke/q4M/q4M.xml" uniqueId="vehicle163ea59cd7b28eb05cb5fb67b027f985_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-384.941 128.586 -75.227" rotation="-162.00 -88.82 180.00"/>
+		<configuration name="baseColor" id="1" isActive="false"/>
+		<configuration name="baseColor" id="NEWHOLLAND_BLUE1" isActive="true"/>
+		<configuration name="designColor" id="1" isActive="false"/>
+		<configuration name="designColor" id="NEWHOLLAND_BLUE1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/quicke/q4M/q4M.xml" uniqueId="vehicle9dce3f9e09f4f6c8afe2e578da15deb8_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-384.918 128.511 -72.720" rotation="-165.02 -89.62 -179.91"/>
+		<configuration name="baseColor" id="1" isActive="false"/>
+		<configuration name="baseColor" id="NEWHOLLAND_BLUE1" isActive="true"/>
+		<configuration name="designColor" id="1" isActive="false"/>
+		<configuration name="designColor" id="NEWHOLLAND_BLUE1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/albutt/frontloaderBaleSpike/frontloaderBaleSpike.xml" uniqueId="vehicle55bb87ccc43f84de634c729df510cc7c_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-389.201 127.914 -77.195" rotation="16.53 -0.07 -0.00"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/albutt/frontloaderBaleSpike/frontloaderBaleSpike.xml" uniqueId="vehiclea9ebada6118d9346d4d27310b1365517_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-387.387 127.914 -77.178" rotation="16.53 -0.50 0.00"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/albutt/frontloaderShovel/frontloaderShovel.xml" uniqueId="vehicle711d586cf31677ea69e49be4a932f310_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-389.990 127.999 -74.887" rotation="-179.99 -89.00 179.99"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/albutt/frontloaderPalletFork/frontloaderPalletFork.xml" uniqueId="vehicle33b2d378e7076f5833ffc2461284cc16_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-390.152 127.999 -72.525" rotation="0.81 -89.34 -0.81"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/masseyFerguson/mf8570Header/mf8570Header.xml" uniqueId="vehicleccec0b3c147ecae8e38f2a9e9f51058b_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-34.418 129.106 -69.398" rotation="155.07 1.45 -179.99"/>
+		<configuration name="designColor" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/valtra/tSeries/tSeries.xml" uniqueId="vehicle0a82ab0255a0b765f296cb5397623afa_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-386.653 128.145 -19.259" rotation="0.05 86.87 0.02"/>
+		<component index="2" position="-385.263 128.750 -19.183" rotation="0.08 86.87 0.06"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<configuration name="frontloader" id="1" isActive="false"/>
+		<configuration name="frontloader" id="2" isActive="true"/>
+		<configuration name="motor" id="1" isActive="false"/>
+		<configuration name="motor" id="11" isActive="true"/>
+		<configuration name="designColor" id="1" isActive="false"/>
+		<configuration name="designColor" id="NEWHOLLAND_BLUE1" isActive="true"/>
+		<configuration name="rimColor" id="1" isActive="false"/>
+		<configuration name="rimColor" id="NEWHOLLAND_BLUE1" isActive="true"/>
+		<configuration name="design" id="1" isActive="true"/>
+		<configuration name="design2" id="1" isActive="true"/>
+		<configuration name="vehicleType" id="1" isActive="true"/>
+		<configuration name="attacherJoint" id="1" isActive="true"/>
+		<configuration name="design3" id="1" isActive="true"/>
+		<configuration name="wheel" id="DEFAULT_TRELLEBORG_TM800" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/valtra/tSeries/tSeries.xml" uniqueId="vehicleea7e40d2e11ff5693a787bfca7b892cb_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-386.613 128.145 -23.007" rotation="0.03 88.57 0.00"/>
+		<component index="2" position="-385.222 128.750 -22.972" rotation="0.12 88.57 0.09"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<configuration name="frontloader" id="1" isActive="false"/>
+		<configuration name="frontloader" id="2" isActive="true"/>
+		<configuration name="motor" id="1" isActive="false"/>
+		<configuration name="motor" id="11" isActive="true"/>
+		<configuration name="designColor" id="1" isActive="false"/>
+		<configuration name="designColor" id="NEWHOLLAND_BLUE1" isActive="true"/>
+		<configuration name="rimColor" id="1" isActive="false"/>
+		<configuration name="rimColor" id="NEWHOLLAND_BLUE1" isActive="true"/>
+		<configuration name="design" id="1" isActive="true"/>
+		<configuration name="design2" id="1" isActive="true"/>
+		<configuration name="vehicleType" id="1" isActive="true"/>
+		<configuration name="attacherJoint" id="1" isActive="true"/>
+		<configuration name="design3" id="1" isActive="true"/>
+		<configuration name="wheel" id="DEFAULT_TRELLEBORG_TM800" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/valtra/tSeries/tSeries.xml" uniqueId="vehicle4aeca2d83de675342b3ea716858aa903_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-386.731 128.145 -26.966" rotation="-179.98 88.85 179.99"/>
+		<component index="2" position="-385.340 128.750 -26.994" rotation="179.91 88.85 179.89"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<configuration name="frontloader" id="1" isActive="false"/>
+		<configuration name="frontloader" id="2" isActive="true"/>
+		<configuration name="motor" id="1" isActive="false"/>
+		<configuration name="motor" id="11" isActive="true"/>
+		<configuration name="designColor" id="1" isActive="false"/>
+		<configuration name="designColor" id="NEWHOLLAND_BLUE1" isActive="true"/>
+		<configuration name="rimColor" id="1" isActive="false"/>
+		<configuration name="rimColor" id="NEWHOLLAND_BLUE1" isActive="true"/>
+		<configuration name="design" id="1" isActive="true"/>
+		<configuration name="design2" id="1" isActive="true"/>
+		<configuration name="vehicleType" id="1" isActive="true"/>
+		<configuration name="attacherJoint" id="1" isActive="true"/>
+		<configuration name="design3" id="1" isActive="true"/>
+		<configuration name="wheel" id="DEFAULT_TRELLEBORG_TM800" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/tenwinkel/weight750/weight750.xml" uniqueId="vehicle84b032fe2817bbde91d5b851653a1ea6_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-382.756 127.999 -77.195" rotation="-0.00 -1.38 -0.00"/>
+		<configuration name="designColor" id="SHARED_BLACKONYX" isActive="false"/>
+		<configuration name="designColor" id="NEWHOLLAND_BLUE1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/tenwinkel/weight750/weight750.xml" uniqueId="vehicle4d81f9d3802c28e15b0bdd8c9064c84c_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-384.237 127.999 -77.188" rotation="0.00 0.33 0.00"/>
+		<configuration name="designColor" id="SHARED_BLACKONYX" isActive="false"/>
+		<configuration name="designColor" id="NEWHOLLAND_BLUE1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/tenwinkel/weight750/weight750.xml" uniqueId="vehicle4e3ffbb68d649fdd1d6f10f540352e25_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-385.762 127.999 -77.191" rotation="-0.00 0.50 0.00"/>
+		<configuration name="designColor" id="SHARED_BLACKONYX" isActive="false"/>
+		<configuration name="designColor" id="NEWHOLLAND_BLUE1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/lemken/juwel6/juwel6.xml" uniqueId="vehicle7d13d8ed9cc0a313bf2275ac1af4bc31_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-155.475 128.000 -111.131" rotation="-0.00 -3.09 0.00"/>
+		<configuration name="folding" id="1" isActive="true"/>
+		<configuration name="design" id="1" isActive="true"/>
+		<configuration name="powerConsumer" id="1" isActive="false"/>
+		<configuration name="powerConsumer" id="2" isActive="true"/>
+		<configuration name="workArea" id="1" isActive="false"/>
+		<configuration name="workArea" id="2" isActive="true"/>
+		<configuration name="ai" id="1" isActive="false"/>
+		<configuration name="ai" id="2" isActive="true"/>
+		<configuration name="plow" id="1" isActive="true"/>
+		<configuration name="wheel" id="6MV4" isActive="false"/>
+		<configuration name="wheel" id="6MV4+1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/lemken/juwel6/juwel6.xml" uniqueId="vehiclebdf66d94e3ed7a45357cc4f42e619a2d_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-152.245 128.000 -111.132" rotation="0.00 1.48 0.00"/>
+		<configuration name="folding" id="1" isActive="true"/>
+		<configuration name="design" id="1" isActive="true"/>
+		<configuration name="powerConsumer" id="1" isActive="false"/>
+		<configuration name="powerConsumer" id="2" isActive="true"/>
+		<configuration name="workArea" id="1" isActive="false"/>
+		<configuration name="workArea" id="2" isActive="true"/>
+		<configuration name="ai" id="1" isActive="false"/>
+		<configuration name="ai" id="2" isActive="true"/>
+		<configuration name="plow" id="1" isActive="true"/>
+		<configuration name="wheel" id="6MV4" isActive="false"/>
+		<configuration name="wheel" id="6MV4+1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/horsch/versa3KR/kredo.xml" uniqueId="vehicle746d5e1113522fd61f3afaebc82b3a52_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-145.758 128.038 -108.137" rotation="-0.00 -2.41 -0.00"/>
+		<component index="2" position="-145.724 128.613 -108.819" rotation="-1.56 -2.41 -0.00"/>
+		<configuration name="inputAttacherJoint" id="1" isActive="false"/>
+		<configuration name="inputAttacherJoint" id="2" isActive="true"/>
+		<configuration name="ridgeMarker" id="1" isActive="false"/>
+		<configuration name="ridgeMarker" id="2" isActive="true"/>
+		<configuration name="wheel" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/horsch/versa3KR/versa.xml" uniqueId="vehicle55ba5a4a54342bb35e0b62bf874dce0c_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-145.715 128.009 -109.167" rotation="-1.42 -2.42 -0.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<configuration name="design" id="1" isActive="true"/>
+		<configuration name="fillVolume" id="1" isActive="true"/>
+		<configuration name="cover" id="1" isActive="true"/>
+		<configuration name="wheel" id="DEFAULT" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/masseyFerguson/mf8570/mf8570.xml" uniqueId="vehicle1bab6b97af38124e0cb2903eb876c5e5_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-34.884 128.039 -74.151" rotation="-0.34 -89.80 0.26"/>
+		<component index="2" position="-33.174 128.712 -74.157" rotation="-0.77 -89.80 0.70"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<configuration name="fillVolume" id="1" isActive="true"/>
+		<configuration name="folding" id="1" isActive="true"/>
+		<configuration name="motor" id="1" isActive="true"/>
+		<configuration name="wheel" id="DEFAULT_TRELLEBORG_TM600" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/masseyFerguson/mf8570Trailer/mf8570Trailer.xml" uniqueId="vehicle5d31cb098aadfedaf96d84addd0ccb45_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-35.803 128.028 -68.627" rotation="-177.41 -88.54 177.42"/>
+		<configuration name="wheel" id="DEFAULT" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/caseIH/header4408/header4408.xml" uniqueId="vehiclec5ef8cf7c301bfe4007c85ac90825f83_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-33.445 128.725 -65.185" rotation="162.35 -0.60 -179.28"/>
+		<configuration name="design" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/nardi/n40bx/n40bx.xml" uniqueId="vehicle99fb2be80a17aec88f96487c54e9f5fe_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-34.074 127.874 -64.896" rotation="1.03 -89.40 -0.31"/>
+		<configuration name="design" id="1" isActive="true"/>
+		<configuration name="baseColor" id="1" isActive="false"/>
+		<configuration name="baseColor" id="NEWHOLLAND_BLUE1" isActive="true"/>
+		<configuration name="rimColor" id="1" isActive="false"/>
+		<configuration name="rimColor" id="NEWHOLLAND_BLUE1" isActive="true"/>
+		<configuration name="wheel" id="MITAS_DEFAULT" isActive="true"/>
+		<configuration name="designColor" id="1" isActive="false"/>
+		<configuration name="designColor" id="NEWHOLLAND_BLUE1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/AmityTechnology_defoliator3750.xml" uniqueId="vehicle5712a0a94c2e3c032bdebe266cea3baa_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-306.374 127.985 -111.129" rotation="-0.99 -86.67 -0.00"/>
+		<component index="2" position="-308.197 128.359 -111.023" rotation="10.65 -86.67 -0.00"/>
+		<configuration name="folding" id="1" isActive="true"/>
+		<configuration name="wheel" id="DEFAULT_TRELLEBORG_TM600" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/AmityTechnology_2720HarvesterScrub.xml" uniqueId="vehiclea6df35afb1a3469033b50c01b36aa858_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-281.537 128.178 -111.055" rotation="179.41 89.28 -180.00"/>
+		<configuration name="folding" id="1" isActive="true"/>
+		<configuration name="wheel" id="DEFAULT_TRELLEBORG_TM2000" isActive="true"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<configuration name="fillVolume" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/farmtech/edk650/edk650.xml" uniqueId="vehicle689196944e3898923b6313a04405394b_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-384.989 127.999 -35.025" rotation="0.27 89.57 0.15"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<configuration name="tensionBelts" id="1" isActive="false"/>
+		<configuration name="tensionBelts" id="2" isActive="true"/>
+		<configuration name="trailer" id="1" isActive="true"/>
+		<configuration name="designColor" id="1" isActive="false"/>
+		<configuration name="designColor" id="NEWHOLLAND_BLUE1" isActive="true"/>
+		<configuration name="design" id="1" isActive="true"/>
+		<configuration name="fillVolume" id="1" isActive="true"/>
+		<configuration name="baseColor" id="1" isActive="false"/>
+		<configuration name="baseColor" id="NEWHOLLAND_BLUE1" isActive="true"/>
+		<configuration name="attacherJoint" id="1" isActive="true"/>
+		<configuration name="dischargeable" id="1" isActive="true"/>
+		<configuration name="wheel" id="DEFAULT_BKT_ridemaxFL693M" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/farmtech/edk650/edk650.xml" uniqueId="vehicle85a3d06deef86d625989b194e0ae6812_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-385.016 127.999 -38.174" rotation="0.12 90.00 0.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<configuration name="tensionBelts" id="1" isActive="false"/>
+		<configuration name="tensionBelts" id="2" isActive="true"/>
+		<configuration name="trailer" id="1" isActive="true"/>
+		<configuration name="designColor" id="1" isActive="false"/>
+		<configuration name="designColor" id="NEWHOLLAND_BLUE1" isActive="true"/>
+		<configuration name="design" id="1" isActive="true"/>
+		<configuration name="fillVolume" id="1" isActive="true"/>
+		<configuration name="baseColor" id="1" isActive="false"/>
+		<configuration name="baseColor" id="NEWHOLLAND_BLUE1" isActive="true"/>
+		<configuration name="attacherJoint" id="1" isActive="true"/>
+		<configuration name="dischargeable" id="1" isActive="true"/>
+		<configuration name="wheel" id="DEFAULT_BKT_ridemaxFL693M" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/farmtech/edk650/edk650.xml" uniqueId="vehicle6080b5cba8c03a3732b6894f11c633f0_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-385.036 127.997 -45.896" rotation="-178.76 89.50 -178.80"/>
+		<configuration name="fillUnit" id="1" isActive="false"/>
+		<configuration name="fillUnit" id="3" isActive="true"/>
+		<configuration name="tensionBelts" id="1" isActive="true"/>
+		<configuration name="trailer" id="1" isActive="false"/>
+		<configuration name="trailer" id="2" isActive="true"/>
+		<configuration name="designColor" id="1" isActive="false"/>
+		<configuration name="designColor" id="NEWHOLLAND_BLUE1" isActive="true"/>
+		<configuration name="design" id="1" isActive="true"/>
+		<configuration name="fillVolume" id="1" isActive="false"/>
+		<configuration name="fillVolume" id="3" isActive="true"/>
+		<configuration name="baseColor" id="1" isActive="false"/>
+		<configuration name="baseColor" id="NEWHOLLAND_BLUE1" isActive="true"/>
+		<configuration name="attacherJoint" id="1" isActive="true"/>
+		<configuration name="dischargeable" id="1" isActive="false"/>
+		<configuration name="dischargeable" id="2" isActive="true"/>
+		<configuration name="wheel" id="DEFAULT_BKT_ridemaxFL693M" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/farmtech/edk650/edk650.xml" uniqueId="vehicle8f831034b660696f5f09df902cdeeb3e_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-385.061 127.997 -42.596" rotation="0.53 88.86 0.49"/>
+		<configuration name="fillUnit" id="1" isActive="false"/>
+		<configuration name="fillUnit" id="3" isActive="true"/>
+		<configuration name="tensionBelts" id="1" isActive="true"/>
+		<configuration name="trailer" id="1" isActive="false"/>
+		<configuration name="trailer" id="2" isActive="true"/>
+		<configuration name="designColor" id="1" isActive="false"/>
+		<configuration name="designColor" id="NEWHOLLAND_BLUE1" isActive="true"/>
+		<configuration name="design" id="1" isActive="true"/>
+		<configuration name="fillVolume" id="1" isActive="false"/>
+		<configuration name="fillVolume" id="3" isActive="true"/>
+		<configuration name="baseColor" id="1" isActive="false"/>
+		<configuration name="baseColor" id="NEWHOLLAND_BLUE1" isActive="true"/>
+		<configuration name="attacherJoint" id="1" isActive="true"/>
+		<configuration name="dischargeable" id="1" isActive="false"/>
+		<configuration name="dischargeable" id="2" isActive="true"/>
+		<configuration name="wheel" id="DEFAULT_BKT_ridemaxFL693M" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/samasz/xt390/xt390.xml" uniqueId="vehicle57bcf350a8fdb7b882078e06e9d5872a_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-34.928 127.854 -21.393" rotation="-179.49 -85.88 -179.99"/>
+		<component index="2" position="-34.863 130.548 -21.532" rotation="94.95 33.66 -86.72"/>
+		<configuration name="folding" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/samasz/z2840/z2840.xml" uniqueId="vehiclecee0cea275eeb1ef22ea3cd1d54fd884_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-34.985 127.890 -29.070" rotation="0.57 -88.82 0.00"/>
+		<component index="2" position="-38.070 128.679 -29.006" rotation="0.55 -88.82 0.02"/>
+		<component index="3" position="-34.876 130.829 -28.295" rotation="-88.82 4.99 90.67"/>
+		<component index="4" position="-34.908 130.829 -29.849" rotation="88.82 5.01 -89.53"/>
+		<configuration name="folding" id="1" isActive="true"/>
+		<configuration name="wheel" id="TRELLEBORG_DEFAULT" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/goeweil/g1F125/g1F125.xml" uniqueId="vehicle954ddde4f3a49705c07fd3eaab60eca9_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-35.855 127.994 -36.959" rotation="-1.02 -87.10 1.22"/>
+		<component index="2" position="-36.440 128.484 -36.930" rotation="6.63 -87.10 1.22"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<configuration name="consumable" id="1" isActive="false"/>
+		<configuration name="consumable" id="3" isActive="true"/>
+		<configuration name="wheel" id="DEFAULT_TRELLEBORG_TwinRadial" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/goeweil/g1015/g1015.xml" uniqueId="vehiclea10be9cf7712499cd9ed04a713c3097a_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-35.972 127.860 -44.232" rotation="-7.67 -89.30 0.06"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<configuration name="consumable" id="1" isActive="false"/>
+		<configuration name="consumable" id="5" isActive="true"/>
+		<configuration name="inputAttacherJoint" id="1" isActive="true"/>
+		<configuration name="folding" id="1" isActive="true"/>
+		<configuration name="wheel" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/objects/bigBag/seeds/bigBag_seeds.xml" uniqueId="vehicle6a5f0c21580030c4306e5611511a0aa1_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-128.941 128.000 -115.873" rotation="180.00 -0.30 180.00"/>
+		<component index="2" position="-128.941 129.272 -115.872" rotation="-180.00 -0.30 -180.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/objects/bigBag/seeds/bigBag_seeds.xml" uniqueId="vehicle8e87c30b9600db913df9df934d21a4c4_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-128.015 128.000 -115.874" rotation="179.99 -0.06 -180.00"/>
+		<component index="2" position="-128.015 129.272 -115.874" rotation="180.00 -0.06 180.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/objects/bigBag/seeds/bigBag_seeds.xml" uniqueId="vehicle48c2fc77a291a20e999d762e1ec466aa_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-128.059 128.000 -114.295" rotation="0.00 -0.06 -0.00"/>
+		<component index="2" position="-128.059 129.272 -114.295" rotation="0.00 -0.06 -0.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/objects/bigBag/seeds/bigBag_seeds.xml" uniqueId="vehicleefe0cdea89484f3da7a7c28d069ff727_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-129.867 128.000 -115.874" rotation="0.01 -0.12 0.00"/>
+		<component index="2" position="-129.867 129.272 -115.874" rotation="0.00 -0.11 -0.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/objects/bigBag/seeds/bigBag_seeds.xml" uniqueId="vehiclee485e456a287e184a3ec5fdaf6bb799f_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-128.985 128.000 -114.291" rotation="0.00 0.46 0.01"/>
+		<component index="2" position="-128.985 129.272 -114.291" rotation="-0.00 0.46 0.01"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/objects/bigBag/seeds/bigBag_seeds.xml" uniqueId="vehiclea993ff3b8ec6c51add62b22c37d4c0bd_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-128.060 128.000 -115.085" rotation="0.00 0.01 0.00"/>
+		<component index="2" position="-128.060 129.272 -115.085" rotation="0.02 0.01 0.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/objects/bigBag/seeds/bigBag_seeds.xml" uniqueId="vehiclebe4563b638bf1ba5e35102631d327dc1_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-129.915 128.000 -115.087" rotation="0.01 -0.05 0.00"/>
+		<component index="2" position="-129.915 129.272 -115.087" rotation="0.06 -0.05 -0.03"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/objects/bigBag/seeds/bigBag_seeds.xml" uniqueId="vehiclec0d83949eccd60dd3586676b96655286_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-128.990 128.000 -115.082" rotation="0.00 0.02 -0.00"/>
+		<component index="2" position="-128.990 129.272 -115.082" rotation="0.01 0.02 0.01"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/dieselCanister/DieselCanister.xml" uniqueId="vehicle3585294b3c50944b194f1bd0ccd0378d_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-132.630 128.000 -114.807" rotation="-0.00 -0.10 0.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/dieselCanister/DieselCanister.xml" uniqueId="vehicle27f119c0981963c9085971e9aec808ea_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-132.629 128.000 -115.069" rotation="-0.01 -0.10 0.01"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/dieselCanister/DieselCanister.xml" uniqueId="vehicle78914b413d64d7272dae248e9608a548_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-132.631 128.000 -115.593" rotation="0.00 -0.08 0.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/dieselCanister/DieselCanister.xml" uniqueId="vehicle9851a891a95519ded8b563d52f35b23d_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-132.630 128.000 -115.331" rotation="-0.00 -0.09 -0.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/dieselCanister/DieselCanister.xml" uniqueId="vehicle74f5211421aca1dc0b7631f43e2f6e3b_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-132.630 128.000 -114.545" rotation="0.02 -0.09 -0.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/dieselCanister/DieselCanister.xml" uniqueId="vehicle1f6802e46570bec9f70f221b32a76949_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-133.142 128.000 -115.579" rotation="0.01 0.51 0.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/dieselCanister/DieselCanister.xml" uniqueId="vehicle1aa323aef4fd6c051134fb4be74ee007_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-133.143 128.000 -115.052" rotation="-0.00 0.90 -0.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/dieselCanister/DieselCanister.xml" uniqueId="vehicle9a99d88cbf1b822f8f61c8a335960e47_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-132.669 128.000 -114.007" rotation="0.34 1.90 -0.12"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/dieselCanister/DieselCanister.xml" uniqueId="vehicle5db405fe64713032fc6509552099de70_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-133.140 128.000 -114.790" rotation="0.00 0.88 -0.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/dieselCanister/DieselCanister.xml" uniqueId="vehiclec7003cb4fca57399535404b8ab323e0f_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-133.141 128.000 -114.527" rotation="-0.01 0.87 -0.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/dieselCanister/DieselCanister.xml" uniqueId="vehicle8e85e5a4cfb76fac7cb4cb01ad07ddcd_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-133.146 128.000 -115.316" rotation="-0.01 0.65 0.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/dieselCanister/DieselCanister.xml" uniqueId="vehicle4c5e749620a38f0695dd092b41e2643c_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-132.633 128.000 -114.282" rotation="0.02 -0.10 -0.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/dieselCanister/DieselCanister.xml" uniqueId="vehicle6f2f4483104d712c1653552ef62a93d4_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-133.659 128.038 -115.319" rotation="1.06 0.79 0.76"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/dieselCanister/DieselCanister.xml" uniqueId="vehicle8f42179dd473dc841f0dca0f42457cc1_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-133.655 128.000 -115.047" rotation="0.02 0.81 -0.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/dieselCanister/DieselCanister.xml" uniqueId="vehiclecdd62983eef9ec27bf217c778bec1419_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-133.179 128.000 -113.998" rotation="0.03 0.99 -0.02"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/dieselCanister/DieselCanister.xml" uniqueId="vehicle69ad61f02b9da28ae1670f1779d74148_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-133.657 128.040 -115.583" rotation="-0.00 1.02 -0.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/dieselCanister/DieselCanister.xml" uniqueId="vehicle4aa4a2455cb38bb6d45d30c469aaff69_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-133.653 128.000 -114.521" rotation="0.02 0.79 -0.01"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/dieselCanister/DieselCanister.xml" uniqueId="vehicle8816308cc07c51c54ae1c17f5d6e828d_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-133.141 128.000 -114.265" rotation="0.04 0.87 0.01"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/dieselCanister/DieselCanister.xml" uniqueId="vehicle0ecd80dc8245f7f5cb4f9ab1b540db07_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-133.648 128.000 -114.784" rotation="-0.04 0.81 0.01"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/dieselCanister/DieselCanister.xml" uniqueId="vehicledbb7816bbb1e0976afa83b95a447a3df_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-133.687 128.000 -113.992" rotation="0.02 0.44 -0.03"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/dieselCanister/DieselCanister.xml" uniqueId="vehicle5605b42a04f9215885b9f823f606628d_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-133.652 128.000 -114.257" rotation="-0.00 0.46 0.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/objects/pallets/raniWrapPallet/raniWrapPallet.xml" uniqueId="vehicle2a6e1951c1e1651a7868cb60878f4ae1_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-136.273 128.002 -108.126" rotation="-179.93 -88.80 179.92"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<configuration name="consumable" id="1" isActive="true"/>
+		<fillUnit>
+			<unit index="1" fillType="BALE_WRAP" fillLevel="40.000000"/>
+		</fillUnit>
+		<dischargeable isAllowed="true"/>
+		<consumable>
+			<type typeName="BALE_WRAP" consumingFillLevel="1.000000" consumingVariationName="RANI_PLAST_WHITE">
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+			</type>
+		</consumable>
+	</vehicle>
+	<vehicle filename="data/objects/pallets/raniWrapPallet/raniWrapPallet.xml" uniqueId="vehiclee5ac9310d9d2e9d03a33ddaf6caef38f_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-137.290 128.002 -108.149" rotation="-179.83 -88.80 179.82"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<configuration name="consumable" id="1" isActive="true"/>
+		<fillUnit>
+			<unit index="1" fillType="BALE_WRAP" fillLevel="40.000000"/>
+		</fillUnit>
+		<dischargeable isAllowed="true"/>
+		<consumable>
+			<type typeName="BALE_WRAP" consumingFillLevel="1.000000" consumingVariationName="RANI_PLAST_WHITE">
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+			</type>
+		</consumable>
+	</vehicle>
+	<vehicle filename="data/objects/pallets/baleNetPallet/baleNetPallet.xml" uniqueId="vehicle7327d690b421608c95c18d329e891d3c_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-140.507 128.689 -108.103" rotation="0.06 -88.82 -0.06"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<configuration name="consumable" id="1" isActive="true"/>
+		<fillUnit>
+			<unit index="1" fillType="BALE_NET" fillLevel="5.000000"/>
+		</fillUnit>
+		<dischargeable isAllowed="true"/>
+		<consumable>
+			<type typeName="BALE_NET" consumingFillLevel="1.000000" consumingVariationName="LIZARD_NETWRAP">
+				<storageSlot consumableVariation="LIZARD_NETWRAP"/>
+				<storageSlot consumableVariation="LIZARD_NETWRAP"/>
+				<storageSlot consumableVariation="LIZARD_NETWRAP"/>
+				<storageSlot consumableVariation="LIZARD_NETWRAP"/>
+				<storageSlot consumableVariation="LIZARD_NETWRAP"/>
+			</type>
+		</consumable>
+	</vehicle>
+	<vehicle filename="data/objects/pallets/baleNetPallet/baleNetPallet.xml" uniqueId="vehicle0be9d398218fa6e9d79656019db5f7ea_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-140.500 128.002 -108.125" rotation="-0.00 -90.00 0.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<configuration name="consumable" id="1" isActive="true"/>
+		<fillUnit>
+			<unit index="1" fillType="BALE_NET" fillLevel="5.000000"/>
+		</fillUnit>
+		<dischargeable isAllowed="true"/>
+		<consumable>
+			<type typeName="BALE_NET" consumingFillLevel="1.000000" consumingVariationName="LIZARD_NETWRAP">
+				<storageSlot consumableVariation="LIZARD_NETWRAP"/>
+				<storageSlot consumableVariation="LIZARD_NETWRAP"/>
+				<storageSlot consumableVariation="LIZARD_NETWRAP"/>
+				<storageSlot consumableVariation="LIZARD_NETWRAP"/>
+				<storageSlot consumableVariation="LIZARD_NETWRAP"/>
+			</type>
+		</consumable>
+	</vehicle>
+	<vehicle filename="data/objects/pallets/honeyBoxPallet/honeyBoxPallet.xml" uniqueId="vehiclebf32f372ef00ef761dfaa24bdf55bac0_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-55.016 128.002 512.562" rotation="0.00 16.14 0.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<fillUnit>
+			<unit index="1" fillType="HONEY" fillLevel="1000.000000"/>
+		</fillUnit>
+		<dischargeable isAllowed="true"/>
+	</vehicle>
+	<vehicle filename="data/objects/pallets/honeyBoxPallet/honeyBoxPallet.xml" uniqueId="vehicleefbd4ec13619739646f449b8097528df_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-57.836 128.002 512.272" rotation="-0.00 -26.81 -0.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<fillUnit>
+			<unit index="1" fillType="HONEY" fillLevel="1000.000000"/>
+		</fillUnit>
+		<dischargeable isAllowed="true"/>
+	</vehicle>
+	<vehicle filename="data/objects/pallets/honeyBoxPallet/honeyBoxPallet.xml" uniqueId="vehicle05112d20fbfddad04e814bbfe5e28199_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-117.229 128.002 496.643" rotation="-180.00 26.32 -180.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<fillUnit>
+			<unit index="1" fillType="HONEY" fillLevel="1000.000000"/>
+		</fillUnit>
+		<dischargeable isAllowed="true"/>
+	</vehicle>
+	<vehicle filename="data/objects/pallets/honeyBoxPallet/honeyBoxPallet.xml" uniqueId="vehicle0ef7404eb676b255eafc07557d4c38e0_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-120.646 128.002 496.310" rotation="-180.00 -26.04 180.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<fillUnit>
+			<unit index="1" fillType="HONEY" fillLevel="1000.000000"/>
+		</fillUnit>
+		<dischargeable isAllowed="true"/>
+	</vehicle>
+	<vehicle filename="data/objects/pallets/honeyBoxPallet/honeyBoxPallet.xml" uniqueId="vehicle2ee8e8f346204fa9f92a65a1164aeb2e_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-189.356 128.002 513.490" rotation="-0.00 -26.41 0.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<fillUnit>
+			<unit index="1" fillType="HONEY" fillLevel="1000.000000"/>
+		</fillUnit>
+		<dischargeable isAllowed="true"/>
+	</vehicle>
+	<vehicle filename="data/objects/pallets/honeyBoxPallet/honeyBoxPallet.xml" uniqueId="vehicle3718766fb5b32aee10c59dd7e155bb82_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-186.056 128.002 513.496" rotation="0.00 23.30 0.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<fillUnit>
+			<unit index="1" fillType="HONEY" fillLevel="1000.000000"/>
+		</fillUnit>
+		<dischargeable isAllowed="true"/>
+	</vehicle>
+	<vehicle filename="data/objects/pallets/honeyBoxPallet/honeyBoxPallet.xml" uniqueId="vehiclecdafe6780200eee26b7f8ccce2211b71_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-248.704 128.002 497.096" rotation="-180.00 28.79 180.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<fillUnit>
+			<unit index="1" fillType="HONEY" fillLevel="1000.000000"/>
+		</fillUnit>
+		<dischargeable isAllowed="true"/>
+	</vehicle>
+	<vehicle filename="data/objects/pallets/honeyBoxPallet/honeyBoxPallet.xml" uniqueId="vehicle113475ebd4f775342ad24c0ded138800_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-252.245 128.002 496.956" rotation="180.00 -22.03 180.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<fillUnit>
+			<unit index="1" fillType="HONEY" fillLevel="1000.000000"/>
+		</fillUnit>
+		<dischargeable isAllowed="true"/>
+	</vehicle>
+	<vehicle filename="data/objects/pallets/honeyBoxPallet/honeyBoxPallet.xml" uniqueId="vehiclef7d5e3d9f422ef3e41015f7f237049be_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-334.340 128.002 513.490" rotation="0.00 -26.13 -0.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<fillUnit>
+			<unit index="1" fillType="HONEY" fillLevel="1000.000000"/>
+		</fillUnit>
+		<dischargeable isAllowed="true"/>
+	</vehicle>
+	<vehicle filename="data/objects/pallets/honeyBoxPallet/honeyBoxPallet.xml" uniqueId="vehiclea892a8b817c5e1f8140e23019a20bb1c_farm1" price="0.000000" farmId="1" >
+		<component index="1" position="-331.318 128.002 513.840" rotation="-0.00 20.42 -0.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<fillUnit>
+			<unit index="1" fillType="HONEY" fillLevel="1000.000000"/>
+		</fillUnit>
+		<dischargeable isAllowed="true"/>
+	</vehicle>
+
+	<!-- ===================================================================================================================== -->
+	<!-- ФЕРМА 2 -->
+	<vehicle filename="data/vehicles/quicke/q4M/q4M.xml" uniqueId="vehicle163ea59cd7b28eb05cb5fb67b027f985_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="31.982 128.516 -74.901" rotation="-166.65 -89.42 179.92"/>
+		<configuration name="baseColor" id="1" isActive="false"/>
+		<configuration name="baseColor" id="CASEIH_RED1" isActive="true"/>
+		<configuration name="designColor" id="1" isActive="false"/>
+		<configuration name="designColor" id="CASEIH_RED1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/quicke/q4M/q4M.xml" uniqueId="vehicle9dce3f9e09f4f6c8afe2e578da15deb8_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="31.941 128.516 -72.504" rotation="-166.74 -88.93 -179.99"/>
+		<configuration name="baseColor" id="1" isActive="false"/>
+		<configuration name="baseColor" id="CASEIH_RED1" isActive="true"/>
+		<configuration name="designColor" id="1" isActive="false"/>
+		<configuration name="designColor" id="CASEIH_RED1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/albutt/frontloaderBaleSpike/frontloaderBaleSpike.xml" uniqueId="vehicle55bb87ccc43f84de634c729df510cc7c_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="29.503 127.914 -77.713" rotation="16.53 -1.43 0.00"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/albutt/frontloaderBaleSpike/frontloaderBaleSpike.xml" uniqueId="vehiclea9ebada6118d9346d4d27310b1365517_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="27.654 127.914 -77.719" rotation="16.53 -0.67 -0.00"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/albutt/frontloaderShovel/frontloaderShovel.xml" uniqueId="vehicle711d586cf31677ea69e49be4a932f310_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="26.771 127.999 -74.897" rotation="-179.98 -89.54 179.98"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/albutt/frontloaderPalletFork/frontloaderPalletFork.xml" uniqueId="vehicle33b2d378e7076f5833ffc2461284cc16_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="26.547 127.999 -72.338" rotation="0.76 -89.29 -0.76"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/masseyFerguson/mf8570Header/mf8570Header.xml" uniqueId="vehicleccec0b3c147ecae8e38f2a9e9f51058b_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="383.368 129.106 -67.616" rotation="155.08 -0.39 -179.99"/>
+		<configuration name="designColor" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/valtra/tSeries/tSeries.xml" uniqueId="vehicle0a82ab0255a0b765f296cb5397623afa_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="30.193 128.144 -19.619" rotation="-179.99 88.40 179.98"/>
+		<component index="2" position="31.584 128.750 -19.657" rotation="179.92 88.40 179.89"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<configuration name="frontloader" id="1" isActive="false"/>
+		<configuration name="frontloader" id="2" isActive="true"/>
+		<configuration name="motor" id="1" isActive="false"/>
+		<configuration name="motor" id="11" isActive="true"/>
+		<configuration name="designColor" id="1" isActive="false"/>
+		<configuration name="designColor" id="CASEIH_RED1" isActive="true"/>
+		<configuration name="rimColor" id="1" isActive="false"/>
+		<configuration name="rimColor" id="CASEIH_RED1" isActive="true"/>
+		<configuration name="design" id="1" isActive="true"/>
+		<configuration name="design2" id="1" isActive="true"/>
+		<configuration name="vehicleType" id="1" isActive="true"/>
+		<configuration name="attacherJoint" id="1" isActive="true"/>
+		<configuration name="design3" id="1" isActive="true"/>
+		<configuration name="wheel" id="DEFAULT_TRELLEBORG_TM800" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/valtra/tSeries/tSeries.xml" uniqueId="vehicleea7e40d2e11ff5693a787bfca7b892cb_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="30.141 128.145 -22.796" rotation="0.03 90.00 0.00"/>
+		<component index="2" position="31.533 128.750 -22.797" rotation="0.03 90.00 0.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<configuration name="frontloader" id="1" isActive="false"/>
+		<configuration name="frontloader" id="2" isActive="true"/>
+		<configuration name="motor" id="1" isActive="false"/>
+		<configuration name="motor" id="11" isActive="true"/>
+		<configuration name="designColor" id="1" isActive="false"/>
+		<configuration name="designColor" id="CASEIH_RED1" isActive="true"/>
+		<configuration name="rimColor" id="1" isActive="false"/>
+		<configuration name="rimColor" id="CASEIH_RED1" isActive="true"/>
+		<configuration name="design" id="1" isActive="true"/>
+		<configuration name="design2" id="1" isActive="true"/>
+		<configuration name="vehicleType" id="1" isActive="true"/>
+		<configuration name="attacherJoint" id="1" isActive="true"/>
+		<configuration name="design3" id="1" isActive="true"/>
+		<configuration name="wheel" id="DEFAULT_TRELLEBORG_TM800" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/valtra/tSeries/tSeries.xml" uniqueId="vehicle4aeca2d83de675342b3ea716858aa903_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="30.174 128.145 -27.228" rotation="0.04 89.04 0.01"/>
+		<component index="2" position="31.565 128.750 -27.205" rotation="0.16 89.04 0.14"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<configuration name="frontloader" id="1" isActive="false"/>
+		<configuration name="frontloader" id="2" isActive="true"/>
+		<configuration name="motor" id="1" isActive="false"/>
+		<configuration name="motor" id="11" isActive="true"/>
+		<configuration name="designColor" id="1" isActive="false"/>
+		<configuration name="designColor" id="CASEIH_RED1" isActive="true"/>
+		<configuration name="rimColor" id="1" isActive="false"/>
+		<configuration name="rimColor" id="CASEIH_RED1" isActive="true"/>
+		<configuration name="design" id="1" isActive="true"/>
+		<configuration name="design2" id="1" isActive="true"/>
+		<configuration name="vehicleType" id="1" isActive="true"/>
+		<configuration name="attacherJoint" id="1" isActive="true"/>
+		<configuration name="design3" id="1" isActive="true"/>
+		<configuration name="wheel" id="DEFAULT_TRELLEBORG_TM800" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/tenwinkel/weight750/weight750.xml" uniqueId="vehicle84b032fe2817bbde91d5b851653a1ea6_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="31.500 127.999 -77.698" rotation="0.00 -0.22 0.00"/>
+		<configuration name="designColor" id="SHARED_BLACKONYX" isActive="false"/>
+		<configuration name="designColor" id="CASEIH_RED1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/tenwinkel/weight750/weight750.xml" uniqueId="vehicle4d81f9d3802c28e15b0bdd8c9064c84c_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="34.283 127.999 -77.739" rotation="0.00 3.88 0.00"/>
+		<configuration name="designColor" id="SHARED_BLACKONYX" isActive="false"/>
+		<configuration name="designColor" id="CASEIH_RED1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/tenwinkel/weight750/weight750.xml" uniqueId="vehicle4e3ffbb68d649fdd1d6f10f540352e25_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="32.892 127.999 -77.694" rotation="0.00 1.70 0.00"/>
+		<configuration name="designColor" id="SHARED_BLACKONYX" isActive="false"/>
+		<configuration name="designColor" id="CASEIH_RED1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/lemken/juwel6/juwel6.xml" uniqueId="vehicle7d13d8ed9cc0a313bf2275ac1af4bc31_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="261.107 128.000 -111.081" rotation="-0.00 0.05 0.00"/>
+		<configuration name="folding" id="1" isActive="true"/>
+		<configuration name="design" id="1" isActive="true"/>
+		<configuration name="powerConsumer" id="1" isActive="false"/>
+		<configuration name="powerConsumer" id="2" isActive="true"/>
+		<configuration name="workArea" id="1" isActive="false"/>
+		<configuration name="workArea" id="2" isActive="true"/>
+		<configuration name="ai" id="1" isActive="false"/>
+		<configuration name="ai" id="2" isActive="true"/>
+		<configuration name="plow" id="1" isActive="true"/>
+		<configuration name="wheel" id="6MV4" isActive="false"/>
+		<configuration name="wheel" id="6MV4+1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/lemken/juwel6/juwel6.xml" uniqueId="vehiclebdf66d94e3ed7a45357cc4f42e619a2d_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="264.061 128.000 -111.010" rotation="0.00 2.97 0.00"/>
+		<configuration name="folding" id="1" isActive="true"/>
+		<configuration name="design" id="1" isActive="true"/>
+		<configuration name="powerConsumer" id="1" isActive="false"/>
+		<configuration name="powerConsumer" id="2" isActive="true"/>
+		<configuration name="workArea" id="1" isActive="false"/>
+		<configuration name="workArea" id="2" isActive="true"/>
+		<configuration name="ai" id="1" isActive="false"/>
+		<configuration name="ai" id="2" isActive="true"/>
+		<configuration name="plow" id="1" isActive="true"/>
+		<configuration name="wheel" id="6MV4" isActive="false"/>
+		<configuration name="wheel" id="6MV4+1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/horsch/versa3KR/kredo.xml" uniqueId="vehicle746d5e1113522fd61f3afaebc82b3a52_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="270.854 128.038 -110.305" rotation="0.02 0.90 0.00"/>
+		<component index="2" position="270.848 128.612 -110.988" rotation="-1.37 0.89 -0.00"/>
+		<configuration name="inputAttacherJoint" id="1" isActive="false"/>
+		<configuration name="inputAttacherJoint" id="2" isActive="true"/>
+		<configuration name="ridgeMarker" id="1" isActive="false"/>
+		<configuration name="ridgeMarker" id="2" isActive="true"/>
+		<configuration name="wheel" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/horsch/versa3KR/versa.xml" uniqueId="vehicle55ba5a4a54342bb35e0b62bf874dce0c_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="270.837 128.008 -111.337" rotation="-1.34 0.89 -0.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<configuration name="design" id="1" isActive="true"/>
+		<configuration name="fillVolume" id="1" isActive="true"/>
+		<configuration name="cover" id="1" isActive="true"/>
+		<configuration name="wheel" id="DEFAULT" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/masseyFerguson/mf8570/mf8570.xml" uniqueId="vehicle1bab6b97af38124e0cb2903eb876c5e5_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="382.931 128.039 -73.984" rotation="179.93 -85.88 179.99"/>
+		<component index="2" position="384.636 128.712 -73.861" rotation="179.96 -85.88 179.97"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<configuration name="fillVolume" id="1" isActive="true"/>
+		<configuration name="folding" id="1" isActive="true"/>
+		<configuration name="motor" id="1" isActive="true"/>
+		<configuration name="wheel" id="DEFAULT_TRELLEBORG_TM600" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/masseyFerguson/mf8570Trailer/mf8570Trailer.xml" uniqueId="vehicle5d31cb098aadfedaf96d84addd0ccb45_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="382.009 128.028 -66.800" rotation="-9.43 -89.60 9.45"/>
+		<configuration name="wheel" id="DEFAULT" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/caseIH/header4408/header4408.xml" uniqueId="vehiclec5ef8cf7c301bfe4007c85ac90825f83_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="384.274 128.725 -59.091" rotation="162.32 -3.17 -179.28"/>
+		<configuration name="design" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/nardi/n40bx/n40bx.xml" uniqueId="vehicle99fb2be80a17aec88f96487c54e9f5fe_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="383.658 127.874 -58.775" rotation="0.79 -86.82 -0.07"/>
+		<configuration name="design" id="1" isActive="true"/>
+		<configuration name="baseColor" id="1" isActive="false"/>
+		<configuration name="baseColor" id="CASEIH_RED1" isActive="true"/>
+		<configuration name="rimColor" id="1" isActive="false"/>
+		<configuration name="rimColor" id="CASEIH_RED1" isActive="true"/>
+		<configuration name="wheel" id="MITAS_DEFAULT" isActive="true"/>
+		<configuration name="designColor" id="1" isActive="false"/>
+		<configuration name="designColor" id="CASEIH_RED1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/AmityTechnology_defoliator3750.xml" uniqueId="vehicle5712a0a94c2e3c032bdebe266cea3baa_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="111.698 127.985 -111.139" rotation="179.01 -88.34 180.00"/>
+		<component index="2" position="109.873 128.359 -111.191" rotation="-169.35 -88.34 180.00"/>
+		<configuration name="folding" id="1" isActive="true"/>
+		<configuration name="wheel" id="DEFAULT_TRELLEBORG_TM600" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/AmityTechnology_2720HarvesterScrub.xml" uniqueId="vehiclea6df35afb1a3469033b50c01b36aa858_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="133.150 128.178 -111.074" rotation="179.41 88.45 179.99"/>
+		<configuration name="folding" id="1" isActive="true"/>
+		<configuration name="wheel" id="DEFAULT_TRELLEBORG_TM2000" isActive="true"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<configuration name="fillVolume" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/farmtech/edk650/edk650.xml" uniqueId="vehicle689196944e3898923b6313a04405394b_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="32.740 127.999 -34.528" rotation="0.19 87.44 0.08"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<configuration name="tensionBelts" id="1" isActive="false"/>
+		<configuration name="tensionBelts" id="2" isActive="true"/>
+		<configuration name="trailer" id="1" isActive="true"/>
+		<configuration name="designColor" id="1" isActive="false"/>
+		<configuration name="designColor" id="CASEIH_RED1" isActive="true"/>
+		<configuration name="design" id="1" isActive="true"/>
+		<configuration name="fillVolume" id="1" isActive="true"/>
+		<configuration name="baseColor" id="1" isActive="false"/>
+		<configuration name="baseColor" id="CASEIH_RED1" isActive="true"/>
+		<configuration name="attacherJoint" id="1" isActive="true"/>
+		<configuration name="dischargeable" id="1" isActive="true"/>
+		<configuration name="wheel" id="DEFAULT_BKT_ridemaxFL693M" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/farmtech/edk650/edk650.xml" uniqueId="vehicle85a3d06deef86d625989b194e0ae6812_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="32.792 127.999 -37.902" rotation="-0.57 89.51 -0.69"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<configuration name="tensionBelts" id="1" isActive="false"/>
+		<configuration name="tensionBelts" id="2" isActive="true"/>
+		<configuration name="trailer" id="1" isActive="true"/>
+		<configuration name="designColor" id="1" isActive="false"/>
+		<configuration name="designColor" id="CASEIH_RED1" isActive="true"/>
+		<configuration name="design" id="1" isActive="true"/>
+		<configuration name="fillVolume" id="1" isActive="true"/>
+		<configuration name="baseColor" id="1" isActive="false"/>
+		<configuration name="baseColor" id="CASEIH_RED1" isActive="true"/>
+		<configuration name="attacherJoint" id="1" isActive="true"/>
+		<configuration name="dischargeable" id="1" isActive="true"/>
+		<configuration name="wheel" id="DEFAULT_BKT_ridemaxFL693M" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/farmtech/edk650/edk650.xml" uniqueId="vehicle6080b5cba8c03a3732b6894f11c633f0_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="32.908 127.997 -45.582" rotation="178.06 89.73 178.02"/>
+		<configuration name="fillUnit" id="1" isActive="false"/>
+		<configuration name="fillUnit" id="3" isActive="true"/>
+		<configuration name="tensionBelts" id="1" isActive="true"/>
+		<configuration name="trailer" id="1" isActive="false"/>
+		<configuration name="trailer" id="2" isActive="true"/>
+		<configuration name="designColor" id="1" isActive="false"/>
+		<configuration name="designColor" id="CASEIH_RED1" isActive="true"/>
+		<configuration name="design" id="1" isActive="true"/>
+		<configuration name="fillVolume" id="1" isActive="false"/>
+		<configuration name="fillVolume" id="3" isActive="true"/>
+		<configuration name="baseColor" id="1" isActive="false"/>
+		<configuration name="baseColor" id="CASEIH_RED1" isActive="true"/>
+		<configuration name="attacherJoint" id="1" isActive="true"/>
+		<configuration name="dischargeable" id="1" isActive="false"/>
+		<configuration name="dischargeable" id="2" isActive="true"/>
+		<configuration name="wheel" id="DEFAULT_BKT_ridemaxFL693M" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/farmtech/edk650/edk650.xml" uniqueId="vehicle8f831034b660696f5f09df902cdeeb3e_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="32.939 127.997 -41.885" rotation="0.04 90.00 0.00"/>
+		<configuration name="fillUnit" id="1" isActive="false"/>
+		<configuration name="fillUnit" id="3" isActive="true"/>
+		<configuration name="tensionBelts" id="1" isActive="true"/>
+		<configuration name="trailer" id="1" isActive="false"/>
+		<configuration name="trailer" id="2" isActive="true"/>
+		<configuration name="designColor" id="1" isActive="false"/>
+		<configuration name="designColor" id="CASEIH_RED1" isActive="true"/>
+		<configuration name="design" id="1" isActive="true"/>
+		<configuration name="fillVolume" id="1" isActive="false"/>
+		<configuration name="fillVolume" id="3" isActive="true"/>
+		<configuration name="baseColor" id="1" isActive="false"/>
+		<configuration name="baseColor" id="CASEIH_RED1" isActive="true"/>
+		<configuration name="attacherJoint" id="1" isActive="true"/>
+		<configuration name="dischargeable" id="1" isActive="false"/>
+		<configuration name="dischargeable" id="2" isActive="true"/>
+		<configuration name="wheel" id="DEFAULT_BKT_ridemaxFL693M" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/samasz/xt390/xt390.xml" uniqueId="vehicle57bcf350a8fdb7b882078e06e9d5872a_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="381.559 127.854 -21.596" rotation="1.33 -88.62 -0.78"/>
+		<component index="2" position="381.610 130.548 -21.740" rotation="88.34 33.82 -90.37"/>
+		<configuration name="folding" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/samasz/z2840/z2840.xml" uniqueId="vehiclecee0cea275eeb1ef22ea3cd1d54fd884_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="382.240 127.890 -29.301" rotation="0.55 -89.11 0.02"/>
+		<component index="2" position="379.155 128.679 -29.253" rotation="0.53 -89.11 0.04"/>
+		<component index="3" position="382.345 130.829 -28.525" rotation="-89.11 4.99 90.65"/>
+		<component index="4" position="382.321 130.829 -30.080" rotation="89.11 5.01 -89.51"/>
+		<configuration name="folding" id="1" isActive="true"/>
+		<configuration name="wheel" id="TRELLEBORG_DEFAULT" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/goeweil/g1F125/g1F125.xml" uniqueId="vehicle954ddde4f3a49705c07fd3eaab60eca9_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="382.227 127.994 -36.959" rotation="-3.63 -89.02 3.84"/>
+		<component index="2" position="381.641 128.484 -36.950" rotation="4.02 -89.02 3.83"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<configuration name="consumable" id="1" isActive="false"/>
+		<configuration name="consumable" id="3" isActive="true"/>
+		<configuration name="wheel" id="DEFAULT_TRELLEBORG_TwinRadial" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/vehicles/goeweil/g1015/g1015.xml" uniqueId="vehiclea10be9cf7712499cd9ed04a713c3097a_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="382.357 127.860 -44.492" rotation="172.38 -89.28 -179.99"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<configuration name="consumable" id="1" isActive="false"/>
+		<configuration name="consumable" id="5" isActive="true"/>
+		<configuration name="inputAttacherJoint" id="1" isActive="true"/>
+		<configuration name="folding" id="1" isActive="true"/>
+		<configuration name="wheel" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/objects/bigBag/seeds/bigBag_seeds.xml" uniqueId="vehicle6a5f0c21580030c4306e5611511a0aa1_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="288.016 128.000 -115.872" rotation="179.98 0.54 -179.98"/>
+		<component index="2" position="288.015 129.272 -115.872" rotation="179.97 0.53 -179.98"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/objects/bigBag/seeds/bigBag_seeds.xml" uniqueId="vehicle8e87c30b9600db913df9df934d21a4c4_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="288.023 128.000 -114.293" rotation="0.01 -0.32 0.01"/>
+		<component index="2" position="288.023 129.272 -114.292" rotation="0.02 -0.32 0.01"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/objects/bigBag/seeds/bigBag_seeds.xml" uniqueId="vehicle48c2fc77a291a20e999d762e1ec466aa_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="287.038 128.000 -115.871" rotation="179.98 -0.81 -179.98"/>
+		<component index="2" position="287.038 129.272 -115.871" rotation="179.94 -0.83 -179.92"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/objects/bigBag/seeds/bigBag_seeds.xml" uniqueId="vehicleefe0cdea89484f3da7a7c28d069ff727_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="288.010 128.000 -115.082" rotation="179.98 0.33 179.99"/>
+		<component index="2" position="288.010 129.272 -115.082" rotation="179.94 0.34 179.98"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/objects/bigBag/seeds/bigBag_seeds.xml" uniqueId="vehiclee485e456a287e184a3ec5fdaf6bb799f_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="288.946 128.000 -115.067" rotation="-179.99 2.70 180.00"/>
+		<component index="2" position="288.946 129.272 -115.067" rotation="-179.99 2.70 -180.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/objects/bigBag/seeds/bigBag_seeds.xml" uniqueId="vehiclea993ff3b8ec6c51add62b22c37d4c0bd_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="288.973 128.000 -114.275" rotation="0.00 -2.60 0.00"/>
+		<component index="2" position="288.973 129.272 -114.274" rotation="0.00 -2.60 0.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/objects/bigBag/seeds/bigBag_seeds.xml" uniqueId="vehiclebe4563b638bf1ba5e35102631d327dc1_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="289.010 128.027 -115.870" rotation="-179.99 1.18 -176.53"/>
+		<component index="2" position="288.932 129.297 -115.870" rotation="-180.00 1.18 -176.56"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/objects/bigBag/seeds/bigBag_seeds.xml" uniqueId="vehiclec0d83949eccd60dd3586676b96655286_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="287.036 128.000 -115.081" rotation="179.98 -0.77 180.00"/>
+		<component index="2" position="287.037 129.272 -115.081" rotation="179.82 -0.75 -179.92"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/dieselCanister/DieselCanister.xml" uniqueId="vehicle3585294b3c50944b194f1bd0ccd0378d_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="283.499 128.000 -114.726" rotation="179.99 0.21 -180.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/dieselCanister/DieselCanister.xml" uniqueId="vehicle27f119c0981963c9085971e9aec808ea_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="283.502 128.000 -116.040" rotation="180.00 0.19 180.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/dieselCanister/DieselCanister.xml" uniqueId="vehicle78914b413d64d7272dae248e9608a548_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="283.500 128.000 -115.252" rotation="179.99 0.11 180.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/dieselCanister/DieselCanister.xml" uniqueId="vehicle9851a891a95519ded8b563d52f35b23d_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="283.501 128.000 -115.514" rotation="-180.00 0.11 -180.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/dieselCanister/DieselCanister.xml" uniqueId="vehicle74f5211421aca1dc0b7631f43e2f6e3b_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="283.498 128.000 -114.463" rotation="-180.00 0.24 -180.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/dieselCanister/DieselCanister.xml" uniqueId="vehicle1f6802e46570bec9f70f221b32a76949_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="284.012 128.000 -116.038" rotation="180.00 0.09 -180.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/dieselCanister/DieselCanister.xml" uniqueId="vehicle1aa323aef4fd6c051134fb4be74ee007_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="284.011 128.000 -115.513" rotation="-180.00 0.19 -180.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/dieselCanister/DieselCanister.xml" uniqueId="vehicle9a99d88cbf1b822f8f61c8a335960e47_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="283.500 128.000 -114.988" rotation="-179.99 0.21 180.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/dieselCanister/DieselCanister.xml" uniqueId="vehicle5db405fe64713032fc6509552099de70_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="284.009 128.000 -114.725" rotation="179.99 0.16 180.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/dieselCanister/DieselCanister.xml" uniqueId="vehiclec7003cb4fca57399535404b8ab323e0f_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="284.012 128.000 -115.776" rotation="180.00 0.14 -180.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/dieselCanister/DieselCanister.xml" uniqueId="vehicle8e85e5a4cfb76fac7cb4cb01ad07ddcd_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="284.011 128.000 -115.250" rotation="179.99 0.17 180.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/dieselCanister/DieselCanister.xml" uniqueId="vehicle4c5e749620a38f0695dd092b41e2643c_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="283.502 128.000 -115.777" rotation="-179.99 0.14 180.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/dieselCanister/DieselCanister.xml" uniqueId="vehicle6f2f4483104d712c1653552ef62a93d4_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="284.522 128.000 -115.512" rotation="179.99 0.30 180.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/dieselCanister/DieselCanister.xml" uniqueId="vehicle8f42179dd473dc841f0dca0f42457cc1_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="284.521 128.000 -115.249" rotation="180.00 0.32 -180.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/dieselCanister/DieselCanister.xml" uniqueId="vehiclecdd62983eef9ec27bf217c778bec1419_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="284.010 128.000 -114.987" rotation="180.00 0.16 180.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/dieselCanister/DieselCanister.xml" uniqueId="vehicle69ad61f02b9da28ae1670f1779d74148_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="284.522 128.000 -115.774" rotation="-179.99 0.16 -180.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/dieselCanister/DieselCanister.xml" uniqueId="vehicle4aa4a2455cb38bb6d45d30c469aaff69_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="284.518 128.000 -114.461" rotation="179.99 0.26 -180.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/dieselCanister/DieselCanister.xml" uniqueId="vehicle8816308cc07c51c54ae1c17f5d6e828d_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="284.008 128.000 -114.462" rotation="179.99 0.27 -180.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/dieselCanister/DieselCanister.xml" uniqueId="vehicle0ecd80dc8245f7f5cb4f9ab1b540db07_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="284.520 128.000 -114.986" rotation="179.99 0.21 -180.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/dieselCanister/DieselCanister.xml" uniqueId="vehicledbb7816bbb1e0976afa83b95a447a3df_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="284.523 128.000 -116.037" rotation="-180.00 0.08 -180.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="$mapdir$/maps/vehicles/dieselCanister/DieselCanister.xml" uniqueId="vehicle5605b42a04f9215885b9f823f606628d_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="284.519 128.000 -114.723" rotation="-180.00 0.23 180.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+	</vehicle>
+	<vehicle filename="data/objects/pallets/raniWrapPallet/raniWrapPallet.xml" uniqueId="vehicle2a6e1951c1e1651a7868cb60878f4ae1_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="279.872 128.002 -107.685" rotation="-179.99 88.45 -179.99"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<configuration name="consumable" id="1" isActive="true"/>
+		<fillUnit>
+			<unit index="1" fillType="BALE_WRAP" fillLevel="40.000000"/>
+		</fillUnit>
+		<dischargeable isAllowed="true"/>
+		<consumable>
+			<type typeName="BALE_WRAP" consumingFillLevel="1.000000" consumingVariationName="RANI_PLAST_WHITE">
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+			</type>
+		</consumable>
+	</vehicle>
+	<vehicle filename="data/objects/pallets/raniWrapPallet/raniWrapPallet.xml" uniqueId="vehiclee5ac9310d9d2e9d03a33ddaf6caef38f_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="280.889 128.002 -107.708" rotation="179.91 88.40 179.91"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<configuration name="consumable" id="1" isActive="true"/>
+		<fillUnit>
+			<unit index="1" fillType="BALE_WRAP" fillLevel="40.000000"/>
+		</fillUnit>
+		<dischargeable isAllowed="true"/>
+		<consumable>
+			<type typeName="BALE_WRAP" consumingFillLevel="1.000000" consumingVariationName="RANI_PLAST_WHITE">
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+				<storageSlot consumableVariation="RANI_PLAST_WHITE"/>
+			</type>
+		</consumable>
+	</vehicle>
+	<vehicle filename="data/objects/pallets/baleNetPallet/baleNetPallet.xml" uniqueId="vehicle7327d690b421608c95c18d329e891d3c_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="276.975 128.002 -107.542" rotation="179.27 89.78 179.28"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<configuration name="consumable" id="1" isActive="true"/>
+		<fillUnit>
+			<unit index="1" fillType="BALE_NET" fillLevel="5.000000"/>
+		</fillUnit>
+		<dischargeable isAllowed="true"/>
+		<consumable>
+			<type typeName="BALE_NET" consumingFillLevel="1.000000" consumingVariationName="LIZARD_NETWRAP">
+				<storageSlot consumableVariation="LIZARD_NETWRAP"/>
+				<storageSlot consumableVariation="LIZARD_NETWRAP"/>
+				<storageSlot consumableVariation="LIZARD_NETWRAP"/>
+				<storageSlot consumableVariation="LIZARD_NETWRAP"/>
+				<storageSlot consumableVariation="LIZARD_NETWRAP"/>
+			</type>
+		</consumable>
+	</vehicle>
+	<vehicle filename="data/objects/pallets/baleNetPallet/baleNetPallet.xml" uniqueId="vehicle0be9d398218fa6e9d79656019db5f7ea_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="276.968 128.689 -107.246" rotation="0.00 90.00 0.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<configuration name="consumable" id="1" isActive="true"/>
+		<fillUnit>
+			<unit index="1" fillType="BALE_NET" fillLevel="5.000000"/>
+		</fillUnit>
+		<dischargeable isAllowed="true"/>
+		<consumable>
+			<type typeName="BALE_NET" consumingFillLevel="1.000000" consumingVariationName="LIZARD_NETWRAP">
+				<storageSlot consumableVariation="LIZARD_NETWRAP"/>
+				<storageSlot consumableVariation="LIZARD_NETWRAP"/>
+				<storageSlot consumableVariation="LIZARD_NETWRAP"/>
+				<storageSlot consumableVariation="LIZARD_NETWRAP"/>
+				<storageSlot consumableVariation="LIZARD_NETWRAP"/>
+			</type>
+		</consumable>
+	</vehicle>
+	<vehicle filename="data/objects/pallets/honeyBoxPallet/honeyBoxPallet.xml" uniqueId="vehiclebf32f372ef00ef761dfaa24bdf55bac0_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="82.034 128.002 514.484" rotation="180.00 19.74 -180.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<fillUnit>
+			<unit index="1" fillType="HONEY" fillLevel="1000.000000"/>
+		</fillUnit>
+		<dischargeable isAllowed="true"/>
+	</vehicle>
+	<vehicle filename="data/objects/pallets/honeyBoxPallet/honeyBoxPallet.xml" uniqueId="vehicleefbd4ec13619739646f449b8097528df_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="84.975 128.002 514.502" rotation="-0.00 28.81 0.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<fillUnit>
+			<unit index="1" fillType="HONEY" fillLevel="1000.000000"/>
+		</fillUnit>
+		<dischargeable isAllowed="true"/>
+	</vehicle>
+	<vehicle filename="data/objects/pallets/honeyBoxPallet/honeyBoxPallet.xml" uniqueId="vehicle05112d20fbfddad04e814bbfe5e28199_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="165.079 128.002 494.876" rotation="180.00 -20.25 -180.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<fillUnit>
+			<unit index="1" fillType="HONEY" fillLevel="1000.000000"/>
+		</fillUnit>
+		<dischargeable isAllowed="true"/>
+	</vehicle>
+	<vehicle filename="data/objects/pallets/honeyBoxPallet/honeyBoxPallet.xml" uniqueId="vehicle0ef7404eb676b255eafc07557d4c38e0_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="168.054 128.002 495.366" rotation="180.00 42.36 180.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<fillUnit>
+			<unit index="1" fillType="HONEY" fillLevel="1000.000000"/>
+		</fillUnit>
+		<dischargeable isAllowed="true"/>
+	</vehicle>
+	<vehicle filename="data/objects/pallets/honeyBoxPallet/honeyBoxPallet.xml" uniqueId="vehicle2ee8e8f346204fa9f92a65a1164aeb2e_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="230.302 128.002 514.335" rotation="-0.00 31.28 -0.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<fillUnit>
+			<unit index="1" fillType="HONEY" fillLevel="1000.000000"/>
+		</fillUnit>
+		<dischargeable isAllowed="true"/>
+	</vehicle>
+	<vehicle filename="data/objects/pallets/honeyBoxPallet/honeyBoxPallet.xml" uniqueId="vehicle3718766fb5b32aee10c59dd7e155bb82_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="227.685 128.002 514.482" rotation="-0.00 -22.87 -0.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<fillUnit>
+			<unit index="1" fillType="HONEY" fillLevel="1000.000000"/>
+		</fillUnit>
+		<dischargeable isAllowed="true"/>
+	</vehicle>
+	<vehicle filename="data/objects/pallets/honeyBoxPallet/honeyBoxPallet.xml" uniqueId="vehiclecdafe6780200eee26b7f8ccce2211b71_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="296.033 128.002 495.177" rotation="-180.00 -34.65 180.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<fillUnit>
+			<unit index="1" fillType="HONEY" fillLevel="1000.000000"/>
+		</fillUnit>
+		<dischargeable isAllowed="true"/>
+	</vehicle>
+	<vehicle filename="data/objects/pallets/honeyBoxPallet/honeyBoxPallet.xml" uniqueId="vehicle113475ebd4f775342ad24c0ded138800_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="299.241 128.002 495.410" rotation="180.00 47.18 -180.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<fillUnit>
+			<unit index="1" fillType="HONEY" fillLevel="1000.000000"/>
+		</fillUnit>
+		<dischargeable isAllowed="true"/>
+	</vehicle>
+	<vehicle filename="data/objects/pallets/honeyBoxPallet/honeyBoxPallet.xml" uniqueId="vehiclef7d5e3d9f422ef3e41015f7f237049be_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="362.194 128.002 514.921" rotation="-0.00 31.37 -0.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<fillUnit>
+			<unit index="1" fillType="HONEY" fillLevel="1000.000000"/>
+		</fillUnit>
+		<dischargeable isAllowed="true"/>
+	</vehicle>
+	<vehicle filename="data/objects/pallets/honeyBoxPallet/honeyBoxPallet.xml" uniqueId="vehiclea892a8b817c5e1f8140e23019a20bb1c_farm2" price="0.000000" farmId="2" >
+		<component index="1" position="358.982 128.002 514.775" rotation="0.00 -30.86 -0.00"/>
+		<configuration name="fillUnit" id="1" isActive="true"/>
+		<fillUnit>
+			<unit index="1" fillType="HONEY" fillLevel="1000.000000"/>
+		</fillUnit>
+		<dischargeable isAllowed="true"/>
+	</vehicle>
+
+</vehicles>

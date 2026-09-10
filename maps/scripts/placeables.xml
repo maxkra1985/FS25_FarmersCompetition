@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<placeables version="1">
+    <!-- ФЕРМА 1 -->
+    <placeable isPreplaced="true" uniqueId="grainSiloSmall_farm1" price="0.000000" canBeSold="true" canBeRenamed="true" boughtWithFarmland="false" farmId="1" />
+    <placeable isPreplaced="true" uniqueId="baleStorage_farm1" price="0.000000" canBeSold="true" canBeRenamed="true" boughtWithFarmland="false" farmId="1" />
+    <placeable isPreplaced="true" uniqueId="rootcropsStorage_farm1" price="0.000000" canBeSold="true" canBeRenamed="true" boughtWithFarmland="false" farmId="1" />
+    <!-- ФЕРМА 2 -->
+    <placeable isPreplaced="true" uniqueId="grainSiloSmall_farm2" price="0.000000" canBeSold="true" canBeRenamed="true" boughtWithFarmland="false" farmId="2" />
+    <placeable isPreplaced="true" uniqueId="rootcropsStorage_farm2" price="0.000000" canBeSold="true" canBeRenamed="true" boughtWithFarmland="false" farmId="2" />
+    <placeable isPreplaced="true" uniqueId="baleStorage_farm2" price="0.000000" canBeSold="true" canBeRenamed="true" boughtWithFarmland="false" farmId="2" />
+</placeables>

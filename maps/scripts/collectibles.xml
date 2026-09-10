@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<collectibles achievementName="CollectiblesEU" hotspotThreshold="40">
+
+    <!-- <group name="default" dialogText="***" dialogIntroText="***" /> 
+		<collectible name="collectible1" group="default" target="collectible01" dialogText="***" moneyReward="1000" /> -->
+    
+
+</collectibles>

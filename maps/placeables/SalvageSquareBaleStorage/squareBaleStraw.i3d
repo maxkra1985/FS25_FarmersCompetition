@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<i3D name="squareBaleStraw.i3d" version="1.6" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://i3d.giants.ch/schema/i3d-1.6.xsd">
+  <Asset>
+    <Export program="GIANTS Editor 64bit" version="10.0.2"/>
+  </Asset>
+
+  <Files>
+    <File fileId="15" filename="$data/maps/textures/shared/props/icicles_diffuse.png"/>
+    <File fileId="16" filename="$data/maps/textures/shared/props/icicles_normal.png"/>
+    <File fileId="17" filename="$data/maps/textures/shared/props/icicles_specular.png"/>
+    <File fileId="11" filename="$data/maps/textures/shared/snow_diffuse.png"/>
+    <File fileId="12" filename="$data/maps/textures/shared/snow_normal.png"/>
+    <File fileId="8" filename="$data/maps/textures/shared/snow_specular.png"/>
+    <File fileId="4" filename="$data/shaders/buildingShader.xml"/>
+    <File fileId="25" filename="$data/shaders/decalShader.xml"/>
+    <File fileId="29" filename="$data/shaders/glowShader.xml"/>
+    <File fileId="13" filename="$data/shaders/snowHeapShader.xml"/>
+    <File fileId="22" filename="$data/shared/assets/assetLibraryDecals_diffuse.dds"/>
+    <File fileId="23" filename="$data/shared/assets/assetLibraryDecals_normal.dds"/>
+    <File fileId="24" filename="$data/shared/assets/assetLibraryDecals_vmask.dds"/>
+    <File fileId="19" filename="$data/shared/warningStripes_diffuse.png"/>
+    <File fileId="20" filename="$data/shared/warningStripes_normal.png"/>
+    <File fileId="21" filename="$data/shared/warningStripes_specular.png"/>
+    <File fileId="1" filename="textures/Unterstand_diffuse.dds"/>
+    <File fileId="2" filename="textures/Unterstand_normal.dds"/>
+    <File fileId="3" filename="textures/Unterstand_specular.dds"/>
+    <File fileId="26" filename="$data/shared/assets/lights/lizard/buildings/garageCeilingLamp_diffuse.dds"/>
+    <File fileId="27" filename="$data/shared/assets/lights/lizard/buildings/garageCeilingLamp_normal.dds"/>
+    <File fileId="28" filename="$data/shared/assets/lights/lizard/buildings/garageCeilingLamp_specular.dds"/>
+    <File fileId="5" filename="textures/storageBarn_specular.dds"/>
+  </Files>
+
+
+  <Materials>
+    <Material name="garageCeilingLamp_mat" materialId="5">
+      <Texture fileId="26"/>
+      <Normalmap fileId="27"/>
+      <Glossmap fileId="28"/>
+    </Material>
+    <Material name="garageCeilingLampLit_mat" materialId="6" customShaderId="29">
+    </Material>
+    <Material name="icicles_mat" materialId="7" alphaBlending="true" customShaderId="13" customShaderVariation="icicle">
+      <Texture fileId="15"/>
+      <Normalmap fileId="16"/>
+      <Glossmap fileId="17"/>
+      <Refractionmap coeff="1" bumpScale="0.1" withSSRData="false"/>
+    </Material>
+    <Material name="lambert1" materialId="8" customShaderId="4" customShaderVariation="customParallax">
+      <Texture fileId="1"/>
+      <Normalmap fileId="2"/>
+      <Glossmap fileId="3"/>
+      <Custommap name="mMaskMap" fileId="5"/>
+    </Material>
+    <Material name="lambert1" materialId="9" diffuseColor="0.494118 0.494118 0.494118 1">
+    </Material>
+    <Material name="lambert2" materialId="10" customShaderId="25">
+      <Texture fileId="22"/>
+      <Normalmap fileId="23"/>
+      <Glossmap fileId="24"/>
+    </Material>
+    <Material name="snow_mat" materialId="11" customShaderId="13">
+      <Texture fileId="11"/>
+      <Normalmap fileId="12"/>
+      <Glossmap fileId="8"/>
+    </Material>
+    <Material name="warningStripes_mat" materialId="12">
+      <Texture fileId="19"/>
+      <Normalmap fileId="20"/>
+      <Glossmap fileId="21"/>
+    </Material>
+  </Materials>
+
+
+  <Shapes externalShapesFile="squareBaleStraw.i3d.shapes">
+  </Shapes>
+
+  <Scene>
+    <TransformGroup name="objectStorage" nodeId="27">
+      <Shape name="Unterstand1" translation="0 -0.088 0" shapeId="1" clipDistance="500" nodeId="28" castsShadows="true" receiveShadows="true" materialIds="8">
+        <TransformGroup name="decals" translation="0 -0.923943 0" rotation="0 8.14222e-13 0" nodeId="29">
+          <TransformGroup name="stopCrossing01" translation="-2.4 2.01194 -11.9" rotation="0 180 0" clipDistance="4" nodeId="30"/>
+          <TransformGroup name="stopCrossing02" translation="2.4 2.01194 11.9" clipDistance="4" nodeId="31"/>
+          <TransformGroup name="stopCrossing03" translation="2.4 2.01194 -11.9" rotation="0 180 0" clipDistance="4" nodeId="32"/>
+          <TransformGroup name="stopCrossing04" translation="-2.4 2.01194 11.9" clipDistance="4" nodeId="33"/>
+        </TransformGroup>
+        <TransformGroup name="winter" translation="0 0.254929 0" rotation="0 8.14222e-13 0" nodeId="34">
+          <Shape name="snow" translation="0 0.834961 0.299528" scale="1.05885 0.87821 1.0624" shapeId="2" clipDistance="200" nodeId="35" castsShadows="true" receiveShadows="true" materialIds="11" weatherRequiredMask="0x400"/>
+          <Shape name="icicles" shapeId="3" clipDistance="200" nodeId="36" castsShadows="true" receiveShadows="true" materialIds="7" weatherRequiredMask="0x400"/>
+        </TransformGroup>
+        <TransformGroup name="objectStorage" translation="0 0.088 0" rotation="0 8.14222e-13 0" nodeId="37">
+          <TransformGroup name="areas" nodeId="38">
+            <TransformGroup name="spawnArea1Start" translation="5.25954 -0.01 15.6477" rotation="0 -90 0" nodeId="39">
+              <TransformGroup name="spawnArea1End" translation="6.17439 0 8.81944" nodeId="40"/>
+            </TransformGroup>
+            <TransformGroup name="storageArea1Start" translation="5.108 0 -11.3099" rotation="0 -90 0" nodeId="41">
+              <TransformGroup name="storageArea1End" translation="21.5593 0 10.225" nodeId="42"/>
+            </TransformGroup>
+          </TransformGroup>
+          <Shape name="objectTrigger" translation="0 0 12.9173" shapeId="4" static="true" trigger="true" collisionFilterGroup="0x20000000" collisionFilterMask="0x50000" nodeId="43" castsShadows="true" receiveShadows="true" nonRenderable="true" materialIds="9">
+            <TransformGroup name="objectTriggerMarker" nodeId="44"/>
+            <Shape name="warningStripes" translation="0 0.01 0" shapeId="5" clipDistance="300" nodeId="45" castsShadows="true" receiveShadows="true" materialIds="12"/>
+          </Shape>
+          <Shape name="playerTrigger" translation="5.42074 0.5 13.6874" shapeId="6" static="true" trigger="true" collisionFilterGroup="0x20000000" collisionFilterMask="0x110000" nodeId="46" castsShadows="true" receiveShadows="true" nonRenderable="true" materialIds="9">
+            <TransformGroup name="playerTriggerMarker" nodeId="47"/>
+          </Shape>
+          <Shape name="infoTrigger" translation="-5e-06 1.66444 15.1967" shapeId="7" static="true" trigger="true" collisionFilterGroup="0x20000000" collisionFilterMask="0x110000" nodeId="48" castsShadows="true" receiveShadows="true" nonRenderable="true" materialIds="9"/>
+        </TransformGroup>
+        <TransformGroup name="tipOcclusionUpdateArea1Start" translation="-6.95025 0.088 -12.25" rotation="0 8.14222e-13 0" nodeId="49">
+          <TransformGroup name="tipOcclusionUpdateArea1End" translation="13.726 0 25.5978" nodeId="50"/>
+        </TransformGroup>
+        <TransformGroup name="indoorArea1Start" translation="-6.24131 0.088 -11.8799" rotation="0 8.14222e-13 0" nodeId="51">
+          <TransformGroup name="indoorArea1Width" translation="-0 0 29.82" nodeId="52"/>
+          <TransformGroup name="indoorArea1Height" translation="12.3823 0 0" nodeId="53"/>
+        </TransformGroup>
+        <TransformGroup name="levelArea1Start" translation="-6.6361 0.088 -12.25" rotation="0 8.14222e-13 0" nodeId="54">
+          <TransformGroup name="levelArea1Width" translation="0 0 34" nodeId="55"/>
+          <TransformGroup name="levelArea1Height" translation="13.3382 0 0" nodeId="56"/>
+        </TransformGroup>
+        <TransformGroup name="clearArea1Start" translation="-6.25 0.088 -12.25" rotation="0 8.14222e-13 0" nodeId="57">
+          <TransformGroup name="clearArea1Width" translation="0 0 33.25" nodeId="58"/>
+          <TransformGroup name="clearArea1Height" translation="12.5 0 0" nodeId="59"/>
+        </TransformGroup>
+        <TransformGroup name="testArea1Start" translation="-7.04711 0.088 -12.96" rotation="0 8.14222e-13 0" nodeId="60">
+          <TransformGroup name="testArea1End" translation="13.925 7.5 33.25" nodeId="61"/>
+        </TransformGroup>
+        <TransformGroup name="collisions" translation="0 0.088 0" rotation="0 8.14222e-13 0" nodeId="62">
+          <Shape name="Col2" translation="0 -0.088 0" shapeId="8" visibility="false" static="true" collisionFilterGroup="0x1034" collisionFilterMask="0xfffffbff" nodeId="63" castsShadows="false" receiveShadows="false" nonRenderable="true" distanceBlending="false" materialIds="9"/>
+          <Shape name="tipCollisionWall" shapeId="9" visibility="false" static="true" collisionFilterGroup="0x8" collisionFilterMask="0x1" nodeId="64" castsShadows="true" receiveShadows="true" nonRenderable="true" materialIds="9"/>
+          <Shape name="tipCollision" translation="0 0 16.5632" shapeId="10" visibility="false" static="true" collisionFilterGroup="0x8" collisionFilterMask="0x1" nodeId="65" castsShadows="true" receiveShadows="true" nonRenderable="true" materialIds="9"/>
+        </TransformGroup>
+      </Shape>
+      <Shape name="boltDecals1" translation="0 -0.088 0" rotation="0 -1.36604e-05 0" shapeId="11" clipDistance="500" nodeId="66" castsShadows="true" receiveShadows="true" materialIds="10"/>
+      <Shape name="garageCeilingLamp1" lockedgroup="true" translation="-0.0130016 6.61034 4.838" rotation="-0 -90 0" shapeId="12" clipDistance="150" nodeId="67" castsShadows="true" receiveShadows="true" materialIds="5">
+        <Shape name="garageCeilingLampBulb" shapeId="13" clipDistance="150" nodeId="68" castsShadows="true" receiveShadows="true" materialIds="6"/>
+        <Light name="light" translation="0.00963954 -0.947476 0.0101007" rotation="-90 -0 0" clipDistance="150" nodeId="69" type="spot" color="1 1 1" emitDiffuse="true" emitSpecular="true" castShadowMap="true" depthMapBias="0.0012" depthMapSlopeScaleBias="2" depthMapSlopeClamp="0.0005" depthMapResolution="1024" shadowFarDistance="1000" shadowExtrusionDistance="200" softShadowsLightSize="0.01" softShadowsLightDistance="15" softShadowsDepthBiasFactor="5" softShadowsMaxPenumbraSize="0.5" range="12" coneAngle="140" dropOff="2"/>
+      </Shape>
+      <Shape name="garageCeilingLamp2" lockedgroup="true" translation="-0.0133619 6.61034 -4.67064" rotation="-0 -90 0" shapeId="12" static="true" clipDistance="150" nodeId="70" castsShadows="true" receiveShadows="true" materialIds="5">
+        <Shape name="garageCeilingLampBulb" shapeId="13" clipDistance="150" nodeId="71" castsShadows="true" receiveShadows="true" materialIds="6"/>
+        <Light name="light" translation="-0.00560793 -0.947476 0.0101007" rotation="-90 -0 0" clipDistance="150" nodeId="72" type="spot" color="1 1 1" emitDiffuse="true" emitSpecular="true" castShadowMap="true" depthMapBias="0.0012" depthMapSlopeScaleBias="2" depthMapSlopeClamp="0.0005" depthMapResolution="1024" shadowFarDistance="1000" shadowExtrusionDistance="200" softShadowsLightSize="0.01" softShadowsLightDistance="15" softShadowsDepthBiasFactor="5" softShadowsMaxPenumbraSize="0.5" range="12" coneAngle="140" dropOff="2"/>
+      </Shape>
+    </TransformGroup>
+  </Scene>
+
+  <UserAttributes>
+    <UserAttribute nodeId="64">
+      <Attribute name="collisionHeight" type="float" value="4"/>
+    </UserAttribute>
+  </UserAttributes>
+
+</i3D>

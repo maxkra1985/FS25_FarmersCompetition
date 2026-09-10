@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<i3D name="DieselCanister.i3d" version="1.6" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://i3d.giants.ch/schema/i3d-1.6.xsd">
+  <Asset>
+    <Export program="GIANTS Editor 64bit" version="10.0.3"/>
+  </Asset>
+
+  <Files>
+    <File fileId="2" filename="DieselCanister_diffuse.dds"/>
+    <File fileId="3" filename="DieselCanister_normal.dds"/>
+    <File fileId="4" filename="DieselCanister_specular.dds"/>
+  </Files>
+
+
+  <Materials>
+    <Material name="lambert1" materialId="5" diffuseColor="0.494118 0.494118 0.494118 1">
+    </Material>
+    <Material name="lambert1" materialId="6" diffuseColor="0.501961 0.501961 0.501961 1">
+    </Material>
+    <Material name="Material.002" materialId="7">
+      <Texture fileId="2"/>
+      <Normalmap fileId="3"/>
+      <Glossmap fileId="4"/>
+    </Material>
+  </Materials>
+
+
+  <Shapes externalShapesFile="DieselCanister.i3d.shapes">
+  </Shapes>
+
+  <Scene>
+    <Shape name="gasCanister" shapeId="1" dynamic="true" collisionFilterGroup="0x10004" collisionFilterMask="0xfe3ffb83" density="0.5" nodeId="13" castsShadows="true" receiveShadows="true" nonRenderable="true" materialIds="6">
+      <Shape name="gasCanister_vis" shapeId="2" clipDistance="30" nodeId="14" castsShadows="true" receiveShadows="true" materialIds="7">
+        <TransformGroup name="triggers" nodeId="15">
+          <Shape name="dynamicMount" scale="0.3428 3.76953 0.199467" shapeId="3" kinematic="true" trigger="true" collisionFilterGroup="0x8000000" collisionFilterMask="0x8000000" clipDistance="100" nodeId="16" castsShadows="true" receiveShadows="true" nonRenderable="true" materialIds="5"/>
+          <Shape name="fill" translation="0 0.348315 0" shapeId="4" kinematic="true" compound="true" trigger="true" collisionFilterGroup="0x20000000" collisionFilterMask="0x40000000" clipDistance="300" nodeId="17" castsShadows="true" receiveShadows="true" nonRenderable="true" materialIds="5"/>
+        </TransformGroup>
+      </Shape>
+    </Shape>
+  </Scene>
+
+</i3D>

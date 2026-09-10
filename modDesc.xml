@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<modDesc descVersion="94">
+    <author>MaxKra1985</author>
+    <version>0.2.0.2</version>
+    <title>
+        <ru>Соревнование фермеров</ru>
+        <en>Farmers' competition</en>
+        <de>Bauernwettbewerb</de>
+        <fr>Concours d'agriculteurs</fr>
+    </title>
+    <description>
+        <ru>Карта для кооперативного соревнования двух ферммерских команд.</ru>
+        <en>A map for a cooperative competition between two farming teams.</en>
+        <de>Eine Karte für einen kooperativen Wettbewerb zwischen zwei Farmteams.</de>
+        <fr>Une carte pour une compétition coopérative entre deux équipes agricoles.</fr>
+    </description>
+    <iconFilename>icon_MAP.png</iconFilename>
+    <multiplayer supported="true"/>
+    <maps>
+        <map id="SampleModMap" className="Mission00" filename="$dataS/scripts/mission00.lua" configFilename="maps/mapEU.xml" defaultVehiclesXMLFilename="maps/scripts/vehicles.xml" defaultHandToolsXMLFilename="$dataS/maps/handTools.xml" defaultPlaceablesXMLFilename="maps/scripts/placeables.xml" defaultItemsXMLFilename="maps/scripts/items.xml">
+            <title>
+                <ru>Соревнование фермеров</ru>
+                <en>Farmers' competition</en>
+                <de>Bauernwettbewerb</de>
+                <fr>Concours d'agriculteurs</fr>
+            </title>
+            <description>
+                <ru>Карта для кооперативного соревнования двух ферммерских команд.</ru>
+                <en>A map for a cooperative competition between two farming teams.</en>
+                <de>Eine Karte für einen kooperativen Wettbewerb zwischen zwei Farmteams.</de>
+                <fr>Une carte pour une compétition coopérative entre deux équipes agricoles.</fr>
+            </description>
+            <iconFilename>preview.png</iconFilename>
+        </map>
+    </maps>
+
+	<extraSourceFiles>
+		<sourceFile filename="scripts/CompetitionScanner.lua" />
+		<sourceFile filename="scripts/CompetitionManager.lua" />
+	</extraSourceFiles>
+
+    <storeItems>
+        <!-- ТЕХНИКА -->
+        <storeItem xmlFilename="maps/vehicles/AmityTechnology_2720HarvesterScrub.xml"/>
+        <storeItem xmlFilename="maps/vehicles/AmityTechnology_defoliator3750.xml"/>
+        <storeItem xmlFilename="maps/placeables/GrainSiloSmall/grainSiloSmall.xml"/>
+        <storeItem xmlFilename="maps/placeables/SalvageSquareBaleStorage/squareBaleStorage.xml"/>
+        <storeItem xmlFilename="maps/placeables/RootcropsStorage/rootcropsStorage.xml"/>
+        <storeItem xmlFilename="maps/vehicles/dieselCanister/DieselCanister.xml"/>
+        <!-- ПОСТРОЙКИ -->
+    </storeItems>
+    <l10n filenamePrefix="maps/translate/l10n"/>
+</modDesc>

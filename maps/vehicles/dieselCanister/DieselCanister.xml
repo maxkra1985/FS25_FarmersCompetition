@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<vehicle type="pallet" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../shared/xml/schema/vehicle.xsd">
+	<storeData>
+		<name>
+			<ru>Канистра топлива</ru>
+			<en>Gas Can</en></name>
+		<functions>
+			<function>$l10n_function_dieselTank</function>
+		</functions>
+		<specs>
+			<capacity>20</capacity>
+			<fillTypes>DIESEL</fillTypes>
+			<weight ignore="true"/>
+		</specs>
+		<image>maps/vehicles/dieselCanister/store_DieselCanister.dds</image>
+		<price>150</price>
+		<allowLeasing>false</allowLeasing>
+		<canBeSold>false</canBeSold>
+		<rotation>0</rotation>
+		<shopHeight>2</shopHeight>
+		<brand>LIZARD</brand>
+		<category>misc</category>
+		<financeCategory>OTHER</financeCategory>
+		<vertexBufferMemoryUsage>17152</vertexBufferMemoryUsage>
+		<indexBufferMemoryUsage>6912</indexBufferMemoryUsage>
+		<textureMemoryUsage>720896</textureMemoryUsage>
+		<audioMemoryUsage>0</audioMemoryUsage>
+		<instanceVertexBufferMemoryUsage>0</instanceVertexBufferMemoryUsage>
+		<instanceIndexBufferMemoryUsage>0</instanceIndexBufferMemoryUsage>
+	</storeData>
+	<base>
+		<typeDesc>$l10n_typeDesc_pallet</typeDesc>
+		<filename>maps/vehicles/dieselCanister/DieselCanister.i3d</filename>
+		<size width="0.3" length="0.5" height="0.7"/>
+		<supportsPickUp>true</supportsPickUp>
+		<input allowed="false"/>
+		<canBeReset>false</canBeReset>
+		<components maxMass="20">
+			<component centerOfMass="0 0.25 0" solverIterationCount="10" mass="4"/>
+		</components>
+		<showInVehicleMenu>false</showInVehicleMenu>
+		<mapHotspot available="false"/>
+	</base>
+	<fillUnit>
+		<fillUnitConfigurations>
+			<fillUnitConfiguration>
+				<fillUnits removeVehicleIfEmpty="true">
+					<fillUnit unitTextOverride="$l10n_unit_literShort" fillTypes="DIESEL" capacity="20" startFillType="DIESEL" startFillLevel="100" ignoreFillLimit="true">
+						<fillRootNode node="0>"/>
+					</fillUnit>
+				</fillUnits>
+			</fillUnitConfiguration>
+		</fillUnitConfigurations>
+	</fillUnit>
+	<fillTriggerVehicle triggerNode="fill" fillUnitIndex="1" litersPerSecond="10"/>
+	<dynamicMount triggerNode="dynamicMount" triggerForceAcceleration="5" additionalMountDistance="1.5" jointTransY="0.11" jointLimitToRotY="true"/>
+	<dischargeable requiresTipOcclusionArea="false"/>
+	<tensionBeltObject>
+		<meshNodes>
+			<meshNode node="gasCanister_vis"/>
+		</meshNodes>
+	</tensionBeltObject>
+	<i3dMappings>
+		<i3dMapping id="dynamicMount" node="0>0|0|0"/>
+		<i3dMapping id="fill" node="0>0|0|1"/>
+		<i3dMapping id="gasCanister_vis" node="0>0"/>
+	</i3dMappings>
+</vehicle>

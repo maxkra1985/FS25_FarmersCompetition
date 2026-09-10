@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="iso-8859-1"?>
+<i3D name="oldWoodBridge.i3d" version="1.6" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://i3d.giants.ch/schema/i3d-1.6.xsd">
+    <Asset>
+        <Export program="GIANTS Editor 64bit" version="10.0.10"/>
+    </Asset>
+    <Files>
+        <File fileId="4" filename="$data/shaders/buildingShader.xml"/>
+        <File fileId="3" filename="$data/shared/default_specular.dds"/>
+        <File fileId="11" filename="textures_map/bridgeWoodLOD_diffuse.dds"/>
+        <File fileId="1" filename="textures_map/bridgeWood_diffuse.dds"/>
+        <File fileId="2" filename="textures_map/bridgeWood_normal.dds"/>
+        <File fileId="5" filename="textures_map/bridgeWood_specular.dds"/>
+    </Files>
+    <Materials>
+        <Material name="bridgeWood_mat" materialId="642" customShaderId="4">
+            <Texture fileId="1"/>
+            <Normalmap fileId="2"/>
+            <Glossmap fileId="3"/>
+            <Custommap name="mMaskMap" fileId="5"/>
+        </Material>
+        <Material name="bridgeWoodLOD_mat" materialId="643">
+            <Texture fileId="11"/>
+        </Material>
+        <Material name="lambert1" materialId="33" diffuseColor="0.486275 0.494118 0.494118 1"/>
+    </Materials>
+    <Shapes externalShapesFile="oldWoodBridge.i3d.shapes"/>
+    <Scene>
+        <TransformGroup name="bridgeWood" translation="209.807 79.5003 -325.4" rotation="180 -60 -180" lodDistance="0 200" static="true" collisionFilterGroup="0x3e" collisionFilterMask="0xfffffbff" clipDistance="1000" objectMask="0xff03ff" nodeId="1848">
+            <TransformGroup name="LOD0" nodeId="1849">
+                <Shape name="visual" shapeId="1" nodeId="1850" castsShadows="true" receiveShadows="true" materialIds="642"/>
+                <Shape name="collision" shapeId="2" static="true" collisionFilterGroup="0x3e" collisionFilterMask="0xfffffbff" nodeId="1851" castsShadows="true" receiveShadows="true" nonRenderable="true" materialIds="33"/>
+            </TransformGroup>
+            <Shape name="LOD1" shapeId="3" nodeId="1852" castsShadows="true" receiveShadows="true" materialIds="643"/>
+        </TransformGroup>
+    </Scene>
+</i3D>

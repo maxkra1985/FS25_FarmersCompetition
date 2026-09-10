@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<i3D name="sounds.i3d" version="1.6" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://i3d.giants.ch/schema/i3d-1.6.xsd">
+  <Asset>
+    <Export program="GIANTS Editor 64bit" version="10.0.3"/>
+  </Asset>
+
+  <Files>
+    <File fileId="1" filename="$data/sounds/animals/stork/anmStorkRattle_01.wav"/>
+    <File fileId="2" filename="$data/sounds/animals/stork/anmStorkRattle_02.wav"/>
+    <File fileId="3" filename="$data/sounds/animals/stork/anmStorkRattle_03.wav"/>
+  </Files>
+
+
+  <Materials>
+  </Materials>
+
+
+  <Shapes>
+  </Shapes>
+
+  <Scene>
+    <TransformGroup name="audio_group" nodeId="21">
+      <AudioSource name="storkRattle01" translation="-452.226 69.9911 -130.776" rotation="-19.4527 -0 -82.2685" nodeId="24" fileIds="1 2 3" range="40" innerRange="10" volume="1" loops="0" audioGroup="ENVIRONMENT" randomPlayback="true" probabilities="1 1 1" retriggerDelay="3 10" dayOfYearStart="60" dayOfYearEnd="240" weatherRequiredMask="0x1" weatherPreventMask="0xc" viewerSpacialityPreventMask="0x40"/>
+    </TransformGroup>
+  </Scene>
+
+</i3D>

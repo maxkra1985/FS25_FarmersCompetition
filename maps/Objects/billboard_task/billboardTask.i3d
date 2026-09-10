@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="iso-8859-1"?>
+<i3D name="billboardTask.i3d" version="1.6" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://i3d.giants.ch/schema/i3d-1.6.xsd">
+    <Asset>
+        <Export program="GIANTS Editor 64bit" version="10.0.10"/>
+    </Asset>
+    <Files>
+        <File fileId="5" filename="$data/maps/mapEU/textures/shared/billboards/ad2x1_01_diffuse.png"/>
+        <File fileId="6" filename="$data/maps/textures/shared/default_normal.png"/>
+        <File fileId="2" filename="$data/maps/textures/shared/props/billboards/billboards_diffuse.png"/>
+        <File fileId="3" filename="$data/maps/textures/shared/props/billboards/billboards_normal.png"/>
+        <File fileId="4" filename="$data/maps/textures/shared/props/billboards/billboards_specular.png"/>
+    </Files>
+    <Materials>
+        <Material name="ad2x1_01_mat" materialId="451994">
+            <Texture fileId="5"/>
+            <Normalmap fileId="6"/>
+        </Material>
+        <Material name="billboards_mat" materialId="452061">
+            <Texture fileId="2"/>
+            <Normalmap fileId="3"/>
+            <Glossmap fileId="4"/>
+        </Material>
+        <Material name="lambert1" materialId="452361" diffuseColor="0.494118 0.494118 0.494118 1"/>
+    </Materials>
+    <Shapes externalShapesFile="billboardTask.i3d.shapes"/>
+    <Scene>
+        <Shape name="billboard2x1" lockedgroup="true" translation="973.477 42.7721 192.657" rotation="-4.80909e-07 -90 1.25167e-07" shapeId="1" static="true" collisionFilterGroup="0x3e" collisionFilterMask="0xfffffbff" density="0.0001" clipDistance="350" nodeId="525575" castsShadows="true" receiveShadows="true" nonRenderable="true" materialIds="452361">
+            <Shape name="billboard2x1Vis" shapeId="2" clipDistance="350" nodeId="525576" castsShadows="true" receiveShadows="true" materialIds="452061"/>
+            <Shape name="_2x1PanelDecal" shapeId="3" clipDistance="200" nodeId="525577" castsShadows="true" receiveShadows="true" adPlacementId="1" decalLayer="1" materialIds="451994"/>
+        </Shape>
+    </Scene>
+</i3D>

@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="iso-8859-1"?>
+<i3D name="waterplanes.i3d" version="1.6" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://i3d.giants.ch/schema/i3d-1.6.xsd">
+    <Asset>
+        <Export program="GIANTS Editor 64bit" version="10.0.10"/>
+    </Asset>
+    <Files>
+        <File fileId="2" filename="$data/maps/textures/shared/water_normal.png"/>
+        <File fileId="3" filename="$data/shaders/oceanShader.xml"/>
+    </Files>
+    <Materials>
+        <Material name="waterSimple_mat" materialId="92" diffuseColor="1 1 1 1" specularColor="1 1 1" customShaderId="3" customShaderVariation="simple">
+            <Normalmap fileId="2"/>
+            <CustomParameter name="underwaterFogColor" value="0.12 0.14 0.11 1"/>
+        </Material>
+        <Material name="waterSimPonds_mat" materialId="93" diffuseColor="1 1 1 1" specularColor="1 1 1" customShaderId="3">
+            <Normalmap fileId="2"/>
+            <Refractionmap coeff="1" bumpScale="0.01" withSSRData="true"/>
+            <CustomParameter name="underwaterFogColor" value="0.12 0.14 0.11 1"/>
+            <CustomParameter name="underwaterFogDepth" value="1.4 1.2 1 1"/>
+        </Material>
+    </Materials>
+    <Shapes externalShapesFile="waterplanes.i3d.shapes"/>
+    <Scene>
+        <TransformGroup name="waterPlanes" translation="6.10743 0 -977.55" nodeId="268">
+            <Shape name="waterPlane08" translation="0 122 0" scale="34 1 29" shapeId="1" static="true" collisionFilterGroup="0x80000000" collisionFilterMask="0x1" clipDistance="1500" nodeId="269" castsShadows="false" receiveShadows="true" materialIds="93"/>
+            <Shape name="waterPlane08m" translation="0 121.5 0" scale="34 1 29" shapeId="1" clipDistance="1500" objectMask="0x8000" nodeId="270" castsShadows="false" receiveShadows="true" materialIds="92"/>
+        </TransformGroup>
+    </Scene>
+    <UserAttributes>
+        <UserAttribute nodeId="269">
+            <Attribute name="onCreate" type="scriptCallback" value="Environment.onCreateWater"/>
+        </UserAttribute>
+    </UserAttributes>
+</i3D>
