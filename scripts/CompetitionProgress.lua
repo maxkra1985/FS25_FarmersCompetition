@@ -158,7 +158,13 @@ function CompetitionProgress:scanBalesAndHoney()
 						or fillName == "GRASS"
 						or fillName == "SILAGE" then
 						teamCounts[farmId].grassTotal = teamCounts[farmId].grassTotal + 1
-
+						CompetitionUtils.info(
+							"GRASS CREATED BALE DEBUG farmId=%s total=%s fill=%s wrapped=%s",
+							tostring(farmId),
+							tostring(teamCounts[farmId].grassTotal),
+							tostring(fillName),
+							tostring(item.wrappingState or 0)
+						)
 						if (item.wrappingState or 0) > 0 then
 							teamCounts[farmId].grassWrapped = teamCounts[farmId].grassWrapped + 1
 						end
@@ -218,14 +224,15 @@ function CompetitionProgress:scanBalesAndHoney()
 						if fillName == "STRAW" then
 							-- Хранящийся тюк больше не является физическим объектом системы тюков (ItemSystem),
 							-- поэтому учитываем его в общем объеме производства и в количестве хранящихся тюков.
-							teamCounts[farmId].strawTotal = teamCounts[farmId].strawTotal + 1
 							teamCounts[farmId].strawStored = teamCounts[farmId].strawStored + 1
 						elseif fillName == "GRASS_WINDROW"
 							or fillName == "DRYGRASS_WINDROW"
 							or fillName == "DRYGRASS"
 							or fillName == "GRASS"
 							or fillName == "SILAGE" then
-							teamCounts[farmId].grassTotal = teamCounts[farmId].grassTotal + 1
+
+							-- Тюк уже был учтён через ItemSystem до помещения на склад.
+							-- Здесь считаем только доставку.
 							teamCounts[farmId].grassStored = teamCounts[farmId].grassStored + 1
 
 							if wrappingState > 0 then
@@ -324,9 +331,26 @@ function CompetitionProgress:scanCompetitionProgress()
 				self.manager:setSubtaskProgress(config.farmId, "task5", "5.1", p51, true)
 				
 				local reqGrassBales = expG ~= nil and expG.expectedGrassBales125 or 1
+				CompetitionUtils.info(
+					"EXPECTED GRASS BALES DEBUG farmId=%s expectedGrassBales=%s expectedLiters=%s",
+					tostring(config.farmId),
+					tostring(reqGrassBales),
+					tostring(expG ~= nil and expG.expectedLiters or nil)
+				)
 				local p52 = (teamCounts[config.farmId].grassTotal / reqGrassBales) * 100
 				local p53 = (teamCounts[config.farmId].grassWrapped / reqGrassBales) * 100
 				local p54 = (teamCounts[config.farmId].grassStored / reqGrassBales) * 100
+				CompetitionUtils.info(
+					"GRASS PROGRESS DEBUG farmId=%s total=%s wrapped=%s stored=%s expected=%s p52=%.1f p53=%.1f p54=%.1f",
+					tostring(config.farmId),
+					tostring(teamCounts[config.farmId].grassTotal),
+					tostring(teamCounts[config.farmId].grassWrapped),
+					tostring(teamCounts[config.farmId].grassStored),
+					tostring(reqGrassBales),
+					p52,
+					p53,
+					p54
+				)
 				self.manager:setSubtaskProgress(config.farmId, "task5", "5.2", p52, false)
 				self.manager:setSubtaskProgress(config.farmId, "task5", "5.3", p53, false)
 				self.manager:setSubtaskProgress(config.farmId, "task5", "5.4", p54, false)
