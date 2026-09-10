@@ -189,14 +189,6 @@ function CompetitionProgress:scanBalesAndHoney()
 
 					local fillTypeIndex = bale ~= nil and bale.fillType or (attrs ~= nil and attrs.fillType or nil)
 					local fillName = getFillName(fillTypeIndex)
-					CompetitionUtils.info(
-						"BALE DEBUG stored farmId=%s fillType=%s fillLevel=%s xml=%s wrappingState=%s",
-						tostring(farmId),
-						tostring(fillName),
-						tostring(attrs ~= nil and attrs.fillLevel or nil),
-						tostring(attrs ~= nil and attrs.xmlFilename or nil),
-						tostring(wrappingState)
-					)
 					local is125 = false
 					local wrappingState = 0
 
@@ -208,16 +200,24 @@ function CompetitionProgress:scanBalesAndHoney()
 						is125 = isRoundBale125(baleDef)
 						wrappingState = attrs.wrappingState or 0
 					end
+					CompetitionUtils.info(
+						"BALE DEBUG stored farmId=%s fillType=%s fillLevel=%s xml=%s wrappingState=%s",
+						tostring(farmId),
+						tostring(fillName),
+						tostring(attrs ~= nil and attrs.fillLevel or nil),
+						tostring(attrs ~= nil and attrs.xmlFilename or nil),
+						tostring(wrappingState)
+					)
 
 					if is125 then
 						CompetitionUtils.info(
-							"GRASS FILTER ObjectStorage DEBUG fillName=%s fillType=%s",
+							"GRASS STORED FILTER DEBUG fillName=%s fillTypeIndex=%s",
 							tostring(fillName),
-							tostring(item.fillType)
+							tostring(fillTypeIndex)
 						)
 						if fillName == "STRAW" then
-							-- Stored bale is no longer a physical ItemSystem bale,
-							-- so include it in total produced and in stored count.
+							-- Хранящийся тюк больше не является физическим объектом системы тюков (ItemSystem),
+							-- поэтому учитываем его в общем объеме производства и в количестве хранящихся тюков.
 							teamCounts[farmId].strawTotal = teamCounts[farmId].strawTotal + 1
 							teamCounts[farmId].strawStored = teamCounts[farmId].strawStored + 1
 						elseif fillName == "GRASS_WINDROW"
@@ -235,7 +235,7 @@ function CompetitionProgress:scanBalesAndHoney()
 					end
 
 				elseif className == "Vehicle" then
-					-- Pallets are stored as abstract Vehicle objects.
+					-- Палеты хранятся как абстрактные объекты «Транспортное средство» (Vehicle).
 					local attrs = abstractObject.palletAttributes
 					if attrs ~= nil and getFillName(attrs.fillType) == "HONEY" then
 						teamCounts[farmId].honeyStored = teamCounts[farmId].honeyStored + 1
