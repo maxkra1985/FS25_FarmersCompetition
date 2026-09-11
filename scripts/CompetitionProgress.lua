@@ -15,6 +15,9 @@ function CompetitionProgress.new(manager, customMt)
 	self.scanCount = 0
 	self.strawPickedLitersByFarmId = {}
 	self.grassPickedLitersByFarmId = {}
+	self.lastStrawPickupLogLitersByFarmId = {}
+	self.lastGrassPickupLogLitersByFarmId = {}
+	self.ignoredBalerFillTypesLogged = {}
 	self:installBalerPickupHook()
 	return self
 end
@@ -23,10 +26,16 @@ end
 function CompetitionProgress:resetRuntimeCounters()
 	self.strawPickedLitersByFarmId = {}
 	self.grassPickedLitersByFarmId = {}
+	self.lastStrawPickupLogLitersByFarmId = {}
+	self.lastGrassPickupLogLitersByFarmId = {}
+	self.ignoredBalerFillTypesLogged = {}
 	for farmId = 1, 4 do
 		self.strawPickedLitersByFarmId[farmId] = 0
 		self.grassPickedLitersByFarmId[farmId] = 0
+		self.lastStrawPickupLogLitersByFarmId[farmId] = 0
+		self.lastGrassPickupLogLitersByFarmId[farmId] = 0
 	end
+	CompetitionUtils.info("BALER PICKUP DEBUG runtime counters reset")
 end
 
 -- Устанавливает перехват Baler:processBalerArea().
@@ -58,11 +67,30 @@ function CompetitionProgress:installBalerPickupHook()
 			if farmId ~= nil and farmId >= 1 and farmId <= 4
 				and g_competitionManager:isFarmInCompetitionMask(farmId) then
 
+				local progress = g_competitionManager.progress
 				local fillType = vehicle.spec_baler.fillEffectType
 				if fillType == FillType.STRAW then
-					g_competitionManager.progress:addPickedStrawLiters(farmId, pickedUpLiters)
+					progress:addPickedStrawLiters(farmId, pickedUpLiters)
 				elseif fillType == FillType.GRASS_WINDROW then
-					g_competitionManager.progress:addPickedGrassLiters(farmId, pickedUpLiters)
+					progress:addPickedGrassLiters(farmId, pickedUpLiters)
+				else
+					-- Неизвестный тип логируем только один раз на ферму/тип, чтобы не засорять лог.
+					local ignoredKey = tostring(farmId) .. ":" .. tostring(fillType)
+					if progress.ignoredBalerFillTypesLogged[ignoredKey] ~= true then
+						progress.ignoredBalerFillTypesLogged[ignoredKey] = true
+						local fillName = nil
+						if fillType ~= nil and g_fillTypeManager ~= nil then
+							fillName = g_fillTypeManager:getFillTypeNameByIndex(fillType)
+						end
+						CompetitionUtils.info(
+							"BALER PICKUP IGNORED DEBUG farmId=%s fillType=%s fillName=%s pickedLiters=%.2f processedLiters=%s",
+							tostring(farmId),
+							tostring(fillType),
+							tostring(fillName),
+							pickedUpLiters,
+							tostring(processedLiters)
+						)
+					end
 				end
 			end
 		end
@@ -76,7 +104,22 @@ function CompetitionProgress:addPickedStrawLiters(farmId, liters)
 	if farmId == nil or farmId < 1 or farmId > 4 or liters == nil or liters <= 0 then
 		return
 	end
-	self.strawPickedLitersByFarmId[farmId] = (self.strawPickedLitersByFarmId[farmId] or 0) + liters
+
+	local previous = self.strawPickedLitersByFarmId[farmId] or 0
+	local total = previous + liters
+	self.strawPickedLitersByFarmId[farmId] = total
+
+	-- Логируем первый подбор и далее примерно каждые 5000 л, а не каждый вызов processBalerArea().
+	local lastLogged = self.lastStrawPickupLogLitersByFarmId[farmId] or 0
+	if previous == 0 or total - lastLogged >= 5000 then
+		self.lastStrawPickupLogLitersByFarmId[farmId] = total
+		CompetitionUtils.info(
+			"BALER PICKUP DEBUG material=STRAW farmId=%s deltaLiters=%.2f totalLiters=%.2f",
+			tostring(farmId),
+			liters,
+			total
+		)
+	end
 end
 
 -- Добавляет фактически подобранный прессом объём скошенной травы.
@@ -84,7 +127,22 @@ function CompetitionProgress:addPickedGrassLiters(farmId, liters)
 	if farmId == nil or farmId < 1 or farmId > 4 or liters == nil or liters <= 0 then
 		return
 	end
-	self.grassPickedLitersByFarmId[farmId] = (self.grassPickedLitersByFarmId[farmId] or 0) + liters
+
+	local previous = self.grassPickedLitersByFarmId[farmId] or 0
+	local total = previous + liters
+	self.grassPickedLitersByFarmId[farmId] = total
+
+	-- Логируем первый подбор и далее примерно каждые 5000 л.
+	local lastLogged = self.lastGrassPickupLogLitersByFarmId[farmId] or 0
+	if previous == 0 or total - lastLogged >= 5000 then
+		self.lastGrassPickupLogLitersByFarmId[farmId] = total
+		CompetitionUtils.info(
+			"BALER PICKUP DEBUG material=GRASS farmId=%s deltaLiters=%.2f totalLiters=%.2f",
+			tostring(farmId),
+			liters,
+			total
+		)
+	end
 end
 
 -------------------------------------------------------------------------------
@@ -226,12 +284,13 @@ function CompetitionProgress:scanBalesAndHoney()
 					end
 
 					CompetitionUtils.info(
-						"BALE DEBUG stored farmId=%s fillType=%s fillLevel=%s xml=%s wrappingState=%s",
+						"BALE DEBUG stored farmId=%s fillType=%s fillLevel=%s xml=%s wrappingState=%s is125=%s",
 						tostring(farmId),
 						tostring(fillName),
 						tostring(attrs ~= nil and attrs.fillLevel or nil),
 						tostring(attrs ~= nil and attrs.xmlFilename or nil),
-						tostring(wrappingState)
+						tostring(wrappingState),
+						tostring(is125)
 					)
 
 					if is125 then
@@ -272,6 +331,22 @@ function CompetitionProgress:scanBalesAndHoney()
 				end
 			end
 		end
+	end
+
+	-- Сводка раз в цикл сканирования: удобна для сопоставления тюков и runtime-литров.
+	for farmId, counts in pairs(teamCounts) do
+		CompetitionUtils.info(
+			"BALE SCAN SUMMARY farmId=%s strawPicked=%.2f strawTotal=%s strawStored=%s grassPicked=%.2f grassTotal=%s grassWrapped=%s grassStored=%s honeyStored=%s",
+			tostring(farmId),
+			self.strawPickedLitersByFarmId[farmId] or 0,
+			tostring(counts.strawTotal),
+			tostring(counts.strawStored),
+			self.grassPickedLitersByFarmId[farmId] or 0,
+			tostring(counts.grassTotal),
+			tostring(counts.grassWrapped),
+			tostring(counts.grassStored),
+			tostring(counts.honeyStored)
+		)
 	end
 
 	return teamCounts
@@ -367,38 +442,54 @@ function CompetitionProgress:scanCompetitionProgress()
 				local _, _, p51 = self.manager:scanSavedArea(base.areas.GRASS, "cut")
 				self.manager:setSubtaskProgress(config.farmId, "task5", "5.1", p51, true)
 
-				-- Нельзя подставлять 1 тюк, если расчётная строка GRASS отсутствует:
-				-- первый созданный тюк в таком случае ошибочно давал бы 100%.
-				local reqGrassBales = expG ~= nil and expG.expectedGrassBales125 or nil
+				-- Подзадание 5.2 считаем так же, как 2.3 для соломы:
+				-- 1) фактический объём GRASS_WINDROW, подобранный прессом;
+				-- 2) фактическое число сформированных круглых тюков 125 см.
+				local reqGrassLiters = expG ~= nil and expG.expectedGrassLiters or 0
 				local pickedGrassLiters = self.grassPickedLitersByFarmId[config.farmId] or 0
-				local p52 = 0
-				local p53 = 0
-				local p54 = 0
+				local grassPickupPercent = reqGrassLiters > 0
+					and math.min(100, (pickedGrassLiters / reqGrassLiters) * 100)
+					or 0
 
-				if reqGrassBales ~= nil and reqGrassBales > 0 then
-					p52 = math.min(100, (teamCounts[config.farmId].grassTotal / reqGrassBales) * 100)
-					p53 = math.min(100, (teamCounts[config.farmId].grassWrapped / reqGrassBales) * 100)
-					p54 = math.min(100, (teamCounts[config.farmId].grassStored / reqGrassBales) * 100)
-				else
+				local reqGrassBales = expG ~= nil and expG.expectedGrassBales125 or 0
+				local grassFormedBalesPercent = reqGrassBales > 0
+					and math.min(100, (teamCounts[config.farmId].grassTotal / reqGrassBales) * 100)
+					or 0
+
+				local p52 = (grassPickupPercent + grassFormedBalesPercent) * 0.5
+				local p53 = reqGrassBales > 0
+					and math.min(100, (teamCounts[config.farmId].grassWrapped / reqGrassBales) * 100)
+					or 0
+				local p54 = reqGrassBales > 0
+					and math.min(100, (teamCounts[config.farmId].grassStored / reqGrassBales) * 100)
+					or 0
+
+				if reqGrassLiters <= 0 or reqGrassBales <= 0 then
 					CompetitionUtils.warning(
-						"GRASS TARGET INVALID farmId=%s expG=%s expectedGrassLiters=%s expectedGrassBales125=%s; task5 bale progress forced to 0",
+						"GRASS TARGET INVALID farmId=%s expG=%s expectedHarvestLiters=%s expectedGrassLiters=%s expectedGrassBales125=%s; pickupPct=%.2f formedPct=%.2f",
 						tostring(config.farmId),
 						tostring(expG ~= nil),
+						tostring(expG ~= nil and expG.expectedLiters or nil),
 						tostring(expG ~= nil and expG.expectedGrassLiters or nil),
-						tostring(reqGrassBales)
+						tostring(expG ~= nil and expG.expectedGrassBales125 or nil),
+						grassPickupPercent,
+						grassFormedBalesPercent
 					)
 				end
 
 				CompetitionUtils.info(
-					"GRASS PROGRESS DEBUG farmId=%s expectedHarvestLiters=%s expectedGrassLiters=%s pickedGrassLiters=%.2f expectedBales=%s total=%s wrapped=%s stored=%s p52=%.2f p53=%.2f p54=%.2f",
+					"GRASS PROGRESS DEBUG farmId=%s expectedHarvestLiters=%s expectedGrassLiters=%.2f pickedGrassLiters=%.2f delta=%.2f expectedBales=%s totalBales=%s wrappedBales=%s storedBales=%s pickupPct=%.2f formedPct=%.2f p52=%.2f p53=%.2f p54=%.2f",
 					tostring(config.farmId),
 					tostring(expG ~= nil and expG.expectedLiters or nil),
-					tostring(expG ~= nil and expG.expectedGrassLiters or nil),
+					reqGrassLiters,
 					pickedGrassLiters,
+					pickedGrassLiters - reqGrassLiters,
 					tostring(reqGrassBales),
 					tostring(teamCounts[config.farmId].grassTotal),
 					tostring(teamCounts[config.farmId].grassWrapped),
 					tostring(teamCounts[config.farmId].grassStored),
+					grassPickupPercent,
+					grassFormedBalesPercent,
 					p52,
 					p53,
 					p54
