@@ -48,6 +48,12 @@ function CompetitionManager.new(customMt)
 	self.competitionClockSyncTimer = 0
 	self.competitionTeamMask = 0
 
+	-- Признаки восстановления соревнования из сохранения.
+	-- При resumePending используется обычный экран готовности, но новый baseline не создаётся.
+	self.loadedCompetitionSave = false
+	self.resumePending = false
+	self.savedCompetitionState = nil
+
 	self.welcomeShown = false
 	self.welcomeClosed = false
 
@@ -61,9 +67,12 @@ function CompetitionManager.new(customMt)
 	self.ROUND_BALE_125_DIAMETER = 1.25
 	self.ROUND_BALE_125_TOLERANCE = 0.015
 	-- Корректировка целевого объёма соломы по результатам тестов.
-	self.STRAW_TARGET_FACTOR = 0.92
+	self.STRAW_TARGET_FACTOR = 0.95
 	-- Стартовый баланс административной фермы.
 	self.ADMIN_FARM_BALANCE = 10000000
+	-- Версия структуры сохранения и размер блока координат baseline.
+	self.SAVE_DATA_VERSION = 1
+	self.SAVE_SAMPLE_PAIRS_PER_CHUNK = 256
 	self.COMPETITION_DURATION_SECONDS = nil
 
 	self.PROGRESS_AREA_DEFS = {
@@ -108,6 +117,26 @@ function CompetitionManager:deleteMap()
 	self.security:restorePreStartTime(true)
 	g_messageCenter:unsubscribeAll(self)
 	if self.readyActionEventId ~= nil and g_inputBinding ~= nil then g_inputBinding:removeActionEvent(self.readyActionEventId) end
+end
+
+-- В загруженной игре CompetitionScanner не должен запускать автоматический проход карты.
+-- Перебираем listeners, потому что Scanner может быть зарегистрирован раньше Manager.
+function CompetitionManager:disableScannerAutoStartForLoadedGame()
+	if not self.loadedCompetitionSave then return end
+	for _, listener in ipairs(g_modEventListeners or {}) do
+		if listener ~= self
+			and listener.startScan ~= nil
+			and listener.autoStartDone ~= nil
+			and listener.consoleCommandRegistered ~= nil then
+
+			listener.autoStartTimer = nil
+			listener.autoStartDone = true
+			if listener.scan ~= nil and listener.scan.running == true and listener.scan.reason == "automatic" then
+				listener.scan.running = false
+				listener.scan.phase = "done"
+			end
+		end
+	end
 end
 
 -------------------------------------------------------------------------------
@@ -197,9 +226,18 @@ function CompetitionManager:initializeSession()
 	end
 
 	self.initialized = true
-	if CompetitionUtils.getIsServer() then 
+	if CompetitionUtils.getIsServer() then
+		-- В сохранении хранятся только числовые данные складов.
+		-- Ссылки на placeable после загрузки получаем заново из уже загруженной карты.
+		if self.loadedCompetitionSave then
+			self:disableScannerAutoStartForLoadedGame()
+			self:reattachProgressStorageTargets()
+			if self.state == CompetitionUtils.STATE.FINISHED then
+				self:rebuildFinalStandingsFromProgress()
+			end
+		end
 		self:reconcileConnectedUsers()
-		self:evaluateServerState() 
+		self:evaluateServerState()
 	end
 	
 	if g_localPlayer ~= nil then
@@ -386,6 +424,60 @@ end
 
 function CompetitionManager:actionEventReady() self:handleLocalReady() end
 
+-- Обрабатывает запрос готовности от удалённого клиента на сервере.
+function CompetitionManager:handleReadyRequest(connection)
+	if not CompetitionUtils.getIsServer() or connection == nil or g_currentMission == nil or g_currentMission.userManager == nil then return end
+	local userId = g_currentMission.userManager:getUserIdByConnection(connection)
+	if userId == nil or not self:isUserEligible(userId) then return end
+
+	self.readyByUserId[userId] = true
+	self:evaluateServerState()
+	if g_server ~= nil then
+		g_server:broadcastEvent(CompetitionReadyStateEvent.new(userId, true, self.state))
+	end
+end
+
+-- Отправляет подключившемуся клиенту полное состояние, нужное для HUD.
+-- Baseline и расчётные цели остаются только на сервере: именно сервер считает прогресс.
+function CompetitionManager:sendStateSnapshot(connection)
+	if not CompetitionUtils.getIsServer() or connection == nil then return end
+	connection:sendEvent(CompetitionSyncStateEvent.new(self.state, self.readyByUserId))
+	connection:sendEvent(CompetitionClockStateEvent.new((self.competitionElapsedMs or 0) / 1000, self.competitionTeamMask or 0))
+	connection:sendEvent(CompetitionProgressSyncEvent.new(self.progressByFarmId or {}))
+end
+
+-- Применяет на клиенте изменение готовности одного игрока.
+function CompetitionManager:applyReadyStateFromServer(userId, isReady, competitionState)
+	if CompetitionUtils.getIsServer() then return end
+	if userId ~= nil then self.readyByUserId[userId] = isReady == true end
+	if competitionState ~= nil then self.state = competitionState end
+end
+
+-- Применяет на клиенте полный снимок состояния готовности.
+function CompetitionManager:applyStateSnapshotFromServer(competitionState, readyUserIds)
+	if CompetitionUtils.getIsServer() then return end
+	self.state = competitionState or self.state
+	self.readyByUserId = {}
+	for _, userId in ipairs(readyUserIds or {}) do
+		self.readyByUserId[userId] = true
+	end
+end
+
+-- Применяет на клиенте сохранённый/текущий таймер и маску участвующих команд.
+function CompetitionManager:applyClockStateFromServer(elapsedSeconds, teamMask)
+	if CompetitionUtils.getIsServer() then return end
+	self.competitionElapsedMs = math.max(0, (elapsedSeconds or 0) * 1000)
+	-- Периодические clock-события во время игры передают teamMask=0.
+	-- Нулём уже полученную стартовую маску команд не затираем.
+	if teamMask ~= nil and teamMask > 0 then
+		self.competitionTeamMask = teamMask
+		if self.state < CompetitionUtils.STATE.STARTING then
+			self.READY_TEXT_LINE1 = "Соревнование восстановлено из сохранения и поставлено на паузу."
+			self.READY_TEXT_LINE2 = "По готовности к продолжению нажмите ENTER."
+		end
+	end
+end
+
 function CompetitionManager:reconcileConnectedUsers()
 	if not CompetitionUtils.getIsServer() then return end
 	local current = {}
@@ -414,16 +506,65 @@ function CompetitionManager:evaluateServerState()
 	end
 	local newState = hasPlayers and CompetitionUtils.STATE.WAITING_FOR_READY or CompetitionUtils.STATE.WAITING_FOR_PLAYERS
 	if newState ~= self.state then
-		self.state = newState; g_server:broadcastEvent(CompetitionSyncStateEvent.new(self.state, self.readyByUserId))
+		self.state = newState
+		if g_server ~= nil then g_server:broadcastEvent(CompetitionSyncStateEvent.new(self.state, self.readyByUserId)) end
 	end
-	if newState == CompetitionUtils.STATE.WAITING_FOR_READY and allReady and hasPlayers then self:startCompetition() end
+
+	if newState == CompetitionUtils.STATE.WAITING_FOR_READY and allReady and hasPlayers then
+		if self.resumePending then
+			self:resumeCompetitionAfterLoad()
+		elseif not self.loadedCompetitionSave then
+			self:startCompetition()
+		else
+			-- Загруженное сохранение не должно запускать предварительный скан заново.
+			CompetitionUtils.error("Сохранение не содержит данных для продолжения соревнования; новый baseline при загрузке не создаётся")
+		end
+	end
 end
 
+-- Запускает соревнование только в новой игре. Для загруженного сохранения эта функция не используется.
 function CompetitionManager:startCompetition()
+	if self.loadedCompetitionSave then
+		CompetitionUtils.warning("Предварительный скан пропущен: игра загружена из сохранения")
+		return
+	end
+
 	self.state = CompetitionUtils.STATE.STARTING
 	g_server:broadcastEvent(CompetitionSyncStateEvent.new(self.state, self.readyByUserId))
 	if g_competitionScanner ~= nil then
-		self.baselineScanRequested = true; g_competitionScanner:startScan("competitionStart")
+		self.baselineScanRequested = true
+		g_competitionScanner:startScan("competitionStart")
+	end
+end
+
+-- Продолжает загруженное соревнование после готовности всех подключённых игроков.
+-- Никаких повторных сканов baseline и пересчётов целевых объёмов здесь нет.
+function CompetitionManager:resumeCompetitionAfterLoad()
+	if not CompetitionUtils.getIsServer() or not self.resumePending then return end
+	if not self.progressBaselineCaptured or not self.expectedHarvestCaptured then
+		CompetitionUtils.error("Продолжение невозможно: в сохранении отсутствует baseline или рассчитанные цели прогресса")
+		return
+	end
+
+	self:reattachProgressStorageTargets()
+	self.resumePending = false
+	self.state = CompetitionUtils.STATE.RUNNING
+	self.competitionClockSyncTimer = 0
+	self.baselineScanRequested = false
+	self.baselineScanInProgress = false
+	if self.progress ~= nil then self.progress.scanTimer = 0 end
+	self.security:restorePreStartTime(false)
+
+	CompetitionUtils.info(
+		"СОРЕВНОВАНИЕ ПРОДОЛЖЕНО ИЗ СОХРАНЕНИЯ elapsed=%.2f sec teamMask=%d",
+		(self.competitionElapsedMs or 0) / 1000,
+		self.competitionTeamMask or 0
+	)
+
+	if g_server ~= nil then
+		g_server:broadcastEvent(CompetitionSyncStateEvent.new(self.state, self.readyByUserId))
+		g_server:broadcastEvent(CompetitionClockStateEvent.new((self.competitionElapsedMs or 0) / 1000, self.competitionTeamMask or 0))
+		g_server:broadcastEvent(CompetitionProgressSyncEvent.new(self.progressByFarmId or {}))
 	end
 end
 
@@ -453,17 +594,23 @@ function CompetitionManager:finishCompetitionStart()
 	g_server:broadcastEvent(CompetitionClockStateEvent.new(0, self.competitionTeamMask))
 end
 
-function CompetitionManager:finishCompetition()
-	if self.state == CompetitionUtils.STATE.FINISHED then return end
-	self.state = CompetitionUtils.STATE.FINISHED
+-- Восстанавливает итоговую таблицу из сохранённых процентов без повторного сканирования карты.
+function CompetitionManager:rebuildFinalStandingsFromProgress()
 	self.finalStandings = {}
 	for _, config in ipairs(self.activeTeams or {}) do
 		if self:isFarmInCompetitionMask(config.farmId) then
-			local p = self.progressByFarmId[config.farmId] and self.progressByFarmId[config.farmId].overall or 0
-			table.insert(self.finalStandings, {name = config.hudName, percent = p, color = config.actualColor})
+			local progress = self.progressByFarmId[config.farmId]
+			local percent = progress ~= nil and progress.overall or 0
+			table.insert(self.finalStandings, {name = config.hudName, percent = percent, color = config.actualColor})
 		end
 	end
 	table.sort(self.finalStandings, function(a, b) return a.percent > b.percent end)
+end
+
+function CompetitionManager:finishCompetition()
+	if self.state == CompetitionUtils.STATE.FINISHED then return end
+	self.state = CompetitionUtils.STATE.FINISHED
+	self:rebuildFinalStandingsFromProgress()
 	g_server:broadcastEvent(CompetitionSyncStateEvent.new(self.state, self.readyByUserId))
 end
 
@@ -889,6 +1036,18 @@ function CompetitionManager:captureProgressStorageBaseline()
 	end
 end
 
+-- После загрузки сохранения повторно связывает сохранённые числовые данные
+-- со штатными объектами зернового и корнеплодного хранилища на карте.
+function CompetitionManager:reattachProgressStorageTargets()
+	if not CompetitionUtils.getIsServer() then return end
+	local targets = self:findCompetitionStorageTargets()
+	for farmId, data in pairs(self.progressStorageByFarmId or {}) do
+		local farmTargets = targets[farmId] or {}
+		data.grain = farmTargets.grain
+		data.rootCrop = farmTargets.rootCrop
+	end
+end
+
 function CompetitionManager:updateDeliveryProgress(config, fillName, taskId, subtaskId)
 	local storageData = self.progressStorageByFarmId[config.farmId]
 	if storageData == nil then return nil end
@@ -1207,6 +1366,325 @@ function CompetitionManager:captureExpectedHarvestBaseline()
 	end
 	self.expectedHarvestCaptured = true
 	return true
+end
+
+-------------------------------------------------------------------------------
+-- СОХРАНЕНИЕ И ВОССТАНОВЛЕНИЕ СОРЕВНОВАНИЯ
+-------------------------------------------------------------------------------
+
+local COMPETITION_SAVE_NUMERIC_ROW_FIELDS = {
+	"minGrowthState", "maxGrowthState", "rawPixels", "weightedPixels",
+	"rawAreaSqm", "rawAreaHa", "weightedAreaSqm", "literPerSqm", "baseLiters",
+	"expectedLiters", "harvestMultiplier", "sprayFactor", "plowFactor", "limeFactor",
+	"weedFactor", "stubbleFactor", "rollerFactor", "beeFactor", "strawLiterPerSqm",
+	"expectedStrawLiters", "roundBale125Capacity", "fullRoundBales125",
+	"mowerInputLiters", "mowerConversionFactor", "expectedGrassLiters",
+	"grassRoundBale125Capacity", "expectedGrassBales125"
+}
+
+-- Сохраняет координаты baseline компактными строковыми блоками, чтобы не создавать
+-- отдельный XML-узел для каждой точки поля.
+function CompetitionManager:saveBaselineSamplePoints(xmlFile, areaKey, samplePoints)
+	local samples = samplePoints or {}
+	local pairCount = math.floor(#samples / 2)
+	local pairsPerChunk = math.max(1, self.SAVE_SAMPLE_PAIRS_PER_CHUNK or 256)
+	local chunkCount = math.ceil(pairCount / pairsPerChunk)
+	xmlFile:setInt(areaKey .. "#samplePairCount", pairCount)
+	xmlFile:setInt(areaKey .. "#sampleChunkCount", chunkCount)
+
+	for chunkIndex = 0, chunkCount - 1 do
+		local firstPair = chunkIndex * pairsPerChunk + 1
+		local lastPair = math.min(pairCount, firstPair + pairsPerChunk - 1)
+		local encoded = {}
+		for pairIndex = firstPair, lastPair do
+			local sampleIndex = (pairIndex - 1) * 2 + 1
+			encoded[#encoded + 1] = string.format("%.6f,%.6f", samples[sampleIndex] or 0, samples[sampleIndex + 1] or 0)
+		end
+		xmlFile:setString(string.format("%s.sampleChunk(%d)#data", areaKey, chunkIndex), table.concat(encoded, ";"))
+	end
+end
+
+-- Загружает сохранённые координаты baseline без обращения к CompetitionScanner.
+function CompetitionManager:loadBaselineSamplePoints(xmlFile, areaKey)
+	local samples = {}
+	local chunkCount = xmlFile:getInt(areaKey .. "#sampleChunkCount", 0) or 0
+	for chunkIndex = 0, chunkCount - 1 do
+		local data = xmlFile:getString(string.format("%s.sampleChunk(%d)#data", areaKey, chunkIndex), "") or ""
+		for token in string.gmatch(data, "([^;]+)") do
+			local xText, zText = string.match(token, "^([^,]+),([^,]+)$")
+			local x = tonumber(xText)
+			local z = tonumber(zText)
+			if x ~= nil and z ~= nil then
+				samples[#samples + 1] = x
+				samples[#samples + 1] = z
+			end
+		end
+	end
+	return samples
+end
+
+-- Сохраняет весь серверный контекст, который нельзя восстановить только из мира игры.
+function CompetitionManager:saveToXMLFile(xmlFile, key, usedModNames)
+	if not CompetitionUtils.getIsServer() or xmlFile == nil or key == nil then return end
+
+	-- Перед сохранением фиксируем максимально свежие проценты текущего мира.
+	if self.state == CompetitionUtils.STATE.RUNNING
+		and self.progress ~= nil
+		and self.progress.scanCompetitionProgress ~= nil then
+		self.progress:scanCompetitionProgress()
+	end
+
+	local root = key .. ".farmersCompetition"
+	xmlFile:setInt(root .. "#version", self.SAVE_DATA_VERSION)
+	xmlFile:setInt(root .. "#state", self.state or CompetitionUtils.STATE.WAITING_FOR_PLAYERS)
+	xmlFile:setBool(root .. "#competitionStarted", self.progressBaselineCaptured == true)
+	xmlFile:setBool(root .. "#progressBaselineCaptured", self.progressBaselineCaptured == true)
+	xmlFile:setBool(root .. "#expectedHarvestCaptured", self.expectedHarvestCaptured == true)
+	xmlFile:setFloat(root .. "#competitionElapsedMs", self.competitionElapsedMs or 0)
+	xmlFile:setInt(root .. "#competitionTeamMask", self.competitionTeamMask or 0)
+
+	-- Текущие проценты всех заданий и подзаданий.
+	for farmId = 1, 4 do
+		local farmKey = string.format("%s.progress.farm(%d)", root, farmId - 1)
+		local farmData = self.progressByFarmId[farmId]
+		xmlFile:setInt(farmKey .. "#farmId", farmId)
+		xmlFile:setFloat(farmKey .. "#overall", farmData ~= nil and farmData.overall or 0)
+		for taskIndex, task in ipairs(self.TASKS) do
+			local taskKey = string.format("%s.task(%d)", farmKey, taskIndex - 1)
+			local taskData = farmData ~= nil and farmData.tasks ~= nil and farmData.tasks[task.id] or nil
+			xmlFile:setString(taskKey .. "#id", task.id)
+			xmlFile:setFloat(taskKey .. "#overall", taskData ~= nil and taskData.overall or 0)
+			for subtaskIndex, subtask in ipairs(task.subtasks) do
+				local subtaskKey = string.format("%s.subtask(%d)", taskKey, subtaskIndex - 1)
+				xmlFile:setString(subtaskKey .. "#id", subtask.id)
+				xmlFile:setFloat(subtaskKey .. "#percent", taskData ~= nil and taskData.subtasks ~= nil and taskData.subtasks[subtask.id] or 0)
+			end
+		end
+	end
+
+	-- Стартовые области и точные точки выборки. Они необходимы для дальнейшего
+	-- сравнения состояния density maps без повторного предварительного сканирования.
+	for farmId = 1, 4 do
+		local farmBase = self.progressBaselineByFarmId[farmId]
+		local farmKey = string.format("%s.baseline.farm(%d)", root, farmId - 1)
+		xmlFile:setInt(farmKey .. "#farmId", farmId)
+		if farmBase ~= nil then
+			xmlFile:setInt(farmKey .. "#farmlandId", farmBase.farmlandId or farmId)
+			xmlFile:setString(farmKey .. "#teamCode", tostring(farmBase.teamCode or ""))
+			for areaIndex, def in ipairs(self.PROGRESS_AREA_DEFS) do
+				local area = farmBase.areas ~= nil and farmBase.areas[def.key] or nil
+				local areaKey = string.format("%s.area(%d)", farmKey, areaIndex - 1)
+				xmlFile:setString(areaKey .. "#key", def.key)
+				xmlFile:setBool(areaKey .. "#exists", area ~= nil)
+				if area ~= nil then
+					xmlFile:setString(areaKey .. "#fruitName", tostring(area.fruitName or def.fruitName or ""))
+					xmlFile:setInt(areaKey .. "#fruitTypeIndex", area.fruitTypeIndex or 0)
+					xmlFile:setInt(areaKey .. "#growthState", area.growthState or 0)
+					xmlFile:setInt(areaKey .. "#baselineCells", area.baselineCells or 0)
+					xmlFile:setFloat(areaKey .. "#baselineAreaM2", area.baselineAreaM2 or 0)
+					xmlFile:setFloat(areaKey .. "#minX", area.minX or 0)
+					xmlFile:setFloat(areaKey .. "#maxX", area.maxX or 0)
+					xmlFile:setFloat(areaKey .. "#minZ", area.minZ or 0)
+					xmlFile:setFloat(areaKey .. "#maxZ", area.maxZ or 0)
+					self:saveBaselineSamplePoints(xmlFile, areaKey, area.samplePoints)
+				end
+			end
+		end
+	end
+
+	-- Рассчитанные при первом старте целевые объёмы. При загрузке они читаются
+	-- из сохранения и никогда не вычисляются повторно.
+	for farmId = 1, 4 do
+		local expectedData = self.expectedHarvestByFarmId[farmId]
+		local farmKey = string.format("%s.expected.farm(%d)", root, farmId - 1)
+		xmlFile:setInt(farmKey .. "#farmId", farmId)
+		local rows = expectedData ~= nil and expectedData.rows or {}
+		xmlFile:setInt(farmKey .. "#rowCount", #rows)
+		for rowIndex, row in ipairs(rows) do
+			local rowKey = string.format("%s.row(%d)", farmKey, rowIndex - 1)
+			xmlFile:setInt(rowKey .. "#fruitTypeIndex", row.fruitTypeIndex or 0)
+			xmlFile:setString(rowKey .. "#fruitName", tostring(row.fruitName or ""))
+			for _, fieldName in ipairs(COMPETITION_SAVE_NUMERIC_ROW_FIELDS) do
+				local value = row[fieldName]
+				if value ~= nil then xmlFile:setFloat(rowKey .. "#" .. fieldName, value) end
+			end
+			if row.mowerConverterSource ~= nil then xmlFile:setString(rowKey .. "#mowerConverterSource", tostring(row.mowerConverterSource)) end
+		end
+	end
+
+	-- Начальные уровни складов и максимальная уже засчитанная доставка.
+	for farmId = 1, 4 do
+		local storageData = self.progressStorageByFarmId[farmId]
+		local storageKey = string.format("%s.storage.farm(%d)", root, farmId - 1)
+		xmlFile:setInt(storageKey .. "#farmId", farmId)
+		for _, fillName in ipairs({"WHEAT", "MAIZE", "POTATO"}) do
+			xmlFile:setFloat(storageKey .. "." .. fillName .. "#initial", storageData ~= nil and storageData.initial ~= nil and storageData.initial[fillName] or 0)
+			xmlFile:setFloat(storageKey .. "." .. fillName .. "#maxDelivered", storageData ~= nil and storageData.maxDelivered ~= nil and storageData.maxDelivered[fillName] or 0)
+		end
+	end
+
+	-- Runtime-счётчики материалов, которые невозможно восстановить по оставшимся объектам мира.
+	for farmId = 1, 4 do
+		local runtimeKey = string.format("%s.runtime.farm(%d)", root, farmId - 1)
+		xmlFile:setInt(runtimeKey .. "#farmId", farmId)
+		xmlFile:setFloat(runtimeKey .. "#strawPickedLiters", self.progress ~= nil and self.progress.strawPickedLitersByFarmId[farmId] or 0)
+		xmlFile:setFloat(runtimeKey .. "#grassPickedLiters", self.progress ~= nil and self.progress.grassPickedLitersByFarmId[farmId] or 0)
+	end
+
+	CompetitionUtils.info(
+		"СОСТОЯНИЕ СОРЕВНОВАНИЯ СОХРАНЕНО state=%s elapsed=%.2f sec teamMask=%d",
+		tostring(self.state),
+		(self.competitionElapsedMs or 0) / 1000,
+		self.competitionTeamMask or 0
+	)
+end
+
+-- Восстанавливает соревнование из items.xml. На этом этапе никакого сканирования
+-- карты и определения целевых объёмов не выполняется.
+function CompetitionManager:loadFromItemsXML(xmlFile, key)
+	if xmlFile == nil or key == nil then return end
+	local root = key .. ".farmersCompetition"
+	if not xmlFile:hasProperty(root .. "#version") then return end
+
+	local version = xmlFile:getInt(root .. "#version", 0) or 0
+	if version <= 0 then return end
+
+	self.loadedCompetitionSave = true
+	self:disableScannerAutoStartForLoadedGame()
+	self.READY_TEXT_LINE1 = "Соревнование восстановлено из сохранения и поставлено на паузу."
+	self.READY_TEXT_LINE2 = "По готовности к продолжению нажмите ENTER."
+	self.savedCompetitionState = xmlFile:getInt(root .. "#state", CompetitionUtils.STATE.WAITING_FOR_PLAYERS)
+	self.progressBaselineCaptured = xmlFile:getBool(root .. "#progressBaselineCaptured", false) == true
+	self.expectedHarvestCaptured = xmlFile:getBool(root .. "#expectedHarvestCaptured", false) == true
+	self.competitionElapsedMs = xmlFile:getFloat(root .. "#competitionElapsedMs", 0) or 0
+	self.competitionTeamMask = xmlFile:getInt(root .. "#competitionTeamMask", 0) or 0
+	self.baselineScanRequested = false
+	self.baselineScanInProgress = false
+	self.readyByUserId = {}
+
+	-- Завершённое соревнование остаётся завершённым. Активное соревнование после
+	-- загрузки всегда переходит в ожидание общей готовности игроков.
+	if self.savedCompetitionState == CompetitionUtils.STATE.FINISHED then
+		self.state = CompetitionUtils.STATE.FINISHED
+		self.resumePending = false
+	else
+		local competitionStarted = xmlFile:getBool(root .. "#competitionStarted", false) == true
+		self.resumePending = competitionStarted and self.progressBaselineCaptured and self.expectedHarvestCaptured
+		self.state = CompetitionUtils.STATE.WAITING_FOR_PLAYERS
+	end
+
+	-- Восстанавливаем проценты задач.
+	self.progressByFarmId = {}
+	for farmId = 1, 4 do
+		local farmKey = string.format("%s.progress.farm(%d)", root, farmId - 1)
+		local farmData = {overall = xmlFile:getFloat(farmKey .. "#overall", 0) or 0, tasks = {}}
+		for taskIndex, task in ipairs(self.TASKS) do
+			local taskKey = string.format("%s.task(%d)", farmKey, taskIndex - 1)
+			local taskData = {overall = xmlFile:getFloat(taskKey .. "#overall", 0) or 0, subtasks = {}}
+			for subtaskIndex, subtask in ipairs(task.subtasks) do
+				local subtaskKey = string.format("%s.subtask(%d)", taskKey, subtaskIndex - 1)
+				taskData.subtasks[subtask.id] = xmlFile:getFloat(subtaskKey .. "#percent", 0) or 0
+			end
+			farmData.tasks[task.id] = taskData
+		end
+		self.progressByFarmId[farmId] = farmData
+	end
+
+	-- Восстанавливаем стартовые области и точки выборки без CompetitionScanner.
+	self.progressBaselineByFarmId = {}
+	for farmId = 1, 4 do
+		local farmKey = string.format("%s.baseline.farm(%d)", root, farmId - 1)
+		local farmBase = {
+			farmId = farmId,
+			farmlandId = xmlFile:getInt(farmKey .. "#farmlandId", farmId) or farmId,
+			teamCode = xmlFile:getString(farmKey .. "#teamCode", "") or "",
+			areas = {}
+		}
+		for areaIndex, def in ipairs(self.PROGRESS_AREA_DEFS) do
+			local areaKey = string.format("%s.area(%d)", farmKey, areaIndex - 1)
+			if xmlFile:getBool(areaKey .. "#exists", false) == true then
+				farmBase.areas[def.key] = {
+					key = def.key,
+					fruitName = xmlFile:getString(areaKey .. "#fruitName", def.fruitName) or def.fruitName,
+					fruitTypeIndex = xmlFile:getInt(areaKey .. "#fruitTypeIndex", 0) or 0,
+					growthState = xmlFile:getInt(areaKey .. "#growthState", 0) or 0,
+					baselineCells = xmlFile:getInt(areaKey .. "#baselineCells", 0) or 0,
+					baselineAreaM2 = xmlFile:getFloat(areaKey .. "#baselineAreaM2", 0) or 0,
+					minX = xmlFile:getFloat(areaKey .. "#minX", 0) or 0,
+					maxX = xmlFile:getFloat(areaKey .. "#maxX", 0) or 0,
+					minZ = xmlFile:getFloat(areaKey .. "#minZ", 0) or 0,
+					maxZ = xmlFile:getFloat(areaKey .. "#maxZ", 0) or 0,
+					samplePoints = self:loadBaselineSamplePoints(xmlFile, areaKey)
+				}
+			end
+		end
+		self.progressBaselineByFarmId[farmId] = farmBase
+	end
+
+	-- Восстанавливаем ранее рассчитанные цели урожая, соломы и травы.
+	self.expectedHarvestByFarmId = {}
+	for farmId = 1, 4 do
+		local farmKey = string.format("%s.expected.farm(%d)", root, farmId - 1)
+		local farmData = {farmId = farmId, rows = {}, byFruitTypeIndex = {}}
+		local rowCount = xmlFile:getInt(farmKey .. "#rowCount", 0) or 0
+		for rowIndex = 0, rowCount - 1 do
+			local rowKey = string.format("%s.row(%d)", farmKey, rowIndex)
+			local row = {
+				fruitTypeIndex = xmlFile:getInt(rowKey .. "#fruitTypeIndex", 0) or 0,
+				fruitName = xmlFile:getString(rowKey .. "#fruitName", "") or ""
+			}
+			for _, fieldName in ipairs(COMPETITION_SAVE_NUMERIC_ROW_FIELDS) do
+				if xmlFile:hasProperty(rowKey .. "#" .. fieldName) then
+					row[fieldName] = xmlFile:getFloat(rowKey .. "#" .. fieldName, 0) or 0
+				end
+			end
+			if xmlFile:hasProperty(rowKey .. "#mowerConverterSource") then
+				row.mowerConverterSource = xmlFile:getString(rowKey .. "#mowerConverterSource", "")
+			end
+			table.insert(farmData.rows, row)
+			farmData.byFruitTypeIndex[row.fruitTypeIndex] = row
+		end
+		self.expectedHarvestByFarmId[farmId] = farmData
+	end
+
+	-- Восстанавливаем числовую часть состояния складов. Ссылки на placeable
+	-- будут привязаны после полной инициализации карты.
+	self.progressStorageByFarmId = {}
+	for farmId = 1, 4 do
+		local storageKey = string.format("%s.storage.farm(%d)", root, farmId - 1)
+		local storageData = {grain = nil, rootCrop = nil, initial = {}, maxDelivered = {}}
+		for _, fillName in ipairs({"WHEAT", "MAIZE", "POTATO"}) do
+			storageData.initial[fillName] = xmlFile:getFloat(storageKey .. "." .. fillName .. "#initial", 0) or 0
+			storageData.maxDelivered[fillName] = xmlFile:getFloat(storageKey .. "." .. fillName .. "#maxDelivered", 0) or 0
+		end
+		self.progressStorageByFarmId[farmId] = storageData
+	end
+
+	-- Восстанавливаем накопленные литры, снятые прессами с карты.
+	if self.progress ~= nil then
+		self.progress.strawPickedLitersByFarmId = {}
+		self.progress.grassPickedLitersByFarmId = {}
+		self.progress.lastStrawPickupLogLitersByFarmId = {}
+		self.progress.lastGrassPickupLogLitersByFarmId = {}
+		for farmId = 1, 4 do
+			local runtimeKey = string.format("%s.runtime.farm(%d)", root, farmId - 1)
+			local strawLiters = xmlFile:getFloat(runtimeKey .. "#strawPickedLiters", 0) or 0
+			local grassLiters = xmlFile:getFloat(runtimeKey .. "#grassPickedLiters", 0) or 0
+			self.progress.strawPickedLitersByFarmId[farmId] = strawLiters
+			self.progress.grassPickedLitersByFarmId[farmId] = grassLiters
+			self.progress.lastStrawPickupLogLitersByFarmId[farmId] = strawLiters
+			self.progress.lastGrassPickupLogLitersByFarmId[farmId] = grassLiters
+		end
+		self.progress.scanTimer = 0
+	end
+
+	CompetitionUtils.info(
+		"СОСТОЯНИЕ СОРЕВНОВАНИЯ ЗАГРУЖЕНО savedState=%s resumePending=%s elapsed=%.2f sec teamMask=%d; baseline повторно не сканируется",
+		tostring(self.savedCompetitionState),
+		tostring(self.resumePending),
+		(self.competitionElapsedMs or 0) / 1000,
+		self.competitionTeamMask or 0
+	)
 end
 
 -------------------------------------------------------------------------------
