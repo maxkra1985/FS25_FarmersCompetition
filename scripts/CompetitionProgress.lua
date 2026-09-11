@@ -18,6 +18,8 @@ function CompetitionProgress.new(manager, customMt)
 	self.lastStrawPickupLogLitersByFarmId = {}
 	self.lastGrassPickupLogLitersByFarmId = {}
 	self.ignoredBalerFillTypesLogged = {}
+	self.lastBaleScanSignatureByFarmId = {}
+	self.invalidGrassTargetsLoggedByFarmId = {}
 	self:installBalerPickupHook()
 	return self
 end
@@ -29,6 +31,8 @@ function CompetitionProgress:resetRuntimeCounters()
 	self.lastStrawPickupLogLitersByFarmId = {}
 	self.lastGrassPickupLogLitersByFarmId = {}
 	self.ignoredBalerFillTypesLogged = {}
+	self.lastBaleScanSignatureByFarmId = {}
+	self.invalidGrassTargetsLoggedByFarmId = {}
 	for farmId = 1, 4 do
 		self.strawPickedLitersByFarmId[farmId] = 0
 		self.grassPickedLitersByFarmId[farmId] = 0
@@ -53,6 +57,23 @@ function CompetitionProgress:installBalerPickupHook()
 	CompetitionProgress.originalProcessBalerArea = Baler.processBalerArea
 
 	Baler.processBalerArea = function(vehicle, workArea, dt)
+		-- Baler добавляет до 5% к возвращаемому объёму при расходовании присадки.
+		-- Запоминаем уровень присадки, чтобы после штатного вызова восстановить
+		-- именно объём материала, удалённый с карты.
+		local balerSpec = vehicle ~= nil and vehicle.spec_baler or nil
+		local additiveData = balerSpec ~= nil and balerSpec.additives or nil
+		local additiveFillLevelBefore = nil
+		if vehicle ~= nil
+			and vehicle.isServer == true
+			and additiveData ~= nil
+			and additiveData.available == true
+			and additiveData.appliedByBufferOverloading ~= true
+			and additiveData.fillUnitIndex ~= nil
+			and vehicle.getFillUnitFillLevel ~= nil then
+
+			additiveFillLevelBefore = vehicle:getFillUnitFillLevel(additiveData.fillUnitIndex)
+		end
+
 		local pickedUpLiters, processedLiters = CompetitionProgress.originalProcessBalerArea(vehicle, workArea, dt)
 
 		if pickedUpLiters ~= nil and pickedUpLiters > 0
@@ -69,10 +90,36 @@ function CompetitionProgress:installBalerPickupHook()
 
 				local progress = g_competitionManager.progress
 				local fillType = vehicle.spec_baler.fillEffectType
+				local groundLiters = pickedUpLiters
+				local additiveUsed = 0
+
+				if additiveFillLevelBefore ~= nil
+					and additiveData ~= nil
+					and additiveData.usage ~= nil
+					and additiveData.usage > 0
+					and vehicle.getFillUnitFillLevel ~= nil then
+
+					local additiveFillLevelAfter = vehicle:getFillUnitFillLevel(additiveData.fillUnitIndex) or 0
+					additiveUsed = math.max(0, additiveFillLevelBefore - additiveFillLevelAfter)
+					groundLiters = math.max(0, pickedUpLiters - 0.05 * additiveUsed / additiveData.usage)
+				end
+
 				if fillType == FillType.STRAW then
-					progress:addPickedStrawLiters(farmId, pickedUpLiters)
+					progress:addPickedStrawLiters(
+						farmId,
+						groundLiters,
+						pickedUpLiters,
+						additiveUsed,
+						vehicle.spec_baler.fillScale
+					)
 				elseif fillType == FillType.GRASS_WINDROW then
-					progress:addPickedGrassLiters(farmId, pickedUpLiters)
+					progress:addPickedGrassLiters(
+						farmId,
+						groundLiters,
+						pickedUpLiters,
+						additiveUsed,
+						vehicle.spec_baler.fillScale
+					)
 				else
 					-- Неизвестный тип логируем только один раз на ферму/тип, чтобы не засорять лог.
 					local ignoredKey = tostring(farmId) .. ":" .. tostring(fillType)
@@ -99,8 +146,9 @@ function CompetitionProgress:installBalerPickupHook()
 	end
 end
 
--- Добавляет фактически подобранный прессом объём соломы.
-function CompetitionProgress:addPickedStrawLiters(farmId, liters)
+-- Добавляет объём соломы, фактически удалённый прессом с карты.
+-- returnedLiters содержит штатный результат Baler с возможным бонусом присадки.
+function CompetitionProgress:addPickedStrawLiters(farmId, liters, returnedLiters, additiveUsed, fillScale)
 	if farmId == nil or farmId < 1 or farmId > 4 or liters == nil or liters <= 0 then
 		return
 	end
@@ -114,16 +162,20 @@ function CompetitionProgress:addPickedStrawLiters(farmId, liters)
 	if previous == 0 or total - lastLogged >= 5000 then
 		self.lastStrawPickupLogLitersByFarmId[farmId] = total
 		CompetitionUtils.info(
-			"BALER PICKUP DEBUG material=STRAW farmId=%s deltaLiters=%.2f totalLiters=%.2f",
+			"BALER PICKUP DEBUG material=STRAW farmId=%s removedLiters=%.2f returnedLiters=%.2f additiveUsed=%.4f fillScale=%s totalRemovedLiters=%.2f",
 			tostring(farmId),
 			liters,
+			returnedLiters or liters,
+			additiveUsed or 0,
+			tostring(fillScale),
 			total
 		)
 	end
 end
 
--- Добавляет фактически подобранный прессом объём скошенной травы.
-function CompetitionProgress:addPickedGrassLiters(farmId, liters)
+-- Добавляет объём скошенной травы, фактически удалённый прессом с карты.
+-- returnedLiters содержит штатный результат Baler с возможным бонусом присадки.
+function CompetitionProgress:addPickedGrassLiters(farmId, liters, returnedLiters, additiveUsed, fillScale)
 	if farmId == nil or farmId < 1 or farmId > 4 or liters == nil or liters <= 0 then
 		return
 	end
@@ -137,9 +189,12 @@ function CompetitionProgress:addPickedGrassLiters(farmId, liters)
 	if previous == 0 or total - lastLogged >= 5000 then
 		self.lastGrassPickupLogLitersByFarmId[farmId] = total
 		CompetitionUtils.info(
-			"BALER PICKUP DEBUG material=GRASS farmId=%s deltaLiters=%.2f totalLiters=%.2f",
+			"BALER PICKUP DEBUG material=GRASS_WINDROW farmId=%s removedLiters=%.2f returnedLiters=%.2f additiveUsed=%.4f fillScale=%s totalRemovedLiters=%.2f",
 			tostring(farmId),
 			liters,
+			returnedLiters or liters,
+			additiveUsed or 0,
+			tostring(fillScale),
 			total
 		)
 	end
@@ -170,7 +225,10 @@ function CompetitionProgress:scanBalesAndHoney()
 			teamCounts[config.farmId] = {
 				strawTotal = 0, strawStored = 0,
 				grassTotal = 0, grassWrapped = 0, grassStored = 0,
-				honeyStored = 0
+				honeyStored = 0,
+				physicalBales = 0, storedBales = 0,
+				wrongSizeBales = 0, unknownFillBales = 0,
+				partialWrappedBales = 0
 			}
 		end
 	end
@@ -207,41 +265,32 @@ function CompetitionProgress:scanBalesAndHoney()
 			local item = entry ~= nil and entry.item or nil
 			if item ~= nil and (item.className == "Bale" or (item.isa ~= nil and item:isa(Bale))) then
 				local farmId = item.getOwnerFarmId ~= nil and item:getOwnerFarmId() or item.ownerFarmId
-				if farmId ~= nil and teamCounts[farmId] ~= nil and isRoundBale125(item) then
-					local fillName = getFillName(item.fillType)
-					CompetitionUtils.info(
-						"BALE DEBUG physical farmId=%s fillType=%s fillLevel=%s xml=%s diameter=%s wrappingState=%s",
-						tostring(farmId),
-						tostring(fillName),
-						tostring(item.fillLevel),
-						tostring(item.xmlFilename),
-						tostring(item.diameter),
-						tostring(item.wrappingState)
-					)
-					CompetitionUtils.info(
-						"GRASS FILTER itemSystem DEBUG fillName=%s fillType=%s",
-						tostring(fillName),
-						tostring(item.fillType)
-					)
+				if farmId ~= nil and teamCounts[farmId] ~= nil then
+					local counts = teamCounts[farmId]
+					counts.physicalBales = counts.physicalBales + 1
 
-					if fillName == "STRAW" then
-						teamCounts[farmId].strawTotal = teamCounts[farmId].strawTotal + 1
-					elseif fillName == "GRASS_WINDROW"
-						or fillName == "DRYGRASS_WINDROW"
-						or fillName == "DRYGRASS"
-						or fillName == "GRASS"
-						or fillName == "SILAGE" then
+					if not isRoundBale125(item) then
+						counts.wrongSizeBales = counts.wrongSizeBales + 1
+					else
+						local fillName = getFillName(item.fillType)
+						if fillName == "STRAW" then
+							counts.strawTotal = counts.strawTotal + 1
+						elseif fillName == "GRASS_WINDROW"
+							or fillName == "DRYGRASS_WINDROW"
+							or fillName == "DRYGRASS"
+							or fillName == "GRASS"
+							or fillName == "SILAGE" then
 
-						teamCounts[farmId].grassTotal = teamCounts[farmId].grassTotal + 1
-						CompetitionUtils.info(
-							"GRASS CREATED BALE DEBUG farmId=%s total=%s fill=%s wrapped=%s",
-							tostring(farmId),
-							tostring(teamCounts[farmId].grassTotal),
-							tostring(fillName),
-							tostring(item.wrappingState or 0)
-						)
-						if (item.wrappingState or 0) > 0 then
-							teamCounts[farmId].grassWrapped = teamCounts[farmId].grassWrapped + 1
+							local wrappingState = item.wrappingState or 0
+							counts.grassTotal = counts.grassTotal + 1
+							-- В FS25 ферментация и завершённая обёртка начинаются только при состоянии >= 1.
+							if wrappingState >= 1 then
+								counts.grassWrapped = counts.grassWrapped + 1
+							elseif wrappingState > 0 then
+								counts.partialWrappedBales = counts.partialWrappedBales + 1
+							end
+						else
+							counts.unknownFillBales = counts.unknownFillBales + 1
 						end
 					end
 				end
@@ -266,6 +315,7 @@ function CompetitionProgress:scanBalesAndHoney()
 				local className = abstractObject.REFERENCE_CLASS_NAME
 
 				if className == "Bale" or className == "PackedBale" then
+					teamCounts[farmId].storedBales = teamCounts[farmId].storedBales + 1
 					local bale = abstractObject.baleObject
 					local attrs = abstractObject.baleAttributes
 
@@ -283,23 +333,7 @@ function CompetitionProgress:scanBalesAndHoney()
 						wrappingState = attrs.wrappingState or 0
 					end
 
-					CompetitionUtils.info(
-						"BALE DEBUG stored farmId=%s fillType=%s fillLevel=%s xml=%s wrappingState=%s is125=%s",
-						tostring(farmId),
-						tostring(fillName),
-						tostring(attrs ~= nil and attrs.fillLevel or nil),
-						tostring(attrs ~= nil and attrs.xmlFilename or nil),
-						tostring(wrappingState),
-						tostring(is125)
-					)
-
 					if is125 then
-						CompetitionUtils.info(
-							"GRASS STORED FILTER DEBUG fillName=%s fillTypeIndex=%s",
-							tostring(fillName),
-							tostring(fillTypeIndex)
-						)
-
 						if fillName == "STRAW" then
 							-- Складированный тюк уже отсутствует в ItemSystem,
 							-- поэтому он входит и в общее число произведённых, и в число доставленных.
@@ -316,10 +350,16 @@ function CompetitionProgress:scanBalesAndHoney()
 							teamCounts[farmId].grassTotal = teamCounts[farmId].grassTotal + 1
 							teamCounts[farmId].grassStored = teamCounts[farmId].grassStored + 1
 
-							if wrappingState > 0 then
+							if wrappingState >= 1 then
 								teamCounts[farmId].grassWrapped = teamCounts[farmId].grassWrapped + 1
+							elseif wrappingState > 0 then
+								teamCounts[farmId].partialWrappedBales = teamCounts[farmId].partialWrappedBales + 1
 							end
+						else
+							teamCounts[farmId].unknownFillBales = teamCounts[farmId].unknownFillBales + 1
 						end
+					else
+						teamCounts[farmId].wrongSizeBales = teamCounts[farmId].wrongSizeBales + 1
 					end
 
 				elseif className == "Vehicle" then
@@ -333,20 +373,45 @@ function CompetitionProgress:scanBalesAndHoney()
 		end
 	end
 
-	-- Сводка раз в цикл сканирования: удобна для сопоставления тюков и runtime-литров.
+	-- Сводку пишем при изменении состава тюков и раз в минуту при отсутствии изменений.
+	-- Это сохраняет диагностическую ценность и не повторяет строку каждые 10 секунд.
 	for farmId, counts in pairs(teamCounts) do
-		CompetitionUtils.info(
-			"BALE SCAN SUMMARY farmId=%s strawPicked=%.2f strawTotal=%s strawStored=%s grassPicked=%.2f grassTotal=%s grassWrapped=%s grassStored=%s honeyStored=%s",
-			tostring(farmId),
-			self.strawPickedLitersByFarmId[farmId] or 0,
-			tostring(counts.strawTotal),
-			tostring(counts.strawStored),
-			self.grassPickedLitersByFarmId[farmId] or 0,
-			tostring(counts.grassTotal),
-			tostring(counts.grassWrapped),
-			tostring(counts.grassStored),
-			tostring(counts.honeyStored)
+		local signature = string.format(
+			"%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d",
+			counts.strawTotal,
+			counts.strawStored,
+			counts.grassTotal,
+			counts.grassWrapped,
+			counts.grassStored,
+			counts.honeyStored,
+			counts.physicalBales,
+			counts.storedBales,
+			counts.wrongSizeBales,
+			counts.unknownFillBales,
+			counts.partialWrappedBales
 		)
+
+		if self.lastBaleScanSignatureByFarmId[farmId] ~= signature or self.scanCount % 6 == 0 then
+			self.lastBaleScanSignatureByFarmId[farmId] = signature
+			CompetitionUtils.info(
+				"BALE SCAN SUMMARY scan=%s farmId=%s strawRemoved=%.2f strawTotal=%s strawStored=%s grassRemoved=%.2f grassTotal=%s grassWrapped=%s grassStored=%s partialWrapped=%s physicalBales=%s storedBales=%s wrongSize=%s unknownFill=%s honeyStored=%s",
+				tostring(self.scanCount),
+				tostring(farmId),
+				self.strawPickedLitersByFarmId[farmId] or 0,
+				tostring(counts.strawTotal),
+				tostring(counts.strawStored),
+				self.grassPickedLitersByFarmId[farmId] or 0,
+				tostring(counts.grassTotal),
+				tostring(counts.grassWrapped),
+				tostring(counts.grassStored),
+				tostring(counts.partialWrappedBales),
+				tostring(counts.physicalBales),
+				tostring(counts.storedBales),
+				tostring(counts.wrongSizeBales),
+				tostring(counts.unknownFillBales),
+				tostring(counts.honeyStored)
+			)
+		end
 	end
 
 	return teamCounts
@@ -464,7 +529,10 @@ function CompetitionProgress:scanCompetitionProgress()
 					and math.min(100, (teamCounts[config.farmId].grassStored / reqGrassBales) * 100)
 					or 0
 
-				if reqGrassLiters <= 0 or reqGrassBales <= 0 then
+				if (reqGrassLiters <= 0 or reqGrassBales <= 0)
+					and self.invalidGrassTargetsLoggedByFarmId[config.farmId] ~= true then
+
+					self.invalidGrassTargetsLoggedByFarmId[config.farmId] = true
 					CompetitionUtils.warning(
 						"GRASS TARGET INVALID farmId=%s expG=%s expectedHarvestLiters=%s expectedGrassLiters=%s expectedGrassBales125=%s; pickupPct=%.2f formedPct=%.2f",
 						tostring(config.farmId),
