@@ -42,6 +42,9 @@ function CompetitionManager.new(customMt)
 	self.progressBaselineByFarmId = {}
 	self.progressStorageByFarmId = {}
 	self.expectedHarvestByFarmId = {}
+	-- Целевое количество поддонов мёда фиксируется только при первом старте.
+	-- После загрузки оно восстанавливается из savegame и не зависит от нового сканирования.
+	self.expectedHoneyByFarmId = {}
 	self.finalStandings = {}
 	
 	self.competitionElapsedMs = 0
@@ -70,8 +73,10 @@ function CompetitionManager.new(customMt)
 	self.STRAW_TARGET_FACTOR = 0.95
 	-- Стартовый баланс административной фермы.
 	self.ADMIN_FARM_BALANCE = 10000000
-	-- Версия структуры сохранения и размер блока координат baseline.
-	self.SAVE_DATA_VERSION = 1
+	-- Версия структуры сохранения и параметры отдельного файла состояния соревнования.
+	self.SAVE_DATA_VERSION = 2
+	self.SAVE_FILENAME = "farmersCompetition.xml"
+	self.SAVE_XML_ROOT = "farmersCompetitionSavegame"
 	self.SAVE_SAMPLE_PAIRS_PER_CHUNK = 256
 	self.COMPETITION_DURATION_SECONDS = nil
 
@@ -568,6 +573,20 @@ function CompetitionManager:resumeCompetitionAfterLoad()
 	end
 end
 
+-- Фиксирует целевое количество поддонов мёда по результатам стартового сканирования.
+-- Эти значения должны жить вместе с остальным baseline и не пересчитываться после загрузки.
+function CompetitionManager:captureExpectedHoneyBaseline()
+	self.expectedHoneyByFarmId = {}
+	for _, config in ipairs(self.activeTeams or {}) do
+		if config.farmId >= 1 and config.farmId <= 4 then
+			local teamData = self:getScannerTeamData(config.farmlandId)
+			local honeyCount = teamData ~= nil and teamData.honeyPallets ~= nil and #teamData.honeyPallets or 0
+			-- Сохраняем прежнюю семантику задания: цель не может быть меньше одного поддона.
+			self.expectedHoneyByFarmId[config.farmId] = math.max(1, honeyCount)
+		end
+	end
+end
+
 function CompetitionManager:finishCompetitionStart()
 	if not CompetitionUtils.getIsServer() then return end
 	self.baselineScanRequested = false
@@ -576,6 +595,7 @@ function CompetitionManager:finishCompetitionStart()
 	if not self:captureCompetitionProgressBaseline() then return end
 	if not self:captureExpectedHarvestBaseline() then return end
 	self:captureProgressStorageBaseline()
+	self:captureExpectedHoneyBaseline()
 
 	-- Runtime counters start exactly when the competition becomes RUNNING.
 	-- Loose straw does not exist at baseline; it is produced by harvesting and
@@ -1523,6 +1543,13 @@ function CompetitionManager:saveToXMLFile(xmlFile, key, usedModNames)
 		end
 	end
 
+	-- Цель по мёду берётся из стартового сканирования только один раз и сохраняется отдельно.
+	for farmId = 1, 4 do
+		local targetKey = string.format("%s.targets.farm(%d)", root, farmId - 1)
+		xmlFile:setInt(targetKey .. "#farmId", farmId)
+		xmlFile:setInt(targetKey .. "#expectedHoneyPallets", self.expectedHoneyByFarmId[farmId] or 0)
+	end
+
 	-- Runtime-счётчики материалов, которые невозможно восстановить по оставшимся объектам мира.
 	for farmId = 1, 4 do
 		local runtimeKey = string.format("%s.runtime.farm(%d)", root, farmId - 1)
@@ -1539,8 +1566,8 @@ function CompetitionManager:saveToXMLFile(xmlFile, key, usedModNames)
 	)
 end
 
--- Восстанавливает соревнование из items.xml. На этом этапе никакого сканирования
--- карты и определения целевых объёмов не выполняется.
+-- Восстанавливает соревнование из отдельного XML savegame. На этом этапе никакого
+-- сканирования карты и определения целевых объёмов не выполняется.
 function CompetitionManager:loadFromItemsXML(xmlFile, key)
 	if xmlFile == nil or key == nil then return end
 	local root = key .. ".farmersCompetition"
@@ -1660,6 +1687,14 @@ function CompetitionManager:loadFromItemsXML(xmlFile, key)
 		self.progressStorageByFarmId[farmId] = storageData
 	end
 
+	-- Восстанавливаем стартовые цели по мёду. Для старой структуры (version 1)
+	-- оставляем 0: Progress сохранит уже загруженный процент и не станет угадывать цель.
+	self.expectedHoneyByFarmId = {}
+	for farmId = 1, 4 do
+		local targetKey = string.format("%s.targets.farm(%d)", root, farmId - 1)
+		self.expectedHoneyByFarmId[farmId] = xmlFile:getInt(targetKey .. "#expectedHoneyPallets", 0) or 0
+	end
+
 	-- Восстанавливаем накопленные литры, снятые прессами с карты.
 	if self.progress ~= nil then
 		self.progress.strawPickedLitersByFarmId = {}
@@ -1685,6 +1720,68 @@ function CompetitionManager:loadFromItemsXML(xmlFile, key)
 		(self.competitionElapsedMs or 0) / 1000,
 		self.competitionTeamMask or 0
 	)
+end
+
+-- Записывает состояние соревнования в отдельный файл текущего savegame.
+-- Подключается к ItemSystem.save тем же способом, который использует штатный Precision Farming.
+function CompetitionManager:saveCompetitionSavegame(usedModNames)
+	if not CompetitionUtils.getIsServer() or g_currentMission == nil or g_currentMission.missionInfo == nil then return end
+	local savegameDirectory = g_currentMission.missionInfo.savegameDirectory
+	if savegameDirectory == nil then return end
+
+	local filename = savegameDirectory .. "/" .. self.SAVE_FILENAME
+	local xmlFile = XMLFile.create("FarmersCompetitionSavegame", filename, self.SAVE_XML_ROOT)
+	if xmlFile == nil then
+		CompetitionUtils.error("Не удалось создать файл состояния соревнования: %s", tostring(filename))
+		return
+	end
+
+	self:saveToXMLFile(xmlFile, self.SAVE_XML_ROOT, usedModNames)
+	xmlFile:save()
+	xmlFile:delete()
+end
+
+-- Загружает сохранённое состояние соревнования до штатной загрузки предметов карты.
+-- Никаких baseline-сканов здесь нет: ссылки на склады будут привязаны после инициализации мира.
+function CompetitionManager:loadCompetitionSavegame()
+	if not CompetitionUtils.getIsServer() or g_currentMission == nil or g_currentMission.missionInfo == nil then return end
+	local savegameDirectory = g_currentMission.missionInfo.savegameDirectory
+	if savegameDirectory == nil then return end
+
+	local filename = savegameDirectory .. "/" .. self.SAVE_FILENAME
+	if not fileExists(filename) then return end
+
+	local xmlFile = XMLFile.load("FarmersCompetitionSavegame", filename)
+	if xmlFile == nil then
+		CompetitionUtils.error("Не удалось открыть файл состояния соревнования: %s", tostring(filename))
+		return
+	end
+
+	self:loadFromItemsXML(xmlFile, self.SAVE_XML_ROOT)
+	xmlFile:delete()
+end
+
+-- Устанавливает штатные точки сохранения/загрузки ItemSystem.
+-- addModEventListener сам по себе не вызывает saveToXMLFile/loadFromItemsXML.
+function CompetitionManager.installSavegameHooks()
+	if CompetitionManager.savegameHooksInstalled == true then return end
+	if ItemSystem == nil or ItemSystem.save == nil or ItemSystem.loadItems == nil then
+		CompetitionUtils.warning("ItemSystem save/load недоступен; состояние соревнования не будет подключено к savegame")
+		return
+	end
+
+	CompetitionManager.savegameHooksInstalled = true
+	ItemSystem.save = Utils.prependedFunction(ItemSystem.save, function(_, _, usedModNames)
+		if g_competitionManager ~= nil then
+			g_competitionManager:saveCompetitionSavegame(usedModNames)
+		end
+	end)
+
+	ItemSystem.loadItems = Utils.prependedFunction(ItemSystem.loadItems, function(_, _, ...)
+		if g_competitionManager ~= nil then
+			g_competitionManager:loadCompetitionSavegame()
+		end
+	end)
 end
 
 -------------------------------------------------------------------------------
@@ -1749,4 +1846,5 @@ function CompetitionManager:keyEvent(unicode, sym, modifier, isDown)
 end
 
 g_competitionManager = CompetitionManager.new()
+CompetitionManager.installSavegameHooks()
 addModEventListener(g_competitionManager)

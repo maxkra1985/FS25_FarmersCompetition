@@ -417,14 +417,31 @@ function CompetitionProgress:scanBalesAndHoney()
 	return teamCounts
 end
 
--- Получить предстартовое количество мёда из CompetitionScanner.
-function CompetitionProgress:getExpectedHoneyPallets(farmlandId)
-	if g_competitionScanner == nil or g_competitionScanner.scan == nil then return 5 end
+-- Возвращает зафиксированную при первом старте цель по поддонам мёда.
+-- После загрузки сохранения новый CompetitionScanner не используется.
+function CompetitionProgress:getExpectedHoneyPallets(farmId, farmlandId)
+	local savedTarget = self.manager.expectedHoneyByFarmId ~= nil
+		and self.manager.expectedHoneyByFarmId[farmId]
+		or nil
+	if savedTarget ~= nil and savedTarget > 0 then
+		return savedTarget
+	end
+
+	-- Для загруженного старого savegame без сохранённой цели ничего не угадываем:
+	-- уже восстановленный процент задания 6 должен остаться неизменным.
+	if self.manager.loadedCompetitionSave then
+		return nil
+	end
+
+	if g_competitionScanner == nil or g_competitionScanner.scan == nil then return nil end
 	local teamData = g_competitionScanner.scan.teamDataByFarmlandId[farmlandId]
 	if teamData ~= nil and teamData.honeyPallets ~= nil then
-		return math.max(1, #teamData.honeyPallets)
+		local target = math.max(1, #teamData.honeyPallets)
+		self.manager.expectedHoneyByFarmId = self.manager.expectedHoneyByFarmId or {}
+		self.manager.expectedHoneyByFarmId[farmId] = target
+		return target
 	end
-	return 1
+	return nil
 end
 
 -------------------------------------------------------------------------------
@@ -568,9 +585,11 @@ function CompetitionProgress:scanCompetitionProgress()
 				self.manager:setSubtaskProgress(config.farmId, "task5", "5.4", p54, false)
 
 				-- ЗАДАНИЕ 6 (Мёд): требуется только доставка на склад.
-				local reqHoney = self:getExpectedHoneyPallets(config.farmlandId)
-				local p61 = (teamCounts[config.farmId].honeyStored / reqHoney) * 100
-				self.manager:setSubtaskProgress(config.farmId, "task6", "6.1", p61, true)
+				local reqHoney = self:getExpectedHoneyPallets(config.farmId, config.farmlandId)
+				if reqHoney ~= nil and reqHoney > 0 then
+					local p61 = (teamCounts[config.farmId].honeyStored / reqHoney) * 100
+					self.manager:setSubtaskProgress(config.farmId, "task6", "6.1", p61, true)
+				end
 
 				-- Пересчет средних значений
 				self.manager:recalculateProgressAggregates(config.farmId)
