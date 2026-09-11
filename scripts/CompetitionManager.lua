@@ -60,6 +60,8 @@ function CompetitionManager.new(customMt)
 	self.EXPECTED_HARVEST_BEE_TILE_SIZE = 24
 	self.ROUND_BALE_125_DIAMETER = 1.25
 	self.ROUND_BALE_125_TOLERANCE = 0.015
+	-- Корректировка целевого объёма соломы по результатам тестов.
+	self.STRAW_TARGET_FACTOR = 0.92
 	self.COMPETITION_DURATION_SECONDS = nil
 
 	self.PROGRESS_AREA_DEFS = {
@@ -1088,7 +1090,8 @@ function CompetitionManager:calculateExpectedFruitOnFarmland(ctx, config, fruitD
 
 	if string.upper(result.fruitName) == "WHEAT" and fruitDesc.windrowLiterPerSqm ~= nil then
 		result.strawLiterPerSqm = fruitDesc.windrowLiterPerSqm
-		result.expectedStrawLiters = expectedLiters / (fruitDesc.literPerSqm or 1) * fruitDesc.windrowLiterPerSqm
+		-- Теоретический объём соломы уменьшаем на 5% до расчёта цели по тюкам.
+		result.expectedStrawLiters = expectedLiters / (fruitDesc.literPerSqm or 1) * fruitDesc.windrowLiterPerSqm * self.STRAW_TARGET_FACTOR
 		local baleCapacity, baleSource = self:resolveRoundBale125Capacity(FillType.STRAW)
 		result.roundBale125Capacity = baleCapacity
 		if baleCapacity ~= nil and baleCapacity > 0 then
