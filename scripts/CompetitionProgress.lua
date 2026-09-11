@@ -275,9 +275,9 @@ function CompetitionProgress:scanBalesAndHoney()
 						local fillName = getFillName(item.fillType)
 						if fillName == "STRAW" then
 							counts.strawTotal = counts.strawTotal + 1
+						-- В задании 5 учитываем только траву и полученный из неё силос.
+						-- Сено (DRYGRASS_WINDROW/DRYGRASS) намеренно исключено.
 						elseif fillName == "GRASS_WINDROW"
-							or fillName == "DRYGRASS_WINDROW"
-							or fillName == "DRYGRASS"
 							or fillName == "GRASS"
 							or fillName == "SILAGE" then
 
@@ -339,9 +339,8 @@ function CompetitionProgress:scanBalesAndHoney()
 							-- поэтому он входит и в общее число произведённых, и в число доставленных.
 							teamCounts[farmId].strawTotal = teamCounts[farmId].strawTotal + 1
 							teamCounts[farmId].strawStored = teamCounts[farmId].strawStored + 1
+						-- На складе применяем тот же фильтр: сено не является частью задания 5.
 						elseif fillName == "GRASS_WINDROW"
-							or fillName == "DRYGRASS_WINDROW"
-							or fillName == "DRYGRASS"
 							or fillName == "GRASS"
 							or fillName == "SILAGE" then
 
