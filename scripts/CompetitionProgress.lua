@@ -345,13 +345,14 @@ function CompetitionProgress:scanBalesAndHoney()
 							or fillName == "GRASS"
 							or fillName == "SILAGE" then
 
-							-- Аналогично соломе: после складирования тюк исчезает из ItemSystem,
-							-- поэтому сохраняем его в общем количестве произведённых тюков.
+							-- Любой корректный травяной тюк входит в общее число сформированных тюков.
+							-- В прогресс доставки на склад (задание 5.4) засчитываем только
+							-- полностью обёрнутые тюки, что подтверждается wrappingState >= 1.
 							teamCounts[farmId].grassTotal = teamCounts[farmId].grassTotal + 1
-							teamCounts[farmId].grassStored = teamCounts[farmId].grassStored + 1
 
 							if wrappingState >= 1 then
 								teamCounts[farmId].grassWrapped = teamCounts[farmId].grassWrapped + 1
+								teamCounts[farmId].grassStored = teamCounts[farmId].grassStored + 1
 							elseif wrappingState > 0 then
 								teamCounts[farmId].partialWrappedBales = teamCounts[farmId].partialWrappedBales + 1
 							end
