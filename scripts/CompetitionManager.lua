@@ -62,6 +62,8 @@ function CompetitionManager.new(customMt)
 	self.ROUND_BALE_125_TOLERANCE = 0.015
 	-- Корректировка целевого объёма соломы по результатам тестов.
 	self.STRAW_TARGET_FACTOR = 0.92
+	-- Стартовый баланс административной фермы.
+	self.ADMIN_FARM_BALANCE = 10000000
 	self.COMPETITION_DURATION_SECONDS = nil
 
 	self.PROGRESS_AREA_DEFS = {
@@ -124,9 +126,13 @@ function CompetitionManager:findClosestFarmColorIndex(targetColor)
 	return bestIndex
 end
 
-function CompetitionManager:setFarmBalanceZero(farm)
+-- Устанавливает баланс фермы и синхронизирует изменение с клиентами.
+function CompetitionManager:setFarmBalance(farm, amount)
 	if farm == nil then return end
-	farm.money = 0; farm.lastMoneySent = 0; farm.lastMoneyPublished = 0
+	local balance = amount or 0
+	farm.money = balance
+	farm.lastMoneySent = balance
+	farm.lastMoneyPublished = balance
 	if farm.raiseDirtyFlags ~= nil and farm.farmMoneyDirtyFlag ~= nil then farm:raiseDirtyFlags(farm.farmMoneyDirtyFlag) end
 	if g_messageCenter ~= nil and MessageType.MONEY_CHANGED ~= nil then g_messageCenter:publish(MessageType.MONEY_CHANGED, farm.farmId, farm.money) end
 end
@@ -172,7 +178,7 @@ function CompetitionManager:initializeSession()
 				farm.name = config.farmName
 				farm.color = config.colorIndex
 			end
-			self:setFarmBalanceZero(farm)
+			self:setFarmBalance(farm, 0)
 
 			-- Участки соревнования принадлежат только соответствующим фермам 1-4.
 			-- FarmlandManager:setLandOwnership() обновляет mapping, Farmland и hotspot.
@@ -187,7 +193,7 @@ function CompetitionManager:initializeSession()
 		if adminFarm == nil then
 			adminFarm = g_farmManager:createFarm(CompetitionUtils.ADMIN_CONFIG.farmName, CompetitionUtils.ADMIN_CONFIG.colorIndex, nil, CompetitionUtils.ADMIN_FARM_ID)
 		end
-		self:setFarmBalanceZero(adminFarm)
+		self:setFarmBalance(adminFarm, self.ADMIN_FARM_BALANCE)
 	end
 
 	self.initialized = true
@@ -211,20 +217,29 @@ end
 -------------------------------------------------------------------------------
 -- ПРАВА И ГЕТТЕРЫ ДЛЯ ИНТЕРФЕЙСА
 -------------------------------------------------------------------------------
-function CompetitionManager:ensureFarmManagerRights(userId, farmId)
-	if not CompetitionUtils.getIsServer() or userId == nil or not CompetitionUtils.isCompetitionFarmId(farmId) then return false end
+-- Снимает ограничения прав только с игроков административной фермы №5.
+-- Командные фермы 1-4 продолжают использовать штатные ограничения прав FS25.
+function CompetitionManager:ensureAdminFarmRights(userId, farmId)
+	if not CompetitionUtils.getIsServer() or userId == nil or farmId ~= CompetitionUtils.ADMIN_FARM_ID then return false end
 	local farm = g_farmManager:getFarmById(farmId)
-	if farm == nil or farm.getUserByUserId == nil then return false end
-	local playerData = farm:getUserByUserId(userId)
+	if farm == nil or farm.userIdToPlayer == nil then return false end
+
+	local playerData = farm.userIdToPlayer[userId]
 	if playerData == nil then return false end
+
 	local changed = playerData.isFarmManager ~= true
 	playerData.isFarmManager = true
 	playerData.permissions = playerData.permissions or {}
+
 	if Farm ~= nil and Farm.PERMISSIONS ~= nil then
 		for _, permission in ipairs(Farm.PERMISSIONS) do
-			if playerData.permissions[permission] ~= true then playerData.permissions[permission] = true; changed = true end
+			if playerData.permissions[permission] ~= true then
+				playerData.permissions[permission] = true
+				changed = true
+			end
 		end
 	end
+
 	if changed and PlayerPermissionsEvent ~= nil and PlayerPermissionsEvent.sendEvent ~= nil then
 		PlayerPermissionsEvent.sendEvent(userId, playerData.permissions, true)
 	end
@@ -328,7 +343,7 @@ function CompetitionManager:onPlayerFarmChanged(player)
 
 	if CompetitionUtils.getIsServer() then
 		if self.state < CompetitionUtils.STATE.STARTING then self.readyByUserId[player.userId] = false end
-		self:ensureFarmManagerRights(player.userId, farmId)
+		self:ensureAdminFarmRights(player.userId, farmId)
 		self:evaluateServerState()
 	end
 
@@ -379,7 +394,7 @@ function CompetitionManager:reconcileConnectedUsers()
 			for _, activeUser in ipairs(farm.activeUsers or {}) do
 				current[activeUser.userId] = true
 				if self.readyByUserId[activeUser.userId] == nil then self.readyByUserId[activeUser.userId] = false end
-				self:ensureFarmManagerRights(activeUser.userId, farm.farmId)
+				self:ensureAdminFarmRights(activeUser.userId, farm.farmId)
 			end
 		end
 	end
