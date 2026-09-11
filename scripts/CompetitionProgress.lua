@@ -258,39 +258,45 @@ function CompetitionProgress:scanBalesAndHoney()
 		return g_baleManager.bales ~= nil and g_baleManager.bales[baleIndex] or nil
 	end
 
-	-- A) Физические тюки, которые всё ещё существуют как объекты ItemSystem.
-	-- FarmManager в FS25 использует itemSystem.itemsToSave и entry.item.
+	-- A) Физические тюки, которые существуют как самостоятельные объекты ItemSystem.
+	-- ObjectStorage сохраняет ферментирующие обёрнутые тюки как скрытые Bale с
+	-- getNeedsSaving() == false. Штатный ItemSystem:saveToXML() такие объекты
+	-- пропускает, поэтому и здесь не считаем их второй раз как физические тюки.
 	if g_currentMission.itemSystem ~= nil then
 		for _, entry in pairs(g_currentMission.itemSystem.itemsToSave or {}) do
 			local item = entry ~= nil and entry.item or nil
 			if item ~= nil and (item.className == "Bale" or (item.isa ~= nil and item:isa(Bale))) then
-				local farmId = item.getOwnerFarmId ~= nil and item:getOwnerFarmId() or item.ownerFarmId
-				if farmId ~= nil and teamCounts[farmId] ~= nil then
-					local counts = teamCounts[farmId]
-					counts.physicalBales = counts.physicalBales + 1
+				local shouldCountAsPhysical = item.getNeedsSaving == nil or item:getNeedsSaving()
 
-					if not isRoundBale125(item) then
-						counts.wrongSizeBales = counts.wrongSizeBales + 1
-					else
-						local fillName = getFillName(item.fillType)
-						if fillName == "STRAW" then
-							counts.strawTotal = counts.strawTotal + 1
-						-- В задании 5 учитываем только траву и полученный из неё силос.
-						-- Сено (DRYGRASS_WINDROW/DRYGRASS) намеренно исключено.
-						elseif fillName == "GRASS_WINDROW"
-							or fillName == "GRASS"
-							or fillName == "SILAGE" then
+				if shouldCountAsPhysical then
+					local farmId = item.getOwnerFarmId ~= nil and item:getOwnerFarmId() or item.ownerFarmId
+					if farmId ~= nil and teamCounts[farmId] ~= nil then
+						local counts = teamCounts[farmId]
+						counts.physicalBales = counts.physicalBales + 1
 
-							local wrappingState = item.wrappingState or 0
-							counts.grassTotal = counts.grassTotal + 1
-							-- В FS25 ферментация и завершённая обёртка начинаются только при состоянии >= 1.
-							if wrappingState >= 1 then
-								counts.grassWrapped = counts.grassWrapped + 1
-							elseif wrappingState > 0 then
-								counts.partialWrappedBales = counts.partialWrappedBales + 1
-							end
+						if not isRoundBale125(item) then
+							counts.wrongSizeBales = counts.wrongSizeBales + 1
 						else
-							counts.unknownFillBales = counts.unknownFillBales + 1
+							local fillName = getFillName(item.fillType)
+							if fillName == "STRAW" then
+								counts.strawTotal = counts.strawTotal + 1
+							-- В задании 5 учитываем только траву и полученный из неё силос.
+							-- Сено (DRYGRASS_WINDROW/DRYGRASS) намеренно исключено.
+							elseif fillName == "GRASS_WINDROW"
+								or fillName == "GRASS"
+								or fillName == "SILAGE" then
+
+								local wrappingState = item.wrappingState or 0
+								counts.grassTotal = counts.grassTotal + 1
+								-- В FS25 ферментация и завершённая обёртка начинаются только при состоянии >= 1.
+								if wrappingState >= 1 then
+									counts.grassWrapped = counts.grassWrapped + 1
+								elseif wrappingState > 0 then
+									counts.partialWrappedBales = counts.partialWrappedBales + 1
+								end
+							else
+								counts.unknownFillBales = counts.unknownFillBales + 1
+							end
 						end
 					end
 				end
@@ -298,9 +304,9 @@ function CompetitionProgress:scanBalesAndHoney()
 		end
 	end
 
-	-- B) ObjectStorage. После помещения тюка на склад физический объект ItemSystem
-	-- исчезает, поэтому storedObjects должен участвовать и в общем количестве
-	-- произведённых тюков, и в количестве доставленных тюков.
+	-- B) ObjectStorage. Обычный складированный тюк удаляется из ItemSystem, а
+	-- ферментирующий остаётся внутри ObjectStorage скрытым Bale с needsSaving=false.
+	-- В обоих случаях storedObjects является единственным источником учёта тюка на складе.
 	local placeables = g_currentMission.placeableSystem ~= nil
 		and g_currentMission.placeableSystem.placeables
 		or g_currentMission.placeables
