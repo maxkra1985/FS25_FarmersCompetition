@@ -14,28 +14,29 @@ function CompetitionProgress.new(manager, customMt)
 	self.scanTimer = 0
 	self.scanCount = 0
 	self.strawPickedLitersByFarmId = {}
+	self.grassPickedLitersByFarmId = {}
 	self:installBalerPickupHook()
 	return self
 end
 
--- Runtime-only counters. The competition start code resets these immediately
--- before STATE.RUNNING, after all baseline scans have completed.
+-- Сбрасывает runtime-счётчики непосредственно перед началом соревнования.
 function CompetitionProgress:resetRuntimeCounters()
 	self.strawPickedLitersByFarmId = {}
+	self.grassPickedLitersByFarmId = {}
 	for farmId = 1, 4 do
 		self.strawPickedLitersByFarmId[farmId] = 0
+		self.grassPickedLitersByFarmId[farmId] = 0
 	end
 end
 
--- FS25 Baler:processBalerArea() returns the actual liters removed from the
--- density-map height layer. On the server spec_baler.fillEffectType is set to
--- the fill type that was picked up. Hook it once and accumulate only STRAW.
+-- Устанавливает перехват Baler:processBalerArea().
+-- Считаем фактические литры STRAW и GRASS_WINDROW, которые пресс реально снял с карты.
 function CompetitionProgress:installBalerPickupHook()
 	if CompetitionProgress.balerPickupHookInstalled == true then
 		return
 	end
 	if Baler == nil or Baler.processBalerArea == nil then
-		CompetitionUtils.warning("Baler.processBalerArea unavailable; straw pickup counter not installed")
+		CompetitionUtils.warning("Baler.processBalerArea unavailable; baler pickup counter not installed")
 		return
 	end
 
@@ -49,7 +50,6 @@ function CompetitionProgress:installBalerPickupHook()
 			and vehicle ~= nil
 			and vehicle.isServer == true
 			and vehicle.spec_baler ~= nil
-			and vehicle.spec_baler.fillEffectType == FillType.STRAW
 			and g_competitionManager ~= nil
 			and g_competitionManager.progress ~= nil
 			and g_competitionManager.state == CompetitionUtils.STATE.RUNNING then
@@ -57,7 +57,13 @@ function CompetitionProgress:installBalerPickupHook()
 			local farmId = vehicle.getOwnerFarmId ~= nil and vehicle:getOwnerFarmId() or nil
 			if farmId ~= nil and farmId >= 1 and farmId <= 4
 				and g_competitionManager:isFarmInCompetitionMask(farmId) then
-				g_competitionManager.progress:addPickedStrawLiters(farmId, pickedUpLiters)
+
+				local fillType = vehicle.spec_baler.fillEffectType
+				if fillType == FillType.STRAW then
+					g_competitionManager.progress:addPickedStrawLiters(farmId, pickedUpLiters)
+				elseif fillType == FillType.GRASS_WINDROW then
+					g_competitionManager.progress:addPickedGrassLiters(farmId, pickedUpLiters)
+				end
 			end
 		end
 
@@ -65,11 +71,20 @@ function CompetitionProgress:installBalerPickupHook()
 	end
 end
 
+-- Добавляет фактически подобранный прессом объём соломы.
 function CompetitionProgress:addPickedStrawLiters(farmId, liters)
 	if farmId == nil or farmId < 1 or farmId > 4 or liters == nil or liters <= 0 then
 		return
 	end
 	self.strawPickedLitersByFarmId[farmId] = (self.strawPickedLitersByFarmId[farmId] or 0) + liters
+end
+
+-- Добавляет фактически подобранный прессом объём скошенной травы.
+function CompetitionProgress:addPickedGrassLiters(farmId, liters)
+	if farmId == nil or farmId < 1 or farmId > 4 or liters == nil or liters <= 0 then
+		return
+	end
+	self.grassPickedLitersByFarmId[farmId] = (self.grassPickedLitersByFarmId[farmId] or 0) + liters
 end
 
 -------------------------------------------------------------------------------
@@ -127,7 +142,7 @@ function CompetitionProgress:scanBalesAndHoney()
 		return g_baleManager.bales ~= nil and g_baleManager.bales[baleIndex] or nil
 	end
 
-	-- A) Физические тюки, которые всё ещё существуют как объекты ItemSystem. 
+	-- A) Физические тюки, которые всё ещё существуют как объекты ItemSystem.
 	-- FarmManager в FS25 использует itemSystem.itemsToSave и entry.item.
 	if g_currentMission.itemSystem ~= nil then
 		for _, entry in pairs(g_currentMission.itemSystem.itemsToSave or {}) do
@@ -150,6 +165,7 @@ function CompetitionProgress:scanBalesAndHoney()
 						tostring(fillName),
 						tostring(item.fillType)
 					)
+
 					if fillName == "STRAW" then
 						teamCounts[farmId].strawTotal = teamCounts[farmId].strawTotal + 1
 					elseif fillName == "GRASS_WINDROW"
@@ -157,6 +173,7 @@ function CompetitionProgress:scanBalesAndHoney()
 						or fillName == "DRYGRASS"
 						or fillName == "GRASS"
 						or fillName == "SILAGE" then
+
 						teamCounts[farmId].grassTotal = teamCounts[farmId].grassTotal + 1
 						CompetitionUtils.info(
 							"GRASS CREATED BALE DEBUG farmId=%s total=%s fill=%s wrapped=%s",
@@ -174,8 +191,9 @@ function CompetitionProgress:scanBalesAndHoney()
 		end
 	end
 
-	-- B) ObjectStorage. FS25 хранит принятые объекты в placeable.spec_objectStorage.storedObjects 
-	-- в виде абстрактных объектов типа Bale (тюк) или Vehicle (транспортное средство).
+	-- B) ObjectStorage. После помещения тюка на склад физический объект ItemSystem
+	-- исчезает, поэтому storedObjects должен участвовать и в общем количестве
+	-- произведённых тюков, и в количестве доставленных тюков.
 	local placeables = g_currentMission.placeableSystem ~= nil
 		and g_currentMission.placeableSystem.placeables
 		or g_currentMission.placeables
@@ -206,6 +224,7 @@ function CompetitionProgress:scanBalesAndHoney()
 						is125 = isRoundBale125(baleDef)
 						wrappingState = attrs.wrappingState or 0
 					end
+
 					CompetitionUtils.info(
 						"BALE DEBUG stored farmId=%s fillType=%s fillLevel=%s xml=%s wrappingState=%s",
 						tostring(farmId),
@@ -221,9 +240,11 @@ function CompetitionProgress:scanBalesAndHoney()
 							tostring(fillName),
 							tostring(fillTypeIndex)
 						)
+
 						if fillName == "STRAW" then
-							-- Хранящийся тюк больше не является физическим объектом системы тюков (ItemSystem),
-							-- поэтому учитываем его в общем объеме производства и в количестве хранящихся тюков.
+							-- Складированный тюк уже отсутствует в ItemSystem,
+							-- поэтому он входит и в общее число произведённых, и в число доставленных.
+							teamCounts[farmId].strawTotal = teamCounts[farmId].strawTotal + 1
 							teamCounts[farmId].strawStored = teamCounts[farmId].strawStored + 1
 						elseif fillName == "GRASS_WINDROW"
 							or fillName == "DRYGRASS_WINDROW"
@@ -231,8 +252,9 @@ function CompetitionProgress:scanBalesAndHoney()
 							or fillName == "GRASS"
 							or fillName == "SILAGE" then
 
-							-- Тюк уже был учтён через ItemSystem до помещения на склад.
-							-- Здесь считаем только доставку.
+							-- Аналогично соломе: после складирования тюк исчезает из ItemSystem,
+							-- поэтому сохраняем его в общем количестве произведённых тюков.
+							teamCounts[farmId].grassTotal = teamCounts[farmId].grassTotal + 1
 							teamCounts[farmId].grassStored = teamCounts[farmId].grassStored + 1
 
 							if wrappingState > 0 then
@@ -255,12 +277,12 @@ function CompetitionProgress:scanBalesAndHoney()
 	return teamCounts
 end
 
--- Получить предстартовое количество мёда из CompetitionScanner
+-- Получить предстартовое количество мёда из CompetitionScanner.
 function CompetitionProgress:getExpectedHoneyPallets(farmlandId)
-	if g_competitionScanner == nil or g_competitionScanner.scan == nil then return 5 end -- Запасной фоллбэк
+	if g_competitionScanner == nil or g_competitionScanner.scan == nil then return 5 end
 	local teamData = g_competitionScanner.scan.teamDataByFarmlandId[farmlandId]
 	if teamData ~= nil and teamData.honeyPallets ~= nil then
-		return math.max(1, #teamData.honeyPallets) -- Защита от деления на 0
+		return math.max(1, #teamData.honeyPallets)
 	end
 	return 1
 end
@@ -271,7 +293,7 @@ end
 function CompetitionProgress:scanCompetitionProgress()
 	if not self.manager.progressBaselineCaptured then return end
 	self.scanCount = self.scanCount + 1
-	
+
 	local teamCounts = self:scanBalesAndHoney()
 	local anyTeamFinished = false
 
@@ -280,7 +302,7 @@ function CompetitionProgress:scanCompetitionProgress()
 			local base = self.manager.progressBaselineByFarmId[config.farmId]
 			local expW = self.manager:getExpectedHarvestRowByName(config.farmId, "WHEAT")
 			local expG = self.manager:getExpectedHarvestRowByName(config.farmId, "GRASS")
-			
+
 			if base ~= nil then
 				-- ЗАДАНИЕ 1 (Вспашка и посев)
 				local _, _, p11 = self.manager:scanSavedArea(base.areas.OAT_WITHERED, "baselineGone")
@@ -292,11 +314,10 @@ function CompetitionProgress:scanCompetitionProgress()
 				local _, _, p21 = self.manager:scanSavedArea(base.areas.WHEAT, "harvested")
 				self.manager:setSubtaskProgress(config.farmId, "task2", "2.1", p21, true)
 				self.manager:updateDeliveryProgress(config, "WHEAT", "task2", "2.2")
-				
-				-- Task 2.3 has two INTERNAL stages but remains one real subtask:
-				--   1) actual STRAW liters picked up from the ground by the baler;
-				--   2) required number of 125 cm round bales actually formed.
-				-- Each internal stage contributes 50% of the visible subtask.
+
+				-- Подзадание 2.3 состоит из двух внутренних частей:
+				-- 1) фактический объём STRAW, подобранный прессом;
+				-- 2) фактическое число сформированных круглых тюков 125 см.
 				local reqStrawLiters = expW ~= nil and expW.expectedStrawLiters or 0
 				local pickedStrawLiters = self.strawPickedLitersByFarmId[config.farmId] or 0
 				local pickupPercent = reqStrawLiters > 0 and math.min(100, (pickedStrawLiters / reqStrawLiters) * 100) or 0
@@ -308,8 +329,24 @@ function CompetitionProgress:scanCompetitionProgress()
 
 				local p23 = (pickupPercent + formedBalesPercent) * 0.5
 				local p24 = reqStrawBales > 0
-					and (teamCounts[config.farmId].strawStored / reqStrawBales) * 100
+					and math.min(100, (teamCounts[config.farmId].strawStored / reqStrawBales) * 100)
 					or 0
+
+				-- Диагностика расхождения теоретического и фактически подобранного объёма соломы.
+				CompetitionUtils.info(
+					"STRAW PROGRESS DEBUG farmId=%s expectedLiters=%.2f pickedLiters=%.2f delta=%.2f expectedBales=%s totalBales=%s storedBales=%s pickupPct=%.2f formedPct=%.2f p23=%.2f p24=%.2f",
+					tostring(config.farmId),
+					reqStrawLiters,
+					pickedStrawLiters,
+					pickedStrawLiters - reqStrawLiters,
+					tostring(reqStrawBales),
+					tostring(teamCounts[config.farmId].strawTotal),
+					tostring(teamCounts[config.farmId].strawStored),
+					pickupPercent,
+					formedBalesPercent,
+					p23,
+					p24
+				)
 
 				self.manager:setSubtaskProgress(config.farmId, "task2", "2.3", p23, true)
 				self.manager:setSubtaskProgress(config.farmId, "task2", "2.4", p24, true)
@@ -329,28 +366,44 @@ function CompetitionProgress:scanCompetitionProgress()
 				-- ЗАДАНИЕ 5 (Трава и силос)
 				local _, _, p51 = self.manager:scanSavedArea(base.areas.GRASS, "cut")
 				self.manager:setSubtaskProgress(config.farmId, "task5", "5.1", p51, true)
-				
-				local reqGrassBales = expG ~= nil and expG.expectedGrassBales125 or 1
+
+				-- Нельзя подставлять 1 тюк, если расчётная строка GRASS отсутствует:
+				-- первый созданный тюк в таком случае ошибочно давал бы 100%.
+				local reqGrassBales = expG ~= nil and expG.expectedGrassBales125 or nil
+				local pickedGrassLiters = self.grassPickedLitersByFarmId[config.farmId] or 0
+				local p52 = 0
+				local p53 = 0
+				local p54 = 0
+
+				if reqGrassBales ~= nil and reqGrassBales > 0 then
+					p52 = math.min(100, (teamCounts[config.farmId].grassTotal / reqGrassBales) * 100)
+					p53 = math.min(100, (teamCounts[config.farmId].grassWrapped / reqGrassBales) * 100)
+					p54 = math.min(100, (teamCounts[config.farmId].grassStored / reqGrassBales) * 100)
+				else
+					CompetitionUtils.warning(
+						"GRASS TARGET INVALID farmId=%s expG=%s expectedGrassLiters=%s expectedGrassBales125=%s; task5 bale progress forced to 0",
+						tostring(config.farmId),
+						tostring(expG ~= nil),
+						tostring(expG ~= nil and expG.expectedGrassLiters or nil),
+						tostring(reqGrassBales)
+					)
+				end
+
 				CompetitionUtils.info(
-					"EXPECTED GRASS BALES DEBUG farmId=%s expectedGrassBales=%s expectedLiters=%s",
+					"GRASS PROGRESS DEBUG farmId=%s expectedHarvestLiters=%s expectedGrassLiters=%s pickedGrassLiters=%.2f expectedBales=%s total=%s wrapped=%s stored=%s p52=%.2f p53=%.2f p54=%.2f",
 					tostring(config.farmId),
+					tostring(expG ~= nil and expG.expectedLiters or nil),
+					tostring(expG ~= nil and expG.expectedGrassLiters or nil),
+					pickedGrassLiters,
 					tostring(reqGrassBales),
-					tostring(expG ~= nil and expG.expectedLiters or nil)
-				)
-				local p52 = (teamCounts[config.farmId].grassTotal / reqGrassBales) * 100
-				local p53 = (teamCounts[config.farmId].grassWrapped / reqGrassBales) * 100
-				local p54 = (teamCounts[config.farmId].grassStored / reqGrassBales) * 100
-				CompetitionUtils.info(
-					"GRASS PROGRESS DEBUG farmId=%s total=%s wrapped=%s stored=%s expected=%s p52=%.1f p53=%.1f p54=%.1f",
-					tostring(config.farmId),
 					tostring(teamCounts[config.farmId].grassTotal),
 					tostring(teamCounts[config.farmId].grassWrapped),
 					tostring(teamCounts[config.farmId].grassStored),
-					tostring(reqGrassBales),
 					p52,
 					p53,
 					p54
 				)
+
 				self.manager:setSubtaskProgress(config.farmId, "task5", "5.2", p52, false)
 				self.manager:setSubtaskProgress(config.farmId, "task5", "5.3", p53, false)
 				self.manager:setSubtaskProgress(config.farmId, "task5", "5.4", p54, false)
@@ -371,10 +424,10 @@ function CompetitionProgress:scanCompetitionProgress()
 		end
 	end
 
-	-- Отправляем обновленный прогресс всем клиентам
+	-- Отправляем обновленный прогресс всем клиентам.
 	g_server:broadcastEvent(CompetitionProgressSyncEvent.new(self.manager.progressByFarmId))
 
-	-- Триггерим финиш
+	-- Триггерим финиш.
 	if anyTeamFinished then 
 		self.manager:finishCompetition() 
 	end
@@ -386,16 +439,16 @@ end
 function CompetitionProgress:checkTeamFinishedStrict(farmId)
 	local farmData = self.manager.progressByFarmId[farmId]
 	if farmData == nil or farmData.tasks == nil then return false end
-	
+
 	for taskId, taskData in pairs(farmData.tasks) do
 		for subtaskId, percent in pairs(taskData.subtasks) do
-			-- Проверяем с точностью до сотых, как требует ТЗ
+			-- Проверяем с точностью до сотых, как требует ТЗ.
 			if percent < 99.99 then 
 				return false 
 			end
 		end
 	end
-	
+
 	CompetitionUtils.info("Команда farmId=%d достигла 100%% по всем заданиям!", farmId)
 	return true
 end
