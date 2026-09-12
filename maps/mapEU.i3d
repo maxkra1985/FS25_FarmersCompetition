@@ -12,15 +12,17 @@
     <File fileId="489" filename="Objects/billboard_Buldozer/MapInfo.png"/>
     <File fileId="493" filename="Objects/billboard_Buldozer/ModsFarmingSimulators.png"/>
     <File fileId="494" filename="Objects/billboard_Buldozer/TeamBlue.png"/>
-    <File fileId="551" filename="Objects/billboard_Buldozer/TeamRed.png"/>
+    <File fileId="553" filename="Objects/billboard_Buldozer/TeamRed.png"/>
     <File fileId="488" filename="Objects/billboard_Buldozer/buldozer221.dds"/>
+    <File fileId="551" filename="Objects/billboard_task/preview01.png"/>
+    <File fileId="552" filename="Objects/billboard_task/preview02.png"/>
     <File fileId="497" filename="Objects/billboard_task/task01.dds"/>
     <File fileId="498" filename="Objects/billboard_task/task02.dds"/>
     <File fileId="499" filename="Objects/billboard_task/task03.dds"/>
     <File fileId="500" filename="Objects/billboard_task/task04.dds"/>
     <File fileId="501" filename="Objects/billboard_task/task05.dds"/>
     <File fileId="502" filename="Objects/billboard_task/task06.dds"/>
-    <File fileId="552" filename="Objects/black.dds"/>
+    <File fileId="554" filename="Objects/black.dds"/>
     <File fileId="373" filename="Objects/carp/carp_diffuse.dds"/>
     <File fileId="374" filename="Objects/carp/carp_normal.dds"/>
     <File fileId="526" filename="Objects/oldWoodBridge/textures_map/bridgeWoodLOD_diffuse.dds"/>
@@ -29,8 +31,8 @@
     <File fileId="524" filename="Objects/oldWoodBridge/textures_map/bridgeWood_specular.dds"/>
     <File fileId="370" filename="Objects/road/textures/street_diffuse.dds"/>
     <File fileId="371" filename="Objects/road/textures/street_normal.dds"/>
-    <File fileId="554" filename="data/BLOCKMASK.png"/>
-    <File fileId="553" filename="data/GEN_roadsMask.png"/>
+    <File fileId="556" filename="data/BLOCKMASK.png"/>
+    <File fileId="555" filename="data/GEN_roadsMask.png"/>
     <File fileId="24" filename="data/concreteIndustrial01_weight.png"/>
     <File fileId="27" filename="data/concreteIndustrial02_weight.png"/>
     <File fileId="30" filename="data/concreteSmallTiles01_weight.png"/>
@@ -728,7 +730,7 @@
       <CustomParameter name="displacementSpeedFrequency" value="0.1 5 4 1"/>
     </Material>
     <Material name="motorexDecal_mat" materialId="41" customShaderId="509">
-      <Texture fileId="551"/>
+      <Texture fileId="553"/>
       <Normalmap fileId="384"/>
       <Glossmap fileId="372"/>
       <CustomParameter name="displacementSpeedFrequency" value="0.1 5 4 1"/>
@@ -960,7 +962,7 @@
       <Glossmap fileId="496"/>
     </Material>
     <Material name="teardropBanner_mat" materialId="69">
-      <Texture fileId="551"/>
+      <Texture fileId="553"/>
       <Normalmap fileId="495"/>
       <Glossmap fileId="496"/>
     </Material>
@@ -975,26 +977,32 @@
     <Material name="UnnamedMaterial" materialId="73">
       <Texture fileId="493"/>
     </Material>
-    <Material name="UnnamedMaterial" materialId="16833">
+    <Material name="UnnamedMaterial" materialId="16842">
+      <Texture fileId="551"/>
+    </Material>
+    <Material name="UnnamedMaterial" materialId="16852">
+      <Texture fileId="552"/>
+    </Material>
+    <Material name="UnnamedMaterial" materialId="74">
       <Texture fileId="497"/>
     </Material>
-    <Material name="UnnamedMaterial" materialId="16834">
+    <Material name="UnnamedMaterial" materialId="75">
       <Texture fileId="498"/>
     </Material>
-    <Material name="UnnamedMaterial" materialId="16883">
+    <Material name="UnnamedMaterial" materialId="76">
       <Texture fileId="499"/>
     </Material>
-    <Material name="UnnamedMaterial" materialId="16884">
+    <Material name="UnnamedMaterial" materialId="77">
       <Texture fileId="500"/>
     </Material>
-    <Material name="UnnamedMaterial" materialId="16887">
+    <Material name="UnnamedMaterial" materialId="78">
       <Texture fileId="501"/>
     </Material>
-    <Material name="UnnamedMaterial" materialId="16888">
+    <Material name="UnnamedMaterial" materialId="79">
       <Texture fileId="502"/>
     </Material>
     <Material name="UnnamedMaterial" materialId="80">
-      <Texture fileId="552"/>
+      <Texture fileId="554"/>
     </Material>
     <Material name="UnnamedMaterial" materialId="81" diffuseColor="1 1 1 1">
     </Material>
@@ -1037,7 +1045,7 @@
   </Shapes>
 
   <Scene>
-    <Camera name="persp" translation="-213.233 319.707 -184.442" rotation="125.523 0.525712 -180" visibility="false" nodeId="223" fov="60" nearClip="0.1" farClip="6000" orthographicHeight="25"/>
+    <Camera name="persp" translation="185.826 252.176 -172.833" rotation="151.994 -0.0693782 -180" visibility="false" nodeId="223" fov="60" nearClip="0.1" farClip="6000" orthographicHeight="25"/>
     <Light name="sun" translation="0 400 0" rotation="-47.2604 -28.1861 -0" objectMask="0x83ff0000" nodeId="224" type="directional" color="1 1 1" emitDiffuse="true" emitSpecular="true" castShadowMap="true" depthMapBias="0.001" depthMapSlopeScaleBias="2" depthMapSlopeClamp="0.001" depthMapResolution="2048" shadowFarDistance="1000" shadowExtrusionDistance="200" softShadowsLightSize="0.5" softShadowsLightDistance="15" softShadowsDepthBiasFactor="1" softShadowsMaxPenumbraSize="0.5" numShadowMapSplits="5" shadowMapSplitDistancesParameter="0.9" lastShadowMapSplitBboxMin="-1024,-128,-1024" lastShadowMapSplitBboxMax="1024,148,1024" range="10000" scattering="true"/>
     <TerrainTransformGroup name="terrain" static="true" collisionFilterGroup="0x100" collisionFilterMask="0xfffff9c3" nodeId="226" heightMapId="1" patchSize="65" maxLODDistance="750" heightScale="255" unitsPerPixel="1" lodBlendStart="200" lodBlendEnd="300" lodTextureSize="2048" lodBlendStartDynamic="50" lodBlendEndDynamic="65" detailLodBlendDelta="5" materialId="70" castShadowMap="true" occNumLODs="1" occMaxLODDistance="300" occPatchSize="65" occLevel="2" occDistanceWeight="1" occMaxAdjacentFaces="10">
       <OccluderLods>
@@ -1448,8 +1456,8 @@
           </FoliageMultiLayer>
         </FoliageSystem>
       </Layers>
-      <ProceduralPlacementMasks blockMaskFileId="554">
-        <Mask name="GEN_roadsMask" fileId="553" />
+      <ProceduralPlacementMasks blockMaskFileId="556">
+        <Mask name="GEN_roadsMask" fileId="555" />
       </ProceduralPlacementMasks>
     </TerrainTransformGroup>
     <TransformGroup name="careerStartPoint" translation="0 128 -326.351" nodeId="245"/>
@@ -2000,32 +2008,32 @@
         <Shape name="billboard2x1_task_01" lockedgroup="true" translation="113.444 0 -201.408" rotation="-180 -1.86693e-05 -180" shapeId="94" static="true" collisionFilterGroup="0x3e" collisionFilterMask="0xfffffbff" density="0.0001" clipDistance="350" nodeId="882" castsShadows="true" receiveShadows="true" nonRenderable="true" materialIds="30">
           <Shape name="billboard2x1Vis" shapeId="95" clipDistance="350" nodeId="883" castsShadows="true" receiveShadows="true" materialIds="8"/>
           <Shape name="ModsFarmingSimulators" translation="-2.48901 1.90109 0.0732141" rotation="-90 1.86693e-05 -180" scale="0.7 1 1" shapeId="5" nodeId="884" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="73"/>
-          <Shape name="task" translation="-0.0567362 2.50085 0.184471" rotation="90 0 0" scale="6 1 3" shapeId="5" nodeId="885" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="16833"/>
+          <Shape name="task" translation="-0.0567362 2.50085 0.184471" rotation="90 0 0" scale="6 1 3" shapeId="5" nodeId="885" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="74"/>
         </Shape>
         <Shape name="billboard2x1_task_02" lockedgroup="true" translation="113.444 0 -139.367" rotation="-180 -1.86693e-05 -180" shapeId="94" static="true" collisionFilterGroup="0x3e" collisionFilterMask="0xfffffbff" density="0.0001" clipDistance="350" nodeId="886" castsShadows="true" receiveShadows="true" nonRenderable="true" materialIds="30">
           <Shape name="billboard2x1Vis" shapeId="95" clipDistance="350" nodeId="887" castsShadows="true" receiveShadows="true" materialIds="8"/>
           <Shape name="ModsFarmingSimulators" translation="-2.48901 1.90109 0.136307" rotation="-90 1.86693e-05 -180" scale="0.7 1 1" shapeId="5" nodeId="888" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="73"/>
-          <Shape name="task" translation="-0.0567362 2.50085 0.184471" rotation="90 0 0" scale="6 1 3" shapeId="5" nodeId="889" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="16834"/>
+          <Shape name="task" translation="-0.0567362 2.50085 0.184471" rotation="90 0 0" scale="6 1 3" shapeId="5" nodeId="889" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="75"/>
         </Shape>
         <Shape name="billboard2x1_task_03" lockedgroup="true" translation="-225.053 -3.05176e-05 -65.1043" rotation="-180 -1.86693e-05 -180" shapeId="94" static="true" collisionFilterGroup="0x3e" collisionFilterMask="0xfffffbff" density="0.0001" clipDistance="350" nodeId="890" castsShadows="true" receiveShadows="true" nonRenderable="true" materialIds="30">
           <Shape name="billboard2x1Vis" shapeId="95" clipDistance="350" nodeId="891" castsShadows="true" receiveShadows="true" materialIds="8"/>
           <Shape name="ModsFarmingSimulators" translation="-2.48904 1.90109 0.135" rotation="-90 1.86693e-05 -180" scale="0.7 1 1" shapeId="5" nodeId="892" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="73"/>
-          <Shape name="task" translation="-0.0567362 2.50085 0.184471" rotation="90 0 0" scale="6 1 3" shapeId="5" nodeId="893" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="16883"/>
+          <Shape name="task" translation="-0.0567362 2.50085 0.184471" rotation="90 0 0" scale="6 1 3" shapeId="5" nodeId="893" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="76"/>
         </Shape>
         <Shape name="billboard2x1_task_04" lockedgroup="true" translation="113.444 0 36.1467" rotation="-180 -1.86693e-05 -180" shapeId="94" static="true" collisionFilterGroup="0x3e" collisionFilterMask="0xfffffbff" density="0.0001" clipDistance="350" nodeId="894" castsShadows="true" receiveShadows="true" nonRenderable="true" materialIds="30">
           <Shape name="billboard2x1Vis" shapeId="95" clipDistance="350" nodeId="895" castsShadows="true" receiveShadows="true" materialIds="8"/>
           <Shape name="ModsFarmingSimulators" translation="-2.489 1.90111 0.135" rotation="-90 1.86693e-05 -180" scale="0.7 1 1" shapeId="5" nodeId="896" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="73"/>
-          <Shape name="task" translation="-0.0567362 2.50085 0.184471" rotation="90 0 0" scale="6 1 3" shapeId="5" nodeId="897" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="16884"/>
+          <Shape name="task" translation="-0.0567362 2.50085 0.184471" rotation="90 0 0" scale="6 1 3" shapeId="5" nodeId="897" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="77"/>
         </Shape>
         <Shape name="billboard2x1_task_05" lockedgroup="true" translation="-228.723 0 130.811" rotation="-180 -1.86693e-05 -180" shapeId="94" static="true" collisionFilterGroup="0x3e" collisionFilterMask="0xfffffbff" density="0.0001" clipDistance="350" nodeId="898" castsShadows="true" receiveShadows="true" nonRenderable="true" materialIds="30">
           <Shape name="billboard2x1Vis" shapeId="95" clipDistance="350" nodeId="899" castsShadows="true" receiveShadows="true" materialIds="8"/>
           <Shape name="ModsFarmingSimulators" translation="-2.489 1.90108 0.135" rotation="-90 1.86693e-05 -180" scale="0.7 1 1" shapeId="5" nodeId="900" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="73"/>
-          <Shape name="task" translation="-0.0567362 2.50085 0.184471" rotation="90 0 0" scale="6 1 3" shapeId="5" nodeId="901" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="16887"/>
+          <Shape name="task" translation="-0.0567362 2.50085 0.184471" rotation="90 0 0" scale="6 1 3" shapeId="5" nodeId="901" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="78"/>
         </Shape>
         <Shape name="billboard2x1_task_06" lockedgroup="true" translation="113.444 1.52588e-05 238.922" rotation="-180 -1.86693e-05 -180" shapeId="94" static="true" collisionFilterGroup="0x3e" collisionFilterMask="0xfffffbff" density="0.0001" clipDistance="350" nodeId="902" castsShadows="true" receiveShadows="true" nonRenderable="true" materialIds="30">
           <Shape name="billboard2x1Vis" shapeId="95" clipDistance="350" nodeId="903" castsShadows="true" receiveShadows="true" materialIds="8"/>
           <Shape name="ModsFarmingSimulators" translation="-2.489 1.90111 0.135" rotation="-90 1.86693e-05 -180" scale="0.7 1 1" shapeId="5" nodeId="904" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="73"/>
-          <Shape name="task" translation="-0.0567362 2.50085 0.184471" rotation="90 0 0" scale="6 1 3" shapeId="5" nodeId="905" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="16888"/>
+          <Shape name="task" translation="-0.0567362 2.50085 0.184471" rotation="90 0 0" scale="6 1 3" shapeId="5" nodeId="905" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="79"/>
         </Shape>
       </TransformGroup>
       <TransformGroup name="waterTower02" translation="-11.655 0 -13.4905" rotation="1.6331e-07 -90 0" lodDistance="0 100" static="true" clipDistance="1000" nodeId="906">
@@ -2651,6 +2659,18 @@
           <Shape name="10m_ai_spline_2" shapeId="122" nodeId="3529" castsShadows="false" receiveShadows="false" nonRenderable="true" distanceBlending="false"/>
         </TransformGroup>
       </TransformGroup>
+      <TransformGroup name="preview" translation="-0.619385 0 77.092" nodeId="16850">
+        <Shape name="billboard2x1_preview01" lockedgroup="true" translation="5 -0.736748 -4.29118" rotation="180 -1.86693e-05 180" scale="1.5 1.5 1.5" shapeId="94" static="true" collisionFilterGroup="0x3e" collisionFilterMask="0xfffffbff" density="0.0001" clipDistance="350" nodeId="16819" castsShadows="true" receiveShadows="true" nonRenderable="true" materialIds="30">
+          <Shape name="billboard2x1Vis" shapeId="95" clipDistance="350" nodeId="16820" castsShadows="true" receiveShadows="true" materialIds="8"/>
+          <Shape name="ModsFarmingSimulators" translation="-2.48901 1.90109 0.0732141" rotation="-90 1.86693e-05 -180" scale="0.7 1 1" shapeId="5" nodeId="16821" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="73"/>
+          <Shape name="task" translation="-0.0567362 2.50085 0.184471" rotation="90 0 0" scale="6 1 3" shapeId="5" nodeId="16822" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="16842"/>
+        </Shape>
+        <Shape name="billboard2x1_preview02" lockedgroup="true" translation="-5 -0.736748 -4.29118" rotation="180 -1.86693e-05 180" scale="1.5 1.5 1.5" shapeId="94" static="true" collisionFilterGroup="0x3e" collisionFilterMask="0xfffffbff" density="0.0001" clipDistance="350" nodeId="16844" castsShadows="true" receiveShadows="true" nonRenderable="true" materialIds="30">
+          <Shape name="billboard2x1Vis" shapeId="95" clipDistance="350" nodeId="16845" castsShadows="true" receiveShadows="true" materialIds="8"/>
+          <Shape name="ModsFarmingSimulators" translation="-2.48901 1.90109 0.0732141" rotation="-90 1.86693e-05 -180" scale="0.7 1 1" shapeId="5" nodeId="16846" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="73"/>
+          <Shape name="task" translation="-0.0567362 2.50085 0.184471" rotation="90 0 0" scale="6 1 3" shapeId="5" nodeId="16847" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="16852"/>
+        </Shape>
+      </TransformGroup>
     </TransformGroup>
     <TransformGroup name="farm2" translation="208.382 128 -81.1085" nodeId="3530">
       <ReferenceNode name="easyShed01" translation="-175.114 0 48.1907" rotation="-0 90 0" referenceId="382" nodeId="3531"/>
@@ -3151,32 +3171,32 @@
         <Shape name="billboard2x1_task_01" lockedgroup="true" translation="113.444 0 -201.408" rotation="-180 -1.86693e-05 -180" shapeId="94" static="true" collisionFilterGroup="0x3e" collisionFilterMask="0xfffffbff" density="0.0001" clipDistance="350" nodeId="4105" castsShadows="true" receiveShadows="true" nonRenderable="true" materialIds="30">
           <Shape name="billboard2x1Vis" shapeId="95" clipDistance="350" nodeId="4106" castsShadows="true" receiveShadows="true" materialIds="8"/>
           <Shape name="ModsFarmingSimulators" translation="-2.48901 1.90109 0.0732141" rotation="-90 1.86693e-05 -180" scale="0.7 1 1" shapeId="5" nodeId="4107" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="73"/>
-          <Shape name="task" translation="-0.0567362 2.50085 0.184471" rotation="90 0 0" scale="6 1 3" shapeId="5" nodeId="4108" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="16833"/>
+          <Shape name="task" translation="-0.0567362 2.50085 0.184471" rotation="90 0 0" scale="6 1 3" shapeId="5" nodeId="4108" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="74"/>
         </Shape>
         <Shape name="billboard2x1_task_02" lockedgroup="true" translation="113.444 0 -139.367" rotation="-180 -1.86693e-05 -180" shapeId="94" static="true" collisionFilterGroup="0x3e" collisionFilterMask="0xfffffbff" density="0.0001" clipDistance="350" nodeId="4109" castsShadows="true" receiveShadows="true" nonRenderable="true" materialIds="30">
           <Shape name="billboard2x1Vis" shapeId="95" clipDistance="350" nodeId="4110" castsShadows="true" receiveShadows="true" materialIds="8"/>
           <Shape name="ModsFarmingSimulators" translation="-2.48901 1.90109 0.136307" rotation="-90 1.86693e-05 -180" scale="0.7 1 1" shapeId="5" nodeId="4111" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="73"/>
-          <Shape name="task" translation="-0.0567322 2.50085 0.184482" rotation="90 -2.17126e-12 3.67803e-15" scale="6 1 3" shapeId="5" nodeId="4112" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="16834"/>
+          <Shape name="task" translation="-0.0567322 2.50085 0.184482" rotation="90 -2.17126e-12 3.67803e-15" scale="6 1 3" shapeId="5" nodeId="4112" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="75"/>
         </Shape>
         <Shape name="billboard2x1_task_03" lockedgroup="true" translation="-225.053 -3.05176e-05 -65.1043" rotation="-180 -1.86693e-05 -180" shapeId="94" static="true" collisionFilterGroup="0x3e" collisionFilterMask="0xfffffbff" density="0.0001" clipDistance="350" nodeId="4113" castsShadows="true" receiveShadows="true" nonRenderable="true" materialIds="30">
           <Shape name="billboard2x1Vis" shapeId="95" clipDistance="350" nodeId="4114" castsShadows="true" receiveShadows="true" materialIds="8"/>
           <Shape name="ModsFarmingSimulators" translation="-2.48904 1.90109 0.135" rotation="-90 1.86693e-05 -180" scale="0.7 1 1" shapeId="5" nodeId="4115" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="73"/>
-          <Shape name="task" translation="-0.0567362 2.50085 0.184471" rotation="90 0 0" scale="6 1 3" shapeId="5" nodeId="4116" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="16883"/>
+          <Shape name="task" translation="-0.0567362 2.50085 0.184471" rotation="90 0 0" scale="6 1 3" shapeId="5" nodeId="4116" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="76"/>
         </Shape>
         <Shape name="billboard2x1_task_04" lockedgroup="true" translation="113.444 0 36.1467" rotation="-180 -1.86693e-05 -180" shapeId="94" static="true" collisionFilterGroup="0x3e" collisionFilterMask="0xfffffbff" density="0.0001" clipDistance="350" nodeId="4117" castsShadows="true" receiveShadows="true" nonRenderable="true" materialIds="30">
           <Shape name="billboard2x1Vis" shapeId="95" clipDistance="350" nodeId="4118" castsShadows="true" receiveShadows="true" materialIds="8"/>
           <Shape name="ModsFarmingSimulators" translation="-2.489 1.90111 0.135" rotation="-90 1.86693e-05 -180" scale="0.7 1 1" shapeId="5" nodeId="4119" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="73"/>
-          <Shape name="task" translation="-0.0567362 2.50085 0.184471" rotation="90 0 0" scale="6 1 3" shapeId="5" nodeId="4120" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="16884"/>
+          <Shape name="task" translation="-0.0567362 2.50085 0.184471" rotation="90 0 0" scale="6 1 3" shapeId="5" nodeId="4120" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="77"/>
         </Shape>
         <Shape name="billboard2x1_task_05" lockedgroup="true" translation="-228.723 0 130.811" rotation="-180 -1.86693e-05 -180" shapeId="94" static="true" collisionFilterGroup="0x3e" collisionFilterMask="0xfffffbff" density="0.0001" clipDistance="350" nodeId="4121" castsShadows="true" receiveShadows="true" nonRenderable="true" materialIds="30">
           <Shape name="billboard2x1Vis" shapeId="95" clipDistance="350" nodeId="4122" castsShadows="true" receiveShadows="true" materialIds="8"/>
           <Shape name="ModsFarmingSimulators" translation="-2.489 1.90108 0.135" rotation="-90 1.86693e-05 -180" scale="0.7 1 1" shapeId="5" nodeId="4123" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="73"/>
-          <Shape name="task" translation="-0.0567362 2.50085 0.184471" rotation="90 0 0" scale="6 1 3" shapeId="5" nodeId="4124" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="16887"/>
+          <Shape name="task" translation="-0.0567362 2.50085 0.184471" rotation="90 0 0" scale="6 1 3" shapeId="5" nodeId="4124" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="78"/>
         </Shape>
         <Shape name="billboard2x1_task_06" lockedgroup="true" translation="113.444 1.52588e-05 238.922" rotation="-180 -1.86693e-05 -180" shapeId="94" static="true" collisionFilterGroup="0x3e" collisionFilterMask="0xfffffbff" density="0.0001" clipDistance="350" nodeId="4125" castsShadows="true" receiveShadows="true" nonRenderable="true" materialIds="30">
           <Shape name="billboard2x1Vis" shapeId="95" clipDistance="350" nodeId="4126" castsShadows="true" receiveShadows="true" materialIds="8"/>
           <Shape name="ModsFarmingSimulators" translation="-2.489 1.90111 0.135" rotation="-90 1.86693e-05 -180" scale="0.7 1 1" shapeId="5" nodeId="4127" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="73"/>
-          <Shape name="task" translation="-0.0567362 2.50085 0.184471" rotation="90 0 0" scale="6 1 3" shapeId="5" nodeId="4128" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="16888"/>
+          <Shape name="task" translation="-0.0567362 2.50085 0.184471" rotation="90 0 0" scale="6 1 3" shapeId="5" nodeId="4128" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="79"/>
         </Shape>
       </TransformGroup>
       <TransformGroup name="waterTower02" translation="-11.655 0 -13.4905" rotation="1.6331e-07 -90 0" lodDistance="0 100" static="true" clipDistance="1000" nodeId="4129">
@@ -3801,6 +3821,18 @@
           <Shape name="10m_ai_spline_1" shapeId="132" nodeId="6642" castsShadows="false" receiveShadows="false" nonRenderable="true" distanceBlending="false"/>
           <Shape name="10m_ai_spline_2" shapeId="133" nodeId="6643" castsShadows="false" receiveShadows="false" nonRenderable="true" distanceBlending="false"/>
         </TransformGroup>
+      </TransformGroup>
+      <TransformGroup name="preview" translation="-0.619385 0 77.092" nodeId="16862">
+        <Shape name="billboard2x1_preview01" lockedgroup="true" translation="5 -0.736748 -4.29118" rotation="180 -1.86693e-05 180" scale="1.5 1.5 1.5" shapeId="94" static="true" collisionFilterGroup="0x3e" collisionFilterMask="0xfffffbff" density="0.0001" clipDistance="350" nodeId="16863" castsShadows="true" receiveShadows="true" nonRenderable="true" materialIds="30">
+          <Shape name="billboard2x1Vis" shapeId="95" clipDistance="350" nodeId="16864" castsShadows="true" receiveShadows="true" materialIds="8"/>
+          <Shape name="ModsFarmingSimulators" translation="-2.48901 1.90109 0.0732141" rotation="-90 1.86693e-05 -180" scale="0.7 1 1" shapeId="5" nodeId="16865" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="73"/>
+          <Shape name="task" translation="-0.0567362 2.50085 0.184471" rotation="90 0 0" scale="6 1 3" shapeId="5" nodeId="16866" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="16842"/>
+        </Shape>
+        <Shape name="billboard2x1_preview02" lockedgroup="true" translation="-5 -0.736748 -4.29118" rotation="180 -1.86693e-05 180" scale="1.5 1.5 1.5" shapeId="94" static="true" collisionFilterGroup="0x3e" collisionFilterMask="0xfffffbff" density="0.0001" clipDistance="350" nodeId="16867" castsShadows="true" receiveShadows="true" nonRenderable="true" materialIds="30">
+          <Shape name="billboard2x1Vis" shapeId="95" clipDistance="350" nodeId="16868" castsShadows="true" receiveShadows="true" materialIds="8"/>
+          <Shape name="ModsFarmingSimulators" translation="-2.48901 1.90109 0.0732141" rotation="-90 1.86693e-05 -180" scale="0.7 1 1" shapeId="5" nodeId="16869" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="73"/>
+          <Shape name="task" translation="-0.0567362 2.50085 0.184471" rotation="90 0 0" scale="6 1 3" shapeId="5" nodeId="16870" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="16852"/>
+        </Shape>
       </TransformGroup>
     </TransformGroup>
     <Shape name="roadLongWest" translation="432.5 128 1024" rotation="-6.83019e-06 -0 0" scale="1 1 1.085" shapeId="6" visibility="false" clipDistance="600" nodeId="6644" castsShadows="true" receiveShadows="true" nonRenderable="true" terrainDecal="true" materialIds="7">
