@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<i3D name="markerIconSpeedBoost.i3d" version="1.6" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://i3d.giants.ch/schema/i3d-1.6.xsd">
+  <Asset>
+    <Export program="GIANTS Editor 64bit" version="10.0.13"/>
+  </Asset>
+
+  <Files>
+    <File fileId="1" filename="speedBoostIcon_diffuse.dds"/>
+    <File fileId="2" filename="$data/shaders/glowShader.xml"/>
+  </Files>
+
+
+  <Materials>
+    <Material name="speedBoostMarker_mat" materialId="5" alphaBlending="true" customShaderId="2" customShaderVariation="additive_billboard_pulsating">
+      <Emissivemap fileId="1"/>
+      <CustomParameter name="lightControl" value="0.25"/>
+    </Material>
+  </Materials>
+
+
+  <Shapes>
+    <IndexedTriangleSet name="speedBoostIconShape" shapeId="1" meshUsage="0" bvCenter="0 0 0" bvRadius="0.707107" isOptimized="true">
+      <Vertices count="4" normal="true" uv0="true">
+        <v p="-0.5 -0.5 0" n="0 0 1" t0="0 1"/>
+        <v p="0.5 -0.5 0" n="0 0 1" t0="1 1"/>
+        <v p="0.5 0.5 0" n="0 0 1" t0="1 0"/>
+        <v p="-0.5 0.5 0" n="0 0 1" t0="0 0"/>
+      </Vertices>
+      <Triangles count="2">
+        <t vi="0 1 2"/>
+        <t vi="0 2 3"/>
+      </Triangles>
+      <Subsets count="1">
+        <Subset firstVertex="0" numVertices="4" firstIndex="0" numIndices="6" uvDensity0="1"/>
+      </Subsets>
+    </IndexedTriangleSet>
+  </Shapes>
+
+  <Scene>
+    <TransformGroup name="markerIconSpeedBoost" nodeId="8">
+      <Shape name="icon" translation="0 1 0" shapeId="1" clipDistance="300" nodeId="9" castsShadows="false" receiveShadows="false" doubleSided="true" materialIds="5"/>
+      <Light name="pointLight" translation="0 1 0" clipDistance="100" nodeId="10" type="point" color="0.55 0.95 0.18" emitDiffuse="true" emitSpecular="true" range="1.5"/>
+    </TransformGroup>
+  </Scene>
+
+</i3D>
