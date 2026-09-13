@@ -17,7 +17,7 @@
 CompetitionSpeedQuest = {}
 local CompetitionSpeedQuest_mt = Class(CompetitionSpeedQuest)
 
-CompetitionSpeedQuest.VERSION = "0.1.12"
+CompetitionSpeedQuest.VERSION = "0.1.13"
 
 CompetitionSpeedQuest.STATE = {
     AVAILABLE = 0,
@@ -45,6 +45,8 @@ CompetitionSpeedQuest.INIT_DELAY_MS = 1500
 CompetitionSpeedQuest.VEHICLE_DELETE_DELAY_MS = 1500
 CompetitionSpeedQuest.MOTOR_REFRESH_INTERVAL_MS = 500
 CompetitionSpeedQuest.ENTER_VEHICLE_TIMEOUT_MS = 5000
+CompetitionSpeedQuest.AVAILABILITY_DELAY_MIN_SECONDS = 20
+CompetitionSpeedQuest.AVAILABILITY_DELAY_MAX_SECONDS = 180
 -- Экспериментальный RPM boost: transport x3 -> RPM x1.5.
 CompetitionSpeedQuest.RPM_BOOST_DIVISOR = 2.0
 CompetitionSpeedQuest.START_ACTION_TEXT = "Начать испытание скорости"
@@ -136,7 +138,15 @@ function CompetitionSpeedQuestStateEvent.emptyNew()
     return Event.new(CompetitionSpeedQuestStateEvent_mt)
 end
 
-function CompetitionSpeedQuestStateEvent.new(state, activeFarmId, boostFarmId, transportMultiplier, workMultiplier, remainingMs)
+function CompetitionSpeedQuestStateEvent.new(
+    state,
+    activeFarmId,
+    boostFarmId,
+    transportMultiplier,
+    workMultiplier,
+    remainingMs,
+    availabilityPending
+)
     local self = CompetitionSpeedQuestStateEvent.emptyNew()
     self.state = state or CompetitionSpeedQuest.STATE.AVAILABLE
     self.activeFarmId = activeFarmId or 0
@@ -144,6 +154,7 @@ function CompetitionSpeedQuestStateEvent.new(state, activeFarmId, boostFarmId, t
     self.transportMultiplier = transportMultiplier or 1
     self.workMultiplier = workMultiplier or 1
     self.remainingMs = math.max(remainingMs or 0, 0)
+    self.availabilityPending = availabilityPending == true
     return self
 end
 
@@ -154,6 +165,7 @@ function CompetitionSpeedQuestStateEvent:writeStream(streamId, connection)
     streamWriteFloat32(streamId, self.transportMultiplier)
     streamWriteFloat32(streamId, self.workMultiplier)
     streamWriteInt32(streamId, math.floor(self.remainingMs))
+    streamWriteBool(streamId, self.availabilityPending)
 end
 
 function CompetitionSpeedQuestStateEvent:readStream(streamId, connection)
@@ -163,6 +175,7 @@ function CompetitionSpeedQuestStateEvent:readStream(streamId, connection)
     self.transportMultiplier = streamReadFloat32(streamId)
     self.workMultiplier = streamReadFloat32(streamId)
     self.remainingMs = streamReadInt32(streamId)
+    self.availabilityPending = streamReadBool(streamId)
     self:run(connection)
 end
 
@@ -179,7 +192,8 @@ function CompetitionSpeedQuestStateEvent:run(connection)
             self.boostFarmId,
             self.transportMultiplier,
             self.workMultiplier,
-            self.remainingMs
+            self.remainingMs,
+            self.availabilityPending
         )
     end
 end
@@ -453,6 +467,12 @@ function CompetitionSpeedQuest.new(customMt)
     self.pendingEnterVehicleTimeoutMs = 0
 
     self.activeBoost = nil
+
+    -- Квест может быть в состоянии AVAILABLE, но ещё ждать случайного момента
+    -- фактического включения маркеров/F1 после старта или окончания буста.
+    self.availabilityPending = false
+    self.availabilityEndsAtMs = nil
+
     self.touchedMotors = setmetatable({}, {__mode = "k"})
     self.workSpeedWrappedVehicles = setmetatable({}, {__mode = "k"})
 
@@ -594,10 +614,81 @@ function CompetitionSpeedQuest:getIsCompetitionRunning()
         and g_competitionManager.state == CompetitionUtils.STATE.RUNNING
 end
 
+-- Назначение: сервер ставит speed-квест на случайную задержку 20..180 секунд.
+-- Используется при старте/возобновлении соревнования и после окончания speed boost.
+function CompetitionSpeedQuest:scheduleAvailability(reason)
+    if g_currentMission == nil
+        or not g_currentMission:getIsServer()
+        or self.state ~= CompetitionSpeedQuest.STATE.AVAILABLE
+        or self.activeBoost ~= nil then
+        return false
+    end
+
+    local delaySeconds = math.random(
+        CompetitionSpeedQuest.AVAILABILITY_DELAY_MIN_SECONDS,
+        CompetitionSpeedQuest.AVAILABILITY_DELAY_MAX_SECONDS
+    )
+    local now = g_currentMission.time or g_time or 0
+
+    self.availabilityPending = true
+    self.availabilityEndsAtMs = now + delaySeconds * 1000
+    self:broadcastState()
+
+    print(string.format(
+        "[FarmersCompetition][SpeedQuest] AVAILABILITY SCHEDULED reason=%s delay=%ds",
+        tostring(reason),
+        delaySeconds
+    ))
+
+    return true
+end
+
+-- Назначение: завершает ожидание, открывает trigger/F1 и оповещает всех игроков gong.
+function CompetitionSpeedQuest:activateAvailability(reason)
+    if g_currentMission == nil
+        or not g_currentMission:getIsServer()
+        or self.state ~= CompetitionSpeedQuest.STATE.AVAILABLE then
+        return false
+    end
+
+    self.availabilityPending = false
+    self.availabilityEndsAtMs = nil
+    self:broadcastState()
+
+    if g_competitionManager ~= nil
+        and g_competitionManager.broadcastNotificationSound ~= nil then
+        g_competitionManager:broadcastNotificationSound("gong")
+    end
+
+    print(string.format(
+        "[FarmersCompetition][SpeedQuest] AVAILABLE reason=%s",
+        tostring(reason)
+    ))
+
+    return true
+end
+
+-- Назначение: обслуживает серверный таймер отложенной доступности speed-квеста.
+function CompetitionSpeedQuest:updateAvailabilityTimer()
+    if g_currentMission == nil
+        or not g_currentMission:getIsServer()
+        or self.availabilityPending ~= true
+        or self.state ~= CompetitionSpeedQuest.STATE.AVAILABLE
+        or not self:getIsCompetitionRunning() then
+        return
+    end
+
+    local now = g_currentMission.time or g_time or 0
+    if self.availabilityEndsAtMs == nil or now >= self.availabilityEndsAtMs then
+        self:activateAvailability("timerExpired")
+    end
+end
+
 -- Назначение: проверяет доступность квеста для указанной фермы.
 function CompetitionSpeedQuest:getCanStartQuest(farmId)
     if not self.initialized
         or self.state ~= CompetitionSpeedQuest.STATE.AVAILABLE
+        or self.availabilityPending == true
         or not self:getIsCompetitionRunning()
         or farmId == nil
         or farmId < 1
@@ -686,6 +777,7 @@ end
 -- Маркер доступного квеста показывается только во время реально запущенного соревнования.
 function CompetitionSpeedQuest:refreshTriggerPresentation()
     local isAvailable = self.state == CompetitionSpeedQuest.STATE.AVAILABLE
+        and self.availabilityPending ~= true
         and self:getIsCompetitionRunning()
 
     for _, triggerData in ipairs(self.startTriggers) do
@@ -792,6 +884,8 @@ function CompetitionSpeedQuest:handleStartRequest(connection, requestedFarmId)
     end
 
     self.state = CompetitionSpeedQuest.STATE.PREPARING
+    self.availabilityPending = false
+    self.availabilityEndsAtMs = nil
     self.activeFarmId = farmId
     self.activeUserId = userId
     self.activeConnection = connection
@@ -971,6 +1065,8 @@ function CompetitionSpeedQuest:cancelPreparingAttempt(reason)
     print("[FarmersCompetition][SpeedQuest] ERROR start: " .. tostring(reason))
 
     self.state = CompetitionSpeedQuest.STATE.AVAILABLE
+    self.availabilityPending = false
+    self.availabilityEndsAtMs = nil
     self.activeFarmId = 0
     self.activeUserId = nil
     self.activeConnection = nil
@@ -1100,6 +1196,8 @@ function CompetitionSpeedQuest:finishAttempt()
     else
         self.activeBoost = nil
         self.state = CompetitionSpeedQuest.STATE.AVAILABLE
+        self.availabilityPending = false
+        self.availabilityEndsAtMs = nil
         self.activeFarmId = 0
     end
 
@@ -1879,7 +1977,8 @@ function CompetitionSpeedQuest:createStateEvent()
         boostFarmId,
         transportMultiplier,
         workMultiplier,
-        remainingMs
+        remainingMs,
+        self.availabilityPending
     )
 end
 
@@ -1902,9 +2001,19 @@ function CompetitionSpeedQuest:sendStateToConnection(connection)
 end
 
 -- Назначение: применяет snapshot сервера на клиенте.
-function CompetitionSpeedQuest:applyStateFromServer(state, activeFarmId, boostFarmId, transportMultiplier, workMultiplier, remainingMs)
+function CompetitionSpeedQuest:applyStateFromServer(
+    state,
+    activeFarmId,
+    boostFarmId,
+    transportMultiplier,
+    workMultiplier,
+    remainingMs,
+    availabilityPending
+)
     self.state = state
     self.activeFarmId = activeFarmId or 0
+    self.availabilityPending = availabilityPending == true
+    self.availabilityEndsAtMs = nil
 
     if boostFarmId ~= nil and boostFarmId > 0 and remainingMs > 0 then
         local now = g_currentMission ~= nil and (g_currentMission.time or g_time or 0) or 0
@@ -1982,6 +2091,8 @@ function CompetitionSpeedQuest:deleteMap()
 
     self.pendingEnterVehicleUniqueId = nil
     self.pendingEnterVehicleTimeoutMs = 0
+    self.availabilityPending = false
+    self.availabilityEndsAtMs = nil
     self.initialized = false
 end
 
@@ -1994,6 +2105,8 @@ function CompetitionSpeedQuest:consoleCommandResetQuest()
 
     self.activeBoost = nil
     self.state = CompetitionSpeedQuest.STATE.AVAILABLE
+    self.availabilityPending = false
+    self.availabilityEndsAtMs = nil
     self.activeFarmId = 0
     self.activeUserId = nil
     self.activeConnection = nil
@@ -2047,6 +2160,10 @@ function CompetitionSpeedQuest:update(dt)
         self:refreshTriggerPresentation()
     end
 
+    if g_currentMission ~= nil and g_currentMission:getIsServer() then
+        self:updateAvailabilityTimer()
+    end
+
     if self.vehicleDeleteTimer ~= nil then
         self.vehicleDeleteTimer = self.vehicleDeleteTimer - dt
         if self.vehicleDeleteTimer <= 0 then
@@ -2077,7 +2194,7 @@ function CompetitionSpeedQuest:update(dt)
         self.activeFarmId = 0
 
         self:refreshTransportBoostOnVehicles()
-        self:broadcastState()
+        self:scheduleAvailability("boostExpired")
 
         print(string.format(
             "[FarmersCompetition][SpeedQuest] BOOST EXPIRED farmId=%d",

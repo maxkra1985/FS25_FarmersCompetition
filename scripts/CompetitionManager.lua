@@ -104,6 +104,11 @@ function CompetitionManager.new(customMt)
 			filename = "sounds/gogogo.ogg",
 			sampleName = "FarmersCompetition_gogogo",
 			sample = nil
+		},
+		gong = {
+			filename = "sounds/gong.ogg",
+			sampleName = "FarmersCompetition_gong",
+			sample = nil
 		}
 	}
 
@@ -597,6 +602,28 @@ function CompetitionManager:teleportCompetitionPlayersToTeamStarts()
 	end
 end
 
+-- Назначение: при старте/возобновлении соревнования запускает независимый
+-- случайный таймер доступности у каждого зарегистрированного квеста.
+function CompetitionManager:scheduleQuestAvailabilityDelays(reason)
+	if not CompetitionUtils.getIsServer() then return end
+
+	local quests = {
+		{ name = "speed", quest = g_competitionSpeedQuest },
+		{ name = "storage", quest = g_competitionStorageQuest }
+	}
+
+	for _, entry in ipairs(quests) do
+		if entry.quest ~= nil and entry.quest.scheduleAvailability ~= nil then
+			entry.quest:scheduleAvailability(reason or "competitionStart")
+		else
+			CompetitionUtils.warning(
+				"Не удалось запланировать доступность квеста %s: quest/scheduleAvailability отсутствует",
+				tostring(entry.name)
+			)
+		end
+	end
+end
+
 function CompetitionManager:teleportLocalPlayerToTeam(farmId)
 	if g_localPlayer == nil then return false end
 
@@ -747,6 +774,7 @@ function CompetitionManager:resumeCompetitionAfterLoad()
 	self:reattachProgressStorageTargets()
 	self.resumePending = false
 	self.state = CompetitionUtils.STATE.RUNNING
+	self:scheduleQuestAvailabilityDelays("competitionResume")
 	self:teleportCompetitionPlayersToTeamStarts()
 	self:broadcastNotificationSound("gogogo")
 	self.competitionClockSyncTimer = 0
@@ -802,6 +830,7 @@ function CompetitionManager:finishCompetitionStart()
 	self.competitionTeamMask = self:captureCompetitionTeamMask()
 	self.state = CompetitionUtils.STATE.RUNNING
 	self.competitionElapsedMs = 0
+	self:scheduleQuestAvailabilityDelays("competitionStart")
 	self:teleportCompetitionPlayersToTeamStarts()
 	self:broadcastNotificationSound("gogogo")
 	self.security:restorePreStartTime(false)

@@ -29,7 +29,7 @@
 CompetitionStorageQuest = {}
 local CompetitionStorageQuest_mt = Class(CompetitionStorageQuest)
 
-CompetitionStorageQuest.VERSION = "0.1.5"
+CompetitionStorageQuest.VERSION = "0.1.6"
 
 CompetitionStorageQuest.STATE = {
     AVAILABLE = 0,
@@ -46,6 +46,8 @@ CompetitionStorageQuest.ASSET_DELETE_DELAY_MS = 1500
 CompetitionStorageQuest.ACCEPTED_OBJECT_DELETE_DELAY_MS = 50
 CompetitionStorageQuest.UNLOCK_Y_OFFSET = -200
 CompetitionStorageQuest.ENTER_VEHICLE_TIMEOUT_MS = 5000
+CompetitionStorageQuest.AVAILABILITY_DELAY_MIN_SECONDS = 20
+CompetitionStorageQuest.AVAILABILITY_DELAY_MAX_SECONDS = 180
 
 CompetitionStorageQuest.START_ACTION_TEXT = "Начать испытание склада"
 CompetitionStorageQuest.INPUT_ACTION_NAME = "FC_QUEST_ACTIVATE"
@@ -148,13 +150,15 @@ function CompetitionStorageQuestStateEvent.new(
     state,
     activeFarmId,
     boostFarmId,
-    remainingBoostMs
+    remainingBoostMs,
+    availabilityPending
 )
     local self = CompetitionStorageQuestStateEvent.emptyNew()
     self.state = state or CompetitionStorageQuest.STATE.AVAILABLE
     self.activeFarmId = activeFarmId or 0
     self.boostFarmId = boostFarmId or 0
     self.remainingBoostMs = math.max(remainingBoostMs or 0, 0)
+    self.availabilityPending = availabilityPending == true
     return self
 end
 
@@ -171,6 +175,7 @@ function CompetitionStorageQuestStateEvent:writeStream(streamId, connection)
         FarmManager.FARM_ID_SEND_NUM_BITS
     )
     streamWriteInt32(streamId, math.floor(self.remainingBoostMs))
+    streamWriteBool(streamId, self.availabilityPending)
 end
 
 function CompetitionStorageQuestStateEvent:readStream(streamId, connection)
@@ -180,6 +185,7 @@ function CompetitionStorageQuestStateEvent:readStream(streamId, connection)
     self.boostFarmId =
         streamReadUIntN(streamId, FarmManager.FARM_ID_SEND_NUM_BITS)
     self.remainingBoostMs = streamReadInt32(streamId)
+    self.availabilityPending = streamReadBool(streamId)
     self:run(connection)
 end
 
@@ -194,7 +200,8 @@ function CompetitionStorageQuestStateEvent:run(connection)
             self.state,
             self.activeFarmId,
             self.boostFarmId,
-            self.remainingBoostMs
+            self.remainingBoostMs,
+            self.availabilityPending
         )
     end
 end
@@ -570,6 +577,11 @@ function CompetitionStorageQuest.new(customMt)
 
     self.activeBoost = nil
 
+    -- AVAILABLE не обязательно означает немедленно доступный trigger:
+    -- после старта/окончания буста сервер выдерживает случайную задержку.
+    self.availabilityPending = false
+    self.availabilityEndsAtMs = nil
+
     self.localAttemptUi = {
         active = false,
         endsAtMs = 0,
@@ -940,6 +952,76 @@ function CompetitionStorageQuest:getIsCompetitionRunning()
         and g_competitionManager.state == CompetitionUtils.STATE.RUNNING
 end
 
+-- Назначение: сервер ставит storage-квест на случайную задержку 20..180 секунд.
+-- Используется при старте/возобновлении соревнования и после окончания storage boost.
+function CompetitionStorageQuest:scheduleAvailability(reason)
+    if g_currentMission == nil
+        or not g_currentMission:getIsServer()
+        or self.state ~= CompetitionStorageQuest.STATE.AVAILABLE
+        or self.activeBoost ~= nil then
+        return false
+    end
+
+    local delaySeconds = math.random(
+        CompetitionStorageQuest.AVAILABILITY_DELAY_MIN_SECONDS,
+        CompetitionStorageQuest.AVAILABILITY_DELAY_MAX_SECONDS
+    )
+    local now = g_currentMission.time or g_time or 0
+
+    self.availabilityPending = true
+    self.availabilityEndsAtMs = now + delaySeconds * 1000
+    self:broadcastState()
+
+    print(string.format(
+        "[FarmersCompetition][StorageQuest] AVAILABILITY SCHEDULED reason=%s delay=%ds",
+        tostring(reason),
+        delaySeconds
+    ))
+
+    return true
+end
+
+-- Назначение: завершает ожидание, открывает trigger/F1 и оповещает всех игроков gong.
+function CompetitionStorageQuest:activateAvailability(reason)
+    if g_currentMission == nil
+        or not g_currentMission:getIsServer()
+        or self.state ~= CompetitionStorageQuest.STATE.AVAILABLE then
+        return false
+    end
+
+    self.availabilityPending = false
+    self.availabilityEndsAtMs = nil
+    self:broadcastState()
+
+    if g_competitionManager ~= nil
+        and g_competitionManager.broadcastNotificationSound ~= nil then
+        g_competitionManager:broadcastNotificationSound("gong")
+    end
+
+    print(string.format(
+        "[FarmersCompetition][StorageQuest] AVAILABLE reason=%s",
+        tostring(reason)
+    ))
+
+    return true
+end
+
+-- Назначение: обслуживает серверный таймер отложенной доступности storage-квеста.
+function CompetitionStorageQuest:updateAvailabilityTimer()
+    if g_currentMission == nil
+        or not g_currentMission:getIsServer()
+        or self.availabilityPending ~= true
+        or self.state ~= CompetitionStorageQuest.STATE.AVAILABLE
+        or not self:getIsCompetitionRunning() then
+        return
+    end
+
+    local now = g_currentMission.time or g_time or 0
+    if self.availabilityEndsAtMs == nil or now >= self.availabilityEndsAtMs then
+        self:activateAvailability("timerExpired")
+    end
+end
+
 -- Назначение: проверяет, существует ли стартовый trigger указанной команды.
 function CompetitionStorageQuest:hasStartTriggerForFarm(farmId)
     for _, triggerData in ipairs(self.startTriggers) do
@@ -957,6 +1039,7 @@ end
 function CompetitionStorageQuest:getCanStartQuest(farmId)
     return self.initialized
         and self.state == CompetitionStorageQuest.STATE.AVAILABLE
+        and self.availabilityPending ~= true
         and self.cleanupTimer == nil
         and self:getIsCompetitionRunning()
         and farmId ~= nil
@@ -1047,6 +1130,7 @@ end
 function CompetitionStorageQuest:refreshTriggerPresentation()
     local isAvailable =
         self.state == CompetitionStorageQuest.STATE.AVAILABLE
+        and self.availabilityPending ~= true
         and self.cleanupTimer == nil
         and self:getIsCompetitionRunning()
 
@@ -1165,6 +1249,8 @@ function CompetitionStorageQuest:handleStartRequest(
 
     self.attemptSerial = self.attemptSerial + 1
     self.state = CompetitionStorageQuest.STATE.PREPARING
+    self.availabilityPending = false
+    self.availabilityEndsAtMs = nil
     self.activeFarmId = farmId
     self.activeUserId = userId
     self.activeConnection = connection
@@ -1803,6 +1889,8 @@ function CompetitionStorageQuest:finishAttemptByTimeout()
     else
         self.activeBoost = nil
         self.state = CompetitionStorageQuest.STATE.AVAILABLE
+        self.availabilityPending = false
+        self.availabilityEndsAtMs = nil
         self.activeFarmId = 0
         self:applyUnlockState(0)
     end
@@ -1830,6 +1918,8 @@ function CompetitionStorageQuest:cancelPreparingAttempt(reason)
 
     self.attemptSerial = self.attemptSerial + 1
     self.state = CompetitionStorageQuest.STATE.AVAILABLE
+    self.availabilityPending = false
+    self.availabilityEndsAtMs = nil
     self.activeFarmId = 0
     self.activeUserId = nil
     self.activeConnection = nil
@@ -2235,7 +2325,8 @@ function CompetitionStorageQuest:createStateEvent()
         self.state,
         self.activeFarmId or 0,
         boostFarmId,
-        remainingBoostMs
+        remainingBoostMs,
+        self.availabilityPending
     )
 end
 
@@ -2264,10 +2355,13 @@ function CompetitionStorageQuest:applyStateFromServer(
     state,
     activeFarmId,
     boostFarmId,
-    remainingBoostMs
+    remainingBoostMs,
+    availabilityPending
 )
     self.state = state
     self.activeFarmId = activeFarmId or 0
+    self.availabilityPending = availabilityPending == true
+    self.availabilityEndsAtMs = nil
 
     if boostFarmId ~= nil
         and boostFarmId > 0
@@ -2350,6 +2444,8 @@ function CompetitionStorageQuest:deleteMap()
     self.localAttemptUi.active = false
     self.pendingEnterVehicleUniqueId = nil
     self.pendingEnterVehicleTimeoutMs = 0
+    self.availabilityPending = false
+    self.availabilityEndsAtMs = nil
     self.activeBoost = nil
     self:applyUnlockState(0)
 
@@ -2385,6 +2481,8 @@ function CompetitionStorageQuest:consoleCommandResetQuest()
     self.attemptSerial = self.attemptSerial + 1
     self.activeBoost = nil
     self.state = CompetitionStorageQuest.STATE.AVAILABLE
+    self.availabilityPending = false
+    self.availabilityEndsAtMs = nil
     self.activeFarmId = 0
     self.activeUserId = nil
     self.activeConnection = nil
@@ -2440,6 +2538,7 @@ function CompetitionStorageQuest:update(dt)
         and g_currentMission:getIsServer() then
 
         self:updatePendingObjectDeletes(dt)
+        self:updateAvailabilityTimer()
 
         if self.cleanupTimer ~= nil then
             self.cleanupTimer = self.cleanupTimer - dt
@@ -2470,7 +2569,7 @@ function CompetitionStorageQuest:update(dt)
             self.state = CompetitionStorageQuest.STATE.AVAILABLE
             self.activeFarmId = 0
             self:applyUnlockState(0)
-            self:broadcastState()
+            self:scheduleAvailability("boostExpired")
 
             print(string.format(
                 "[FarmersCompetition][StorageQuest] BOOST EXPIRED farmId=%d",
