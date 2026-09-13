@@ -17,7 +17,7 @@
 CompetitionSpeedQuest = {}
 local CompetitionSpeedQuest_mt = Class(CompetitionSpeedQuest)
 
-CompetitionSpeedQuest.VERSION = "0.1.8"
+CompetitionSpeedQuest.VERSION = "0.1.10"
 
 CompetitionSpeedQuest.STATE = {
     AVAILABLE = 0,
@@ -26,13 +26,20 @@ CompetitionSpeedQuest.STATE = {
     BOOST_ACTIVE = 3
 }
 
--- ВРЕМЕННАЯ ТЕСТОВАЯ шкала наград.
--- После замеров реального времени трассы меняются только эти значения.
-CompetitionSpeedQuest.REWARD_TIERS = {
-    {maxTimeSeconds = 60,  transportMultiplier = 3.0, workMultiplier = 2.0, durationSeconds = 600},
-    {maxTimeSeconds = 90,  transportMultiplier = 2.0, workMultiplier = 1.5, durationSeconds = 360},
-    {maxTimeSeconds = 120, transportMultiplier = 1.5, workMultiplier = 1.2, durationSeconds = 180}
-}
+-- Плавная шкала награды speed-квеста.
+-- 25 секунд и быстрее дают максимальный буст.
+-- На 40 секундах выдаётся минимальный буст, после 40 секунд награды нет.
+CompetitionSpeedQuest.REWARD_BEST_TIME_SECONDS = 25
+CompetitionSpeedQuest.REWARD_LIMIT_TIME_SECONDS = 40
+
+CompetitionSpeedQuest.REWARD_MIN_TRANSPORT_MULTIPLIER = 1.5
+CompetitionSpeedQuest.REWARD_MAX_TRANSPORT_MULTIPLIER = 3.0
+
+CompetitionSpeedQuest.REWARD_MIN_WORK_MULTIPLIER = 1.2
+CompetitionSpeedQuest.REWARD_MAX_WORK_MULTIPLIER = 2.0
+
+CompetitionSpeedQuest.REWARD_MIN_DURATION_SECONDS = 180
+CompetitionSpeedQuest.REWARD_MAX_DURATION_SECONDS = 600
 
 CompetitionSpeedQuest.INIT_DELAY_MS = 1500
 CompetitionSpeedQuest.VEHICLE_DELETE_DELAY_MS = 1500
@@ -1003,18 +1010,54 @@ function CompetitionSpeedQuest:onFinishTriggerCallback(triggerId, otherId, onEnt
     self:finishAttempt()
 end
 
--- Назначение: выбирает награду по серверному времени прохождения.
+-- Назначение: рассчитывает плавную награду по серверному времени прохождения.
+-- Между 25 и 40 секундами все параметры линейно меняются от максимума к минимуму.
 function CompetitionSpeedQuest:getRewardForTime(elapsedSeconds)
-    for _, tier in ipairs(CompetitionSpeedQuest.REWARD_TIERS) do
-        if elapsedSeconds <= tier.maxTimeSeconds then
-            return tier
-        end
+    elapsedSeconds = math.max(0, elapsedSeconds or 0)
+
+    if elapsedSeconds > CompetitionSpeedQuest.REWARD_LIMIT_TIME_SECONDS then
+        return {
+            transportMultiplier = 1,
+            workMultiplier = 1,
+            durationSeconds = 0
+        }
     end
 
+    local timeRange =
+        CompetitionSpeedQuest.REWARD_LIMIT_TIME_SECONDS
+        - CompetitionSpeedQuest.REWARD_BEST_TIME_SECONDS
+
+    local quality = math.clamp(
+        (CompetitionSpeedQuest.REWARD_LIMIT_TIME_SECONDS - elapsedSeconds) / timeRange,
+        0,
+        1
+    )
+
+    local transportMultiplier =
+        CompetitionSpeedQuest.REWARD_MIN_TRANSPORT_MULTIPLIER
+        + (
+            CompetitionSpeedQuest.REWARD_MAX_TRANSPORT_MULTIPLIER
+            - CompetitionSpeedQuest.REWARD_MIN_TRANSPORT_MULTIPLIER
+        ) * quality
+
+    local workMultiplier =
+        CompetitionSpeedQuest.REWARD_MIN_WORK_MULTIPLIER
+        + (
+            CompetitionSpeedQuest.REWARD_MAX_WORK_MULTIPLIER
+            - CompetitionSpeedQuest.REWARD_MIN_WORK_MULTIPLIER
+        ) * quality
+
+    local durationSeconds =
+        CompetitionSpeedQuest.REWARD_MIN_DURATION_SECONDS
+        + (
+            CompetitionSpeedQuest.REWARD_MAX_DURATION_SECONDS
+            - CompetitionSpeedQuest.REWARD_MIN_DURATION_SECONDS
+        ) * quality
+
     return {
-        transportMultiplier = 1,
-        workMultiplier = 1,
-        durationSeconds = 0
+        transportMultiplier = transportMultiplier,
+        workMultiplier = workMultiplier,
+        durationSeconds = math.floor(durationSeconds + 0.5)
     }
 end
 
@@ -1405,26 +1448,21 @@ function CompetitionSpeedQuest:applyTransportBoostToMotor(motor)
         motor.maxForwardSpeed = (motor.maxForwardSpeedOrigin or motor.maxForwardSpeed) * transportMultiplier
         motor.maxBackwardSpeed = (motor.maxBackwardSpeedOrigin or motor.maxBackwardSpeed) * transportMultiplier
 
-        if motor.minForwardGearRatioOrigin ~= nil then
-            motor.minForwardGearRatio = motor.minForwardGearRatioOrigin / transportMultiplier
-            motor.maxForwardGearRatio = motor.maxForwardGearRatioOrigin
-        end
-        if motor.minBackwardGearRatioOrigin ~= nil then
-            motor.minBackwardGearRatio = motor.minBackwardGearRatioOrigin / transportMultiplier
-            motor.maxBackwardGearRatio = motor.maxBackwardGearRatioOrigin
-        end
+        -- Диагностика 0.1.9: передаточные отношения оставляем полностью штатными.
+        -- Это позволяет проверить разгон и выбор стартовой передачи без нашего вмешательства.
+        motor.minForwardGearRatio = motor.minForwardGearRatioOrigin
+        motor.maxForwardGearRatio = motor.maxForwardGearRatioOrigin
+        motor.minBackwardGearRatio = motor.minBackwardGearRatioOrigin
+        motor.maxBackwardGearRatio = motor.maxBackwardGearRatioOrigin
     else
         motor.maxForwardSpeed = (motor.maxBackwardSpeedOrigin or motor.maxForwardSpeed) * transportMultiplier
         motor.maxBackwardSpeed = (motor.maxForwardSpeedOrigin or motor.maxBackwardSpeed) * transportMultiplier
 
-        if motor.minBackwardGearRatioOrigin ~= nil then
-            motor.minForwardGearRatio = motor.minBackwardGearRatioOrigin / transportMultiplier
-            motor.maxForwardGearRatio = motor.maxBackwardGearRatioOrigin
-        end
-        if motor.minForwardGearRatioOrigin ~= nil then
-            motor.minBackwardGearRatio = motor.minForwardGearRatioOrigin / transportMultiplier
-            motor.maxBackwardGearRatio = motor.maxForwardGearRatioOrigin
-        end
+        -- При реверсивном направлении также сохраняем штатные значения коробки.
+        motor.minForwardGearRatio = motor.minBackwardGearRatioOrigin
+        motor.maxForwardGearRatio = motor.maxBackwardGearRatioOrigin
+        motor.minBackwardGearRatio = motor.minForwardGearRatioOrigin
+        motor.maxBackwardGearRatio = motor.maxForwardGearRatioOrigin
     end
 
     if physicalMotorChanged then
@@ -1625,41 +1663,9 @@ function CompetitionSpeedQuest.installSpeedHooks()
         end
     end
 
-    -- Для ступенчатых КПП minForwardGearRatioOrigin == nil.
-    -- Их текущий физический gear ratio уменьшается динамически, расширяя диапазон скорости.
-    if VehicleMotor ~= nil and VehicleMotor.getMinMaxGearRatio ~= nil then
-        CompetitionSpeedQuest.originalGetMinMaxGearRatio = VehicleMotor.getMinMaxGearRatio
-
-        VehicleMotor.getMinMaxGearRatio = function(motor, ...)
-            local minRatio, maxRatio = CompetitionSpeedQuest.originalGetMinMaxGearRatio(motor, ...)
-            local quest = g_competitionSpeedQuest
-
-            if quest ~= nil then
-                local multiplier = quest:getTransportMultiplierForMotor(motor)
-                if multiplier > 1 then
-                    local isForward = maxRatio >= 0
-                    local hasVariableRatio
-
-                    if isForward then
-                        hasVariableRatio = motor.minForwardGearRatioOrigin ~= nil
-                    else
-                        hasVariableRatio = motor.minBackwardGearRatioOrigin ~= nil
-                    end
-
-                    if not hasVariableRatio then
-                        if minRatio ~= 0 then
-                            minRatio = minRatio / multiplier
-                        end
-                        if maxRatio ~= 0 then
-                            maxRatio = maxRatio / multiplier
-                        end
-                    end
-                end
-            end
-
-            return minRatio, maxRatio
-        end
-    end
+    -- Диагностика 0.1.9:
+    -- VehicleMotor.getMinMaxGearRatio() намеренно не оборачивается.
+    -- Ступенчатые КПП используют свои штатные ratio на всех передачах.
 end
 
 
