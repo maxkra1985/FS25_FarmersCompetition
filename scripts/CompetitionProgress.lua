@@ -20,7 +20,23 @@ function CompetitionProgress.new(manager, customMt)
 	self.ignoredBalerFillTypesLogged = {}
 	self.lastBaleScanSignatureByFarmId = {}
 	self.invalidGrassTargetsLoggedByFarmId = {}
+
+	-- Диагностика прохождения соломы через комбайн:
+	-- от начисления во внутренний буфер до фактической укладки на землю.
+	self.strawGroundDiagnosticsByVehicle = {}
+	self.nextStrawGroundDiagnosticVehicleId = 1
+
+	-- Диагностика травы ведётся отдельно для косилок и валкователей.
+	-- Для покоса сравниваем произведённый объём с фактически уложенным на карту.
+	-- Для валкования сравниваем снятый с карты объём с новым сформированным валком.
+	self.grassMowerDiagnosticsByVehicle = {}
+	self.nextGrassMowerDiagnosticVehicleId = 1
+	self.grassWindrowerDiagnosticsByVehicle = {}
+	self.nextGrassWindrowerDiagnosticVehicleId = 1
+
 	self:installBalerPickupHook()
+	self:installStrawGroundDiagnosticsHooks()
+	self:installGrassGroundDiagnosticsHooks()
 	return self
 end
 
@@ -33,6 +49,15 @@ function CompetitionProgress:resetRuntimeCounters()
 	self.ignoredBalerFillTypesLogged = {}
 	self.lastBaleScanSignatureByFarmId = {}
 	self.invalidGrassTargetsLoggedByFarmId = {}
+
+	-- Диагностические суммы относятся только к текущему запуску соревнования.
+	self.strawGroundDiagnosticsByVehicle = {}
+	self.nextStrawGroundDiagnosticVehicleId = 1
+	self.grassMowerDiagnosticsByVehicle = {}
+	self.nextGrassMowerDiagnosticVehicleId = 1
+	self.grassWindrowerDiagnosticsByVehicle = {}
+	self.nextGrassWindrowerDiagnosticVehicleId = 1
+
 	for farmId = 1, 4 do
 		self.strawPickedLitersByFarmId[farmId] = 0
 		self.grassPickedLitersByFarmId[farmId] = 0
@@ -144,6 +169,882 @@ function CompetitionProgress:installBalerPickupHook()
 
 		return pickedUpLiters, processedLiters
 	end
+end
+
+
+-------------------------------------------------------------------------------
+-- ДИАГНОСТИКА ЦЕПОЧКИ СОЛОМЫ В КОМБАЙНЕ
+-------------------------------------------------------------------------------
+
+-- Возвращает суммарный объём материала, который сейчас остаётся
+-- во внутренних слотах буфера обработки комбайна.
+function CompetitionProgress:getCombineProcessingBufferLiters(vehicle)
+	if vehicle == nil or vehicle.spec_combine == nil then return 0 end
+	local processing = vehicle.spec_combine.processing
+	local inputBuffer = processing ~= nil and processing.inputBuffer or nil
+	local total = 0
+
+	for _, slot in ipairs(inputBuffer ~= nil and inputBuffer.buffer or {}) do
+		total = total + math.max(0, slot.liters or 0)
+	end
+
+	return total
+end
+
+-- Проверяет, относится ли культура к типам, из которых штатный Combine
+-- формирует валок STRAW.
+function CompetitionProgress:isStrawFruitType(fruitTypeIndex)
+	if fruitTypeIndex == nil
+		or g_fruitTypeManager == nil
+		or g_fruitTypeManager.getWindrowFillTypeIndexByFruitTypeIndex == nil then
+		return false
+	end
+
+	return g_fruitTypeManager:getWindrowFillTypeIndexByFruitTypeIndex(fruitTypeIndex) == FillType.STRAW
+end
+
+-- Проверяет текущий output fill type комбайна и определяет, относится ли
+-- обрабатываемый материал к культуре, которая даёт STRAW.
+function CompetitionProgress:isCombineCurrentlyProcessingStraw(vehicle)
+	if vehicle == nil or vehicle.spec_combine == nil or g_fruitTypeManager == nil then
+		return false
+	end
+
+	local fillType = vehicle.spec_combine.workAreaParameters ~= nil
+		and vehicle.spec_combine.workAreaParameters.dropFillType
+		or nil
+
+	if fillType == nil or fillType == FillType.UNKNOWN then return false end
+
+	local fruitTypeIndex = g_fruitTypeManager:getFruitTypeIndexByFillTypeIndex(fillType)
+	return self:isStrawFruitType(fruitTypeIndex)
+end
+
+-- Возвращает диагностическую запись конкретного комбайна.
+-- Диагностика намеренно не зависит от teamMask и состояния соревнования:
+-- при сравнительных тестах оператор может перейти на другую ферму.
+function CompetitionProgress:getStrawGroundDiagnosticData(vehicle)
+	if vehicle == nil
+		or vehicle.isServer ~= true
+		or vehicle.spec_combine == nil then
+		return nil
+	end
+
+	local farmId = vehicle.getOwnerFarmId ~= nil and vehicle:getOwnerFarmId() or 0
+	farmId = farmId or 0
+
+	local data = self.strawGroundDiagnosticsByVehicle[vehicle]
+	if data == nil then
+		local vehicleId = self.nextStrawGroundDiagnosticVehicleId or 1
+		self.nextStrawGroundDiagnosticVehicleId = vehicleId + 1
+
+		local name = nil
+		if vehicle.getName ~= nil then
+			local ok, value = pcall(vehicle.getName, vehicle)
+			if ok then name = value end
+		end
+
+		data = {
+			id = vehicleId,
+			farmId = farmId,
+			name = tostring(name or vehicle.typeName or vehicle.className or "Combine"),
+			configFileName = tostring(vehicle.configFileName or vehicle.xmlFilename or ""),
+			bufferGeneratedLiters = 0,
+			tipRequestedLiters = 0,
+			groundPlacedLiters = 0,
+			combineAccountedDroppedLiters = 0,
+			choppedLiters = 0,
+			toggleDiscardedBufferLiters = 0,
+			harvestInputLiters = 0,
+			cutAreaPixels = 0,
+			tipCalls = 0,
+			lastBufferLogLiters = 0,
+			lastGroundLogLiters = 0,
+			lastTipShortfallLogLiters = 0,
+			lastChoppedLogLiters = 0
+		}
+		self.strawGroundDiagnosticsByVehicle[vehicle] = data
+
+		CompetitionUtils.info(
+			"STRAW FLOW VEHICLE DEBUG id=%d farmId=%d swathActive=%s name=%s config=%s",
+			data.id,
+			data.farmId,
+			tostring(vehicle.spec_combine.isSwathActive == true),
+			data.name,
+			data.configFileName
+		)
+	end
+
+	return data
+end
+
+-- Учитывает солому, которую штатный Combine:addCutterArea() реально
+-- добавил во внутренний processing buffer после прохода жатки.
+function CompetitionProgress:recordStrawBufferGenerated(vehicle, addedLiters, harvestInputLiters, areaPixels)
+	if addedLiters == nil or addedLiters <= 0 then return end
+	local data = self:getStrawGroundDiagnosticData(vehicle)
+	if data == nil then return end
+
+	data.bufferGeneratedLiters = data.bufferGeneratedLiters + addedLiters
+	data.harvestInputLiters = data.harvestInputLiters + math.max(0, harvestInputLiters or 0)
+	data.cutAreaPixels = data.cutAreaPixels + math.max(0, areaPixels or 0)
+
+	local shouldLog = data.bufferGeneratedLiters - data.lastBufferLogLiters >= 5000
+	if data.lastBufferLogLiters == 0 or shouldLog then
+		data.lastBufferLogLiters = data.bufferGeneratedLiters
+
+		local cutHa = 0
+		if MathUtil ~= nil
+			and MathUtil.areaToHa ~= nil
+			and g_currentMission ~= nil
+			and g_currentMission.getFruitPixelsToSqm ~= nil then
+			cutHa = MathUtil.areaToHa(data.cutAreaPixels, g_currentMission:getFruitPixelsToSqm())
+		end
+
+		CompetitionUtils.info(
+			"STRAW BUFFER DEBUG id=%d farmId=%d added=%.2f totalGenerated=%.2f harvestInputTotal=%.2f cutHa=%.4f currentBuffer=%.2f",
+			data.id,
+			data.farmId,
+			addedLiters,
+			data.bufferGeneratedLiters,
+			data.harvestInputLiters,
+			cutHa,
+			self:getCombineProcessingBufferLiters(vehicle)
+		)
+	end
+end
+
+-- Учитывает вызов DensityMapHeightUtil.tipToGroundAroundLine() для STRAW.
+-- requestedLiters — сколько валка запросил Combine, placedLiters —
+-- сколько функция фактически вернула как уложенное на density height map.
+function CompetitionProgress:recordStrawGroundTip(vehicle, requestedLiters, placedLiters)
+	if requestedLiters == nil or requestedLiters <= 0 then return end
+	local data = self:getStrawGroundDiagnosticData(vehicle)
+	if data == nil then return end
+
+	local actual = math.max(0, placedLiters or 0)
+	local callShortfall = math.max(0, requestedLiters - actual)
+
+	data.tipCalls = data.tipCalls + 1
+	data.tipRequestedLiters = data.tipRequestedLiters + requestedLiters
+	data.groundPlacedLiters = data.groundPlacedLiters + actual
+
+	local totalShortfall = data.tipRequestedLiters - data.groundPlacedLiters
+	local logByGround = data.groundPlacedLiters - data.lastGroundLogLiters >= 5000
+	local logByShortfall = totalShortfall - data.lastTipShortfallLogLiters >= 250
+	local firstCall = data.tipCalls == 1
+
+	if firstCall or logByGround or logByShortfall then
+		data.lastGroundLogLiters = data.groundPlacedLiters
+		data.lastTipShortfallLogLiters = totalShortfall
+
+		CompetitionUtils.info(
+			"STRAW GROUND TIP DEBUG id=%d farmId=%d call=%d requested=%.2f placed=%.2f callShortfall=%.2f totalRequested=%.2f totalPlaced=%.2f totalShortfall=%.2f",
+			data.id,
+			data.farmId,
+			data.tipCalls,
+			requestedLiters,
+			actual,
+			callShortfall,
+			data.tipRequestedLiters,
+			data.groundPlacedLiters,
+			totalShortfall
+		)
+	end
+end
+
+-- Учитывает объём, который сам Combine после processCombineSwathArea()
+-- записал в workAreaParameters.droppedLiters как выгруженный.
+function CompetitionProgress:recordStrawCombineAccounting(vehicle, accountedLiters)
+	if accountedLiters == nil or accountedLiters <= 0 then return end
+	local data = self:getStrawGroundDiagnosticData(vehicle)
+	if data == nil then return end
+
+	data.combineAccountedDroppedLiters = data.combineAccountedDroppedLiters + accountedLiters
+end
+
+-- Учитывает солому, которая была обработана измельчителем вместо укладки
+-- валка на землю.
+function CompetitionProgress:recordStrawChopped(vehicle, choppedLiters)
+	if choppedLiters == nil or choppedLiters <= 0 then return end
+	local data = self:getStrawGroundDiagnosticData(vehicle)
+	if data == nil then return end
+
+	data.choppedLiters = data.choppedLiters + choppedLiters
+	if data.lastChoppedLogLiters == 0
+		or data.choppedLiters - data.lastChoppedLogLiters >= 5000 then
+
+		data.lastChoppedLogLiters = data.choppedLiters
+		CompetitionUtils.info(
+			"STRAW CHOPPER DEBUG id=%d farmId=%d chopped=%.2f totalChopped=%.2f currentBuffer=%.2f",
+			data.id,
+			data.farmId,
+			choppedLiters,
+			data.choppedLiters,
+			self:getCombineProcessingBufferLiters(vehicle)
+		)
+	end
+end
+
+-- Печатает накопленный баланс соломы конкретного комбайна.
+-- По нему можно отдельно увидеть потери до tipToGround и потери уже при укладке.
+function CompetitionProgress:logStrawGroundSummary(vehicle, reason)
+	local data = self.strawGroundDiagnosticsByVehicle[vehicle]
+	if data == nil then return end
+
+	local remainingBuffer = self:getCombineProcessingBufferLiters(vehicle)
+	local routedLiters = data.tipRequestedLiters + data.choppedLiters
+	local flowGap = data.bufferGeneratedLiters - routedLiters - remainingBuffer
+	local groundShortfall = data.tipRequestedLiters - data.groundPlacedLiters
+	local accountingOverActual = data.combineAccountedDroppedLiters - data.groundPlacedLiters
+
+	CompetitionUtils.info(
+		"STRAW FLOW SUMMARY id=%d farmId=%d reason=%s generated=%.2f tipRequested=%.2f groundPlaced=%.2f combineAccounted=%.2f chopped=%.2f toggleDiscarded=%.2f remainingBuffer=%.2f flowGap=%.2f groundShortfall=%.2f accountingOverActual=%.2f tipCalls=%d name=%s config=%s",
+		data.id,
+		data.farmId,
+		tostring(reason or "summary"),
+		data.bufferGeneratedLiters,
+		data.tipRequestedLiters,
+		data.groundPlacedLiters,
+		data.combineAccountedDroppedLiters,
+		data.choppedLiters,
+		data.toggleDiscardedBufferLiters,
+		remainingBuffer,
+		flowGap,
+		groundShortfall,
+		accountingOverActual,
+		data.tipCalls,
+		data.name,
+		data.configFileName
+	)
+end
+
+-- Устанавливает диагностические перехваты штатной цепочки Combine.
+-- Хуки только читают аргументы/результаты и накапливают лог; игровую логику
+-- и возвращаемые штатными функциями значения они не изменяют.
+function CompetitionProgress:installStrawGroundDiagnosticsHooks()
+	if CompetitionProgress.strawGroundDiagnosticsHooksInstalled == true then
+		return
+	end
+
+	if Combine == nil or DensityMapHeightUtil == nil then
+		CompetitionUtils.warning("STRAW FLOW DEBUG hooks unavailable: Combine or DensityMapHeightUtil missing")
+		return
+	end
+
+	CompetitionProgress.strawGroundDiagnosticsHooksInstalled = true
+
+	-- 1. Сколько соломы реально попало во внутренний буфер Combine.
+	if Combine.addCutterArea ~= nil then
+		CompetitionProgress.originalCombineAddCutterArea = Combine.addCutterArea
+
+		Combine.addCutterArea = function(vehicle, area, liters, inputFruitType, outputFillType, strawRatio, farmId, cutterLoad)
+			local progress = g_competitionManager ~= nil and g_competitionManager.progress or nil
+			local beforeBuffer = progress ~= nil and progress:getCombineProcessingBufferLiters(vehicle) or 0
+
+			local result = CompetitionProgress.originalCombineAddCutterArea(
+				vehicle,
+				area,
+				liters,
+				inputFruitType,
+				outputFillType,
+				strawRatio,
+				farmId,
+				cutterLoad
+			)
+
+			if progress ~= nil
+				and progress:isStrawFruitType(inputFruitType)
+				and vehicle ~= nil
+				and vehicle.isServer == true then
+
+				local afterBuffer = progress:getCombineProcessingBufferLiters(vehicle)
+				local added = math.max(0, afterBuffer - beforeBuffer)
+				if added > 0 then
+					progress:recordStrawBufferGenerated(vehicle, added, liters, area)
+				end
+			end
+
+			return result
+		end
+	else
+		CompetitionUtils.warning("STRAW FLOW DEBUG Combine.addCutterArea hook unavailable")
+	end
+
+	-- 2. Сколько STRAW запросили положить на землю и сколько реально положено.
+	if DensityMapHeightUtil.tipToGroundAroundLine ~= nil then
+		CompetitionProgress.originalTipToGroundAroundLine = DensityMapHeightUtil.tipToGroundAroundLine
+
+		DensityMapHeightUtil.tipToGroundAroundLine = function(vehicle, delta, fillTypeIndex, ...)
+			local dropped, lineOffset = CompetitionProgress.originalTipToGroundAroundLine(
+				vehicle,
+				delta,
+				fillTypeIndex,
+				...
+			)
+
+			if delta ~= nil
+				and delta > 0
+				and fillTypeIndex == FillType.STRAW
+				and vehicle ~= nil
+				and vehicle.spec_combine ~= nil
+				and vehicle.isServer == true
+				and g_competitionManager ~= nil
+				and g_competitionManager.progress ~= nil then
+
+				g_competitionManager.progress:recordStrawGroundTip(vehicle, delta, dropped)
+			end
+
+			return dropped, lineOffset
+		end
+	else
+		CompetitionUtils.warning("STRAW FLOW DEBUG DensityMapHeightUtil.tipToGroundAroundLine hook unavailable")
+	end
+
+	-- 3. Сколько Combine сам считает выгруженным после прохода swath work area.
+	if Combine.processCombineSwathArea ~= nil then
+		CompetitionProgress.originalProcessCombineSwathArea = Combine.processCombineSwathArea
+
+		Combine.processCombineSwathArea = function(vehicle, workArea)
+			local progress = g_competitionManager ~= nil and g_competitionManager.progress or nil
+			local isStraw = progress ~= nil and progress:isCombineCurrentlyProcessingStraw(vehicle)
+			local spec = vehicle ~= nil and vehicle.spec_combine or nil
+			local beforeDropped = spec ~= nil and spec.workAreaParameters ~= nil
+				and (spec.workAreaParameters.droppedLiters or 0)
+				or 0
+
+			local area, totalArea = CompetitionProgress.originalProcessCombineSwathArea(vehicle, workArea)
+
+			if isStraw and progress ~= nil and spec ~= nil and spec.workAreaParameters ~= nil then
+				local afterDropped = spec.workAreaParameters.droppedLiters or 0
+				progress:recordStrawCombineAccounting(vehicle, math.max(0, afterDropped - beforeDropped))
+			end
+
+			return area, totalArea
+		end
+	else
+		CompetitionUtils.warning("STRAW FLOW DEBUG Combine.processCombineSwathArea hook unavailable")
+	end
+
+	-- 4. Сколько соломы ушло в измельчитель вместо валка.
+	if Combine.processCombineChopperArea ~= nil then
+		CompetitionProgress.originalProcessCombineChopperArea = Combine.processCombineChopperArea
+
+		Combine.processCombineChopperArea = function(vehicle, workArea)
+			local progress = g_competitionManager ~= nil and g_competitionManager.progress or nil
+			local isStraw = progress ~= nil and progress:isCombineCurrentlyProcessingStraw(vehicle)
+			local spec = vehicle ~= nil and vehicle.spec_combine or nil
+			local beforeDropped = spec ~= nil and spec.workAreaParameters ~= nil
+				and (spec.workAreaParameters.droppedLiters or 0)
+				or 0
+
+			local area, totalArea = CompetitionProgress.originalProcessCombineChopperArea(vehicle, workArea)
+
+			if isStraw and progress ~= nil and spec ~= nil and spec.workAreaParameters ~= nil then
+				local afterDropped = spec.workAreaParameters.droppedLiters or 0
+				progress:recordStrawChopped(vehicle, math.max(0, afterDropped - beforeDropped))
+			end
+
+			return area, totalArea
+		end
+	else
+		CompetitionUtils.warning("STRAW FLOW DEBUG Combine.processCombineChopperArea hook unavailable")
+	end
+
+	-- 5. Переключение режима валка может очистить processing buffer.
+	if Combine.setIsSwathActive ~= nil then
+		CompetitionProgress.originalSetIsSwathActive = Combine.setIsSwathActive
+
+		Combine.setIsSwathActive = function(vehicle, isSwathActive, noEventSend, force)
+			local progress = g_competitionManager ~= nil and g_competitionManager.progress or nil
+			local oldState = vehicle ~= nil and vehicle.spec_combine ~= nil
+				and vehicle.spec_combine.isSwathActive
+				or nil
+			local beforeBuffer = progress ~= nil and progress:getCombineProcessingBufferLiters(vehicle) or 0
+
+			CompetitionProgress.originalSetIsSwathActive(vehicle, isSwathActive, noEventSend, force)
+
+			local relevantToStraw = progress ~= nil
+				and vehicle ~= nil
+				and (
+					progress.strawGroundDiagnosticsByVehicle[vehicle] ~= nil
+					or beforeBuffer > 0
+					or progress:isCombineCurrentlyProcessingStraw(vehicle)
+				)
+
+			if relevantToStraw
+				and vehicle.isServer == true
+				and (oldState ~= isSwathActive or force == true) then
+
+				local data = progress:getStrawGroundDiagnosticData(vehicle)
+				if data ~= nil then
+					local afterBuffer = progress:getCombineProcessingBufferLiters(vehicle)
+					local discarded = math.max(0, beforeBuffer - afterBuffer)
+					data.toggleDiscardedBufferLiters = data.toggleDiscardedBufferLiters + discarded
+
+					CompetitionUtils.info(
+						"STRAW SWATH MODE DEBUG id=%d farmId=%d old=%s new=%s force=%s bufferBefore=%.2f bufferAfter=%.2f discarded=%.2f totalDiscarded=%.2f",
+						data.id,
+						data.farmId,
+						tostring(oldState),
+						tostring(isSwathActive),
+						tostring(force == true),
+						beforeBuffer,
+						afterBuffer,
+						discarded,
+						data.toggleDiscardedBufferLiters
+					)
+				end
+			end
+		end
+	else
+		CompetitionUtils.warning("STRAW FLOW DEBUG Combine.setIsSwathActive hook unavailable")
+	end
+
+	-- 6. При каждой остановке молотилки печатаем накопленный баланс.
+	if Combine.stopThreshing ~= nil then
+		CompetitionProgress.originalStopThreshing = Combine.stopThreshing
+
+		Combine.stopThreshing = function(vehicle)
+			CompetitionProgress.originalStopThreshing(vehicle)
+
+			if g_competitionManager ~= nil and g_competitionManager.progress ~= nil then
+				g_competitionManager.progress:logStrawGroundSummary(vehicle, "stopThreshing")
+			end
+		end
+	else
+		CompetitionUtils.warning("STRAW FLOW DEBUG Combine.stopThreshing hook unavailable")
+	end
+
+
+	CompetitionUtils.info("STRAW FLOW DEBUG hooks installed")
+end
+
+-- Возвращает сумму травы, ожидающей укладки в drop-area косилки.
+-- Это внутренний буфер между processMowerArea() и processDropArea().
+function CompetitionProgress:getMowerGrassDropBufferLiters(vehicle)
+	local spec = vehicle ~= nil and vehicle.spec_mower or nil
+	if spec == nil or spec.dropAreas == nil then return 0 end
+
+	local total = 0
+	for _, dropArea in ipairs(spec.dropAreas) do
+		if dropArea ~= nil and dropArea.fillType == FillType.GRASS_WINDROW then
+			total = total + math.max(0, dropArea.litersToDrop or 0)
+		end
+	end
+	return total
+end
+
+-- Возвращает диагностическую запись косилки.
+-- В отличие от логики соревнования диагностика не фильтруется по farmId/teamMask.
+function CompetitionProgress:getGrassMowerDiagnosticData(vehicle)
+	if vehicle == nil or vehicle.isServer ~= true or vehicle.spec_mower == nil then
+		return nil
+	end
+
+	local farmId = vehicle.getOwnerFarmId ~= nil and vehicle:getOwnerFarmId() or 0
+	farmId = farmId or 0
+	local data = self.grassMowerDiagnosticsByVehicle[vehicle]
+	if data == nil then
+		local vehicleId = self.nextGrassMowerDiagnosticVehicleId or 1
+		self.nextGrassMowerDiagnosticVehicleId = vehicleId + 1
+
+		local name = nil
+		if vehicle.getName ~= nil then
+			local ok, value = pcall(vehicle.getName, vehicle)
+			if ok then name = value end
+		end
+
+		data = {
+			id = vehicleId,
+			farmId = farmId,
+			name = tostring(name or vehicle.typeName or vehicle.className or "Mower"),
+			configFileName = tostring(vehicle.configFileName or vehicle.xmlFilename or ""),
+			generatedLiters = 0,
+			cutAreaPixels = 0,
+			tipAttemptRequestedLiters = 0,
+			groundPlacedLiters = 0,
+			tipCalls = 0,
+			lastGeneratedLogLiters = 0,
+			lastGroundLogLiters = 0,
+			lastShortfallLogLiters = 0
+		}
+		self.grassMowerDiagnosticsByVehicle[vehicle] = data
+
+		CompetitionUtils.info(
+			"GRASS MOWER VEHICLE DEBUG id=%d farmId=%d name=%s config=%s",
+			data.id,
+			data.farmId,
+			data.name,
+			data.configFileName
+		)
+	end
+
+	return data
+end
+
+-- Учитывает объём GRASS_WINDROW, который штатная косилка рассчитала
+-- из реально срезанной площади после применения урожайности и converter factor.
+function CompetitionProgress:recordGrassMowerGenerated(vehicle, liters, areaPixels, inputFruitType)
+	if liters == nil or liters <= 0 then return end
+	local data = self:getGrassMowerDiagnosticData(vehicle)
+	if data == nil then return end
+
+	data.generatedLiters = data.generatedLiters + liters
+	data.cutAreaPixels = data.cutAreaPixels + math.max(0, areaPixels or 0)
+
+	if data.lastGeneratedLogLiters == 0
+		or data.generatedLiters - data.lastGeneratedLogLiters >= 5000 then
+
+		data.lastGeneratedLogLiters = data.generatedLiters
+		local fruitName = nil
+		if inputFruitType ~= nil and g_fruitTypeManager ~= nil then
+			local fruitDesc = g_fruitTypeManager:getFruitTypeByIndex(inputFruitType)
+			fruitName = fruitDesc ~= nil and fruitDesc.name or nil
+		end
+
+		local cutHa = 0
+		if MathUtil ~= nil
+			and MathUtil.areaToHa ~= nil
+			and g_currentMission ~= nil
+			and g_currentMission.getFruitPixelsToSqm ~= nil then
+			cutHa = MathUtil.areaToHa(data.cutAreaPixels, g_currentMission:getFruitPixelsToSqm())
+		end
+
+		CompetitionUtils.info(
+			"GRASS MOWER CUT DEBUG id=%d farmId=%d generated=%.2f totalGenerated=%.2f cutHa=%.4f inputFruit=%s dropBuffer=%.2f",
+			data.id,
+			data.farmId,
+			liters,
+			data.generatedLiters,
+			cutHa,
+			tostring(fruitName or inputFruitType),
+			self:getMowerGrassDropBufferLiters(vehicle)
+		)
+	end
+end
+
+-- Учитывает попытку косилки положить GRASS_WINDROW на density height map.
+-- attemptRequested может повторно включать остаток предыдущего вызова, поэтому
+-- для итогового баланса используем generated/groundPlaced/remainingDropBuffer.
+function CompetitionProgress:recordGrassMowerGroundTip(vehicle, attemptRequested, placedLiters)
+	if attemptRequested == nil or attemptRequested <= 0 then return end
+	local data = self:getGrassMowerDiagnosticData(vehicle)
+	if data == nil then return end
+
+	local actual = math.max(0, placedLiters or 0)
+	local callShortfall = math.max(0, attemptRequested - actual)
+	data.tipCalls = data.tipCalls + 1
+	data.tipAttemptRequestedLiters = data.tipAttemptRequestedLiters + attemptRequested
+	data.groundPlacedLiters = data.groundPlacedLiters + actual
+
+	local cumulativeAttemptShortfall = data.tipAttemptRequestedLiters - data.groundPlacedLiters
+	local firstCall = data.tipCalls == 1
+	local logByGround = data.groundPlacedLiters - data.lastGroundLogLiters >= 5000
+	local logByShortfall = cumulativeAttemptShortfall - data.lastShortfallLogLiters >= 250
+
+	if firstCall or logByGround or logByShortfall then
+		data.lastGroundLogLiters = data.groundPlacedLiters
+		data.lastShortfallLogLiters = cumulativeAttemptShortfall
+		CompetitionUtils.info(
+			"GRASS MOWER GROUND DEBUG id=%d farmId=%d call=%d requested=%.2f placed=%.2f callShortfall=%.2f totalAttemptRequested=%.2f totalPlaced=%.2f dropBuffer=%.2f",
+			data.id,
+			data.farmId,
+			data.tipCalls,
+			attemptRequested,
+			actual,
+			callShortfall,
+			data.tipAttemptRequestedLiters,
+			data.groundPlacedLiters,
+			self:getMowerGrassDropBufferLiters(vehicle)
+		)
+	end
+end
+
+-- Печатает итоговый баланс покоса: сколько травы рассчитано косилкой,
+-- сколько реально записано на землю и сколько осталось ждать укладки.
+function CompetitionProgress:logGrassMowerSummary(vehicle, reason)
+	local data = self.grassMowerDiagnosticsByVehicle[vehicle]
+	if data == nil then return end
+
+	local remainingBuffer = self:getMowerGrassDropBufferLiters(vehicle)
+	local flowGap = data.generatedLiters - data.groundPlacedLiters - remainingBuffer
+
+	CompetitionUtils.info(
+		"GRASS MOWER FLOW SUMMARY id=%d farmId=%d reason=%s generated=%.2f groundPlaced=%.2f remainingDropBuffer=%.2f flowGap=%.2f tipAttemptRequested=%.2f tipCalls=%d name=%s config=%s",
+		data.id,
+		data.farmId,
+		tostring(reason or "summary"),
+		data.generatedLiters,
+		data.groundPlacedLiters,
+		remainingBuffer,
+		flowGap,
+		data.tipAttemptRequestedLiters,
+		data.tipCalls,
+		data.name,
+		data.configFileName
+	)
+end
+
+-- Возвращает сумму материала, который валкователь уже снял с карты,
+-- но пока не смог вернуть в сформированный валок.
+function CompetitionProgress:getWindrowerGrassBufferLiters(vehicle)
+	if vehicle == nil or vehicle.spec_windrower == nil then return 0 end
+
+	local workAreas = vehicle.getTypedWorkAreas ~= nil
+		and vehicle:getTypedWorkAreas(WorkAreaType.WINDROWER)
+		or {}
+	local total = 0
+	for _, workArea in ipairs(workAreas) do
+		if workArea ~= nil and workArea.lastValidPickupFillType == FillType.GRASS_WINDROW then
+			total = total + math.max(0, workArea.litersToDrop or 0)
+		end
+	end
+	return total
+end
+
+-- Возвращает диагностическую запись валкователя без фильтра по teamMask.
+function CompetitionProgress:getGrassWindrowerDiagnosticData(vehicle)
+	if vehicle == nil or vehicle.isServer ~= true or vehicle.spec_windrower == nil then
+		return nil
+	end
+
+	local farmId = vehicle.getOwnerFarmId ~= nil and vehicle:getOwnerFarmId() or 0
+	farmId = farmId or 0
+	local data = self.grassWindrowerDiagnosticsByVehicle[vehicle]
+	if data == nil then
+		local vehicleId = self.nextGrassWindrowerDiagnosticVehicleId or 1
+		self.nextGrassWindrowerDiagnosticVehicleId = vehicleId + 1
+
+		local name = nil
+		if vehicle.getName ~= nil then
+			local ok, value = pcall(vehicle.getName, vehicle)
+			if ok then name = value end
+		end
+
+		data = {
+			id = vehicleId,
+			farmId = farmId,
+			name = tostring(name or vehicle.typeName or vehicle.className or "Windrower"),
+			configFileName = tostring(vehicle.configFileName or vehicle.xmlFilename or ""),
+			pickedUpLiters = 0,
+			dropRequestedLiters = 0,
+			groundPlacedLiters = 0,
+			calls = 0,
+			lastPickupLogLiters = 0,
+			lastGroundLogLiters = 0,
+			lastShortfallLogLiters = 0
+		}
+		self.grassWindrowerDiagnosticsByVehicle[vehicle] = data
+
+		CompetitionUtils.info(
+			"GRASS WINDROWER VEHICLE DEBUG id=%d farmId=%d name=%s config=%s",
+			data.id,
+			data.farmId,
+			data.name,
+			data.configFileName
+		)
+	end
+
+	return data
+end
+
+-- Учитывает один штатный цикл валкователя для GRASS_WINDROW:
+-- pickedUp снято со старого валка, dropped реально записано в новый валок.
+function CompetitionProgress:recordGrassWindrowerFlow(vehicle, pickedUpLiters, droppedLiters)
+	if pickedUpLiters == nil or pickedUpLiters <= 0 then return end
+	local data = self:getGrassWindrowerDiagnosticData(vehicle)
+	if data == nil then return end
+
+	local dropped = math.max(0, droppedLiters or 0)
+	data.calls = data.calls + 1
+	data.pickedUpLiters = data.pickedUpLiters + pickedUpLiters
+	data.dropRequestedLiters = data.dropRequestedLiters + pickedUpLiters
+	data.groundPlacedLiters = data.groundPlacedLiters + dropped
+
+	local currentShortfall = data.pickedUpLiters - data.groundPlacedLiters
+	local firstCall = data.calls == 1
+	local logByPickup = data.pickedUpLiters - data.lastPickupLogLiters >= 5000
+	local logByGround = data.groundPlacedLiters - data.lastGroundLogLiters >= 5000
+	local logByShortfall = currentShortfall - data.lastShortfallLogLiters >= 250
+
+	if firstCall or logByPickup or logByGround or logByShortfall then
+		data.lastPickupLogLiters = data.pickedUpLiters
+		data.lastGroundLogLiters = data.groundPlacedLiters
+		data.lastShortfallLogLiters = currentShortfall
+
+		CompetitionUtils.info(
+			"GRASS WINDROWER FLOW DEBUG id=%d farmId=%d call=%d picked=%.2f dropped=%.2f callShortfall=%.2f totalPicked=%.2f totalDropped=%.2f buffer=%.2f",
+			data.id,
+			data.farmId,
+			data.calls,
+			pickedUpLiters,
+			dropped,
+			math.max(0, pickedUpLiters - dropped),
+			data.pickedUpLiters,
+			data.groundPlacedLiters,
+			self:getWindrowerGrassBufferLiters(vehicle)
+		)
+	end
+end
+
+-- Печатает итоговый баланс валкования.
+function CompetitionProgress:logGrassWindrowerSummary(vehicle, reason)
+	local data = self.grassWindrowerDiagnosticsByVehicle[vehicle]
+	if data == nil then return end
+
+	local remainingBuffer = self:getWindrowerGrassBufferLiters(vehicle)
+	local flowGap = data.pickedUpLiters - data.groundPlacedLiters - remainingBuffer
+
+	CompetitionUtils.info(
+		"GRASS WINDROWER FLOW SUMMARY id=%d farmId=%d reason=%s picked=%.2f groundPlaced=%.2f remainingBuffer=%.2f flowGap=%.2f calls=%d name=%s config=%s",
+		data.id,
+		data.farmId,
+		tostring(reason or "summary"),
+		data.pickedUpLiters,
+		data.groundPlacedLiters,
+		remainingBuffer,
+		flowGap,
+		data.calls,
+		data.name,
+		data.configFileName
+	)
+end
+
+-- Устанавливает диагностические хуки покоса и валкования травы.
+-- Обёртки не меняют аргументы, результаты или внутренние значения штатных функций.
+function CompetitionProgress:installGrassGroundDiagnosticsHooks()
+	if CompetitionProgress.grassGroundDiagnosticsHooksInstalled == true then
+		return
+	end
+
+	if Mower == nil and Windrower == nil then
+		CompetitionUtils.warning("GRASS FLOW DEBUG hooks unavailable: Mower and Windrower missing")
+		return
+	end
+
+	CompetitionProgress.grassGroundDiagnosticsHooksInstalled = true
+
+	-- 1. Покос: объём GRASS_WINDROW, рассчитанный из реально срезанной площади.
+	if Mower ~= nil and Mower.processMowerArea ~= nil then
+		CompetitionProgress.originalProcessMowerArea = Mower.processMowerArea
+		Mower.processMowerArea = function(vehicle, workArea, dt)
+			local changedArea, totalArea = CompetitionProgress.originalProcessMowerArea(vehicle, workArea, dt)
+			local progress = g_competitionManager ~= nil and g_competitionManager.progress or nil
+
+			if progress ~= nil
+				and vehicle ~= nil
+				and vehicle.isServer == true
+				and changedArea ~= nil
+				and changedArea > 0
+				and vehicle.spec_mower ~= nil then
+
+				local spec = vehicle.spec_mower
+				local inputFruitType = spec.workAreaParameters ~= nil
+					and spec.workAreaParameters.lastInputFruitType
+					or nil
+				local converter = inputFruitType ~= nil
+					and spec.fruitTypeConverters ~= nil
+					and spec.fruitTypeConverters[inputFruitType]
+					or nil
+				local outputFillType = converter ~= nil and converter.fillTypeIndex or nil
+				local generatedLiters = workArea ~= nil and workArea.pickedUpLiters or 0
+
+				if outputFillType == FillType.GRASS_WINDROW and generatedLiters > 0 then
+					progress:recordGrassMowerGenerated(vehicle, generatedLiters, changedArea, inputFruitType)
+				end
+			end
+
+			return changedArea, totalArea
+		end
+	else
+		CompetitionUtils.warning("GRASS FLOW DEBUG Mower.processMowerArea hook unavailable")
+	end
+
+	-- 2. Покос: фактическая укладка накопленной травы на density height map.
+	if Mower ~= nil and Mower.processDropArea ~= nil then
+		CompetitionProgress.originalMowerProcessDropArea = Mower.processDropArea
+		Mower.processDropArea = function(vehicle, dropArea, dt)
+			local fillType = dropArea ~= nil and dropArea.fillType or nil
+			local beforeLiters = dropArea ~= nil and (dropArea.litersToDrop or 0) or 0
+			local minValid = 0
+			if fillType ~= nil and g_densityMapHeightManager ~= nil then
+				minValid = g_densityMapHeightManager:getMinValidLiterValue(fillType) or 0
+			end
+			local wasEligible = fillType == FillType.GRASS_WINDROW and beforeLiters > minValid
+
+			CompetitionProgress.originalMowerProcessDropArea(vehicle, dropArea, dt)
+
+			if wasEligible
+				and vehicle ~= nil
+				and vehicle.isServer == true
+				and g_competitionManager ~= nil
+				and g_competitionManager.progress ~= nil then
+
+				local afterLiters = dropArea ~= nil and (dropArea.litersToDrop or 0) or 0
+				local placed = math.max(0, beforeLiters - afterLiters)
+				g_competitionManager.progress:recordGrassMowerGroundTip(vehicle, beforeLiters, placed)
+			end
+		end
+	else
+		CompetitionUtils.warning("GRASS FLOW DEBUG Mower.processDropArea hook unavailable")
+	end
+
+	-- 3. Валкование: сравниваем снятый со старого валка объём с фактической
+	-- укладкой нового валка, которую штатная функция вернула после processDropArea().
+	if Windrower ~= nil and Windrower.processWindrowerArea ~= nil then
+		CompetitionProgress.originalProcessWindrowerArea = Windrower.processWindrowerArea
+		Windrower.processWindrowerArea = function(vehicle, workArea, dt)
+			local dropped, area = CompetitionProgress.originalProcessWindrowerArea(vehicle, workArea, dt)
+			local progress = g_competitionManager ~= nil and g_competitionManager.progress or nil
+
+			if progress ~= nil
+				and vehicle ~= nil
+				and vehicle.isServer == true
+				and workArea ~= nil
+				and workArea.lastValidPickupFillType == FillType.GRASS_WINDROW
+				and (workArea.lastPickupLiters or 0) > 0 then
+
+				progress:recordGrassWindrowerFlow(
+					vehicle,
+					workArea.lastPickupLiters or 0,
+					workArea.lastDroppedLiters or dropped or 0
+				)
+			end
+
+			return dropped, area
+		end
+	else
+		CompetitionUtils.warning("GRASS FLOW DEBUG Windrower.processWindrowerArea hook unavailable")
+	end
+
+	-- 4. При выключении косилки печатаем накопленный баланс поля/прохода.
+	if Mower ~= nil and Mower.onTurnedOff ~= nil then
+		CompetitionProgress.originalMowerOnTurnedOff = Mower.onTurnedOff
+		Mower.onTurnedOff = function(vehicle, ...)
+			CompetitionProgress.originalMowerOnTurnedOff(vehicle, ...)
+			if g_competitionManager ~= nil and g_competitionManager.progress ~= nil then
+				g_competitionManager.progress:logGrassMowerSummary(vehicle, "turnedOff")
+			end
+		end
+	else
+		CompetitionUtils.warning("GRASS FLOW DEBUG Mower.onTurnedOff hook unavailable")
+	end
+
+	-- 5. При выключении валкователя печатаем его накопленный баланс.
+	if Windrower ~= nil and Windrower.onTurnedOff ~= nil then
+		CompetitionProgress.originalWindrowerOnTurnedOff = Windrower.onTurnedOff
+		Windrower.onTurnedOff = function(vehicle, ...)
+			CompetitionProgress.originalWindrowerOnTurnedOff(vehicle, ...)
+			if g_competitionManager ~= nil and g_competitionManager.progress ~= nil then
+				g_competitionManager.progress:logGrassWindrowerSummary(vehicle, "turnedOff")
+			end
+		end
+	else
+		CompetitionUtils.warning("GRASS FLOW DEBUG Windrower.onTurnedOff hook unavailable")
+	end
+
+	CompetitionUtils.info("GRASS FLOW DEBUG hooks installed")
 end
 
 -- Добавляет объём соломы, фактически удалённый прессом с карты.

@@ -33,12 +33,11 @@
             <iconFilename>preview.png</iconFilename>
         </map>
     </maps>
-
-	<extraSourceFiles>
-		<sourceFile filename="scripts/CompetitionScanner.lua" />
-		<sourceFile filename="scripts/CompetitionManager.lua" />
-	</extraSourceFiles>
-
+    <extraSourceFiles>
+        <sourceFile filename="scripts/CompetitionScanner.lua"/>
+        <sourceFile filename="scripts/CompetitionCombineFix.lua"/>
+        <sourceFile filename="scripts/CompetitionManager.lua"/>
+    </extraSourceFiles>
     <storeItems>
         <!-- ТЕХНИКА -->
         <storeItem xmlFilename="maps/vehicles/AmityTechnology_2720HarvesterScrub.xml"/>
