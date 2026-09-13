@@ -4505,10 +4505,6 @@
     <UserAttribute nodeId="4177">
       <Attribute name="noTireTracks" type="boolean" value="true"/>
     </UserAttribute>
-    <UserAttribute nodeId="17496">
-      <Attribute name="boostName" type="string" value="speed"/>
-      <Attribute name="farmId" type="integer" value="1"/>
-    </UserAttribute>
     <UserAttribute nodeId="279">
       <Attribute name="numShips" type="integer" value="10"/>
       <Attribute name="onCreate" type="scriptCallback" value="Ship.onCreate"/>
