@@ -33,10 +33,23 @@
             <iconFilename>preview.png</iconFilename>
         </map>
     </maps>
+
+    <!-- Общее действие активации для всех квестов. Текст в F1 задаётся конкретным Activatable в Lua. -->
+    <actions>
+        <action name="FC_QUEST_ACTIVATE" category="ONFOOT"/>
+    </actions>
+    <inputBinding>
+        <actionBinding action="FC_QUEST_ACTIVATE">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_e"/>
+        </actionBinding>
+    </inputBinding>
+
     <extraSourceFiles>
         <sourceFile filename="scripts/CompetitionScanner.lua"/>
         <sourceFile filename="scripts/CompetitionCombineFix.lua"/>
         <sourceFile filename="scripts/CompetitionManager.lua"/>
+        <sourceFile filename="scripts/CompetitionBoostHUD.lua"/>
+        <sourceFile filename="scripts/CompetitionSpeedQuest.lua"/>
     </extraSourceFiles>
     <storeItems>
         <!-- ТЕХНИКА -->
