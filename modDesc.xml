@@ -50,6 +50,7 @@
         <sourceFile filename="scripts/CompetitionManager.lua"/>
         <sourceFile filename="scripts/CompetitionBoostHUD.lua"/>
         <sourceFile filename="scripts/CompetitionSpeedQuest.lua"/>
+        <sourceFile filename="scripts/CompetitionStorageQuest.lua"/>
     </extraSourceFiles>
     <storeItems>
         <!-- ТЕХНИКА -->
