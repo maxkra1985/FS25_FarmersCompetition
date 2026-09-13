@@ -12,6 +12,42 @@ source(Utils.getFilename("scripts/CompetitionUI.lua", modDir))
 source(Utils.getFilename("scripts/CompetitionProgress.lua", modDir))
 source(Utils.getFilename("scripts/CompetitionScanner.lua", modDir))
 
+-------------------------------------------------------------------------------
+-- УВЕДОМИТЕЛЬНЫЕ ЗВУКИ (Сервер -> Клиенты)
+-- Сервер передаёт только soundId; сам файл загружается и проигрывается локально.
+-------------------------------------------------------------------------------
+CompetitionSoundEvent = {}
+local CompetitionSoundEvent_mt = Class(CompetitionSoundEvent, Event)
+InitEventClass(CompetitionSoundEvent, "CompetitionSoundEvent")
+
+function CompetitionSoundEvent.emptyNew()
+	return Event.new(CompetitionSoundEvent_mt)
+end
+
+function CompetitionSoundEvent.new(soundId)
+	local event = CompetitionSoundEvent.emptyNew()
+	event.soundId = soundId or ""
+	return event
+end
+
+function CompetitionSoundEvent:writeStream(streamId, connection)
+	streamWriteString(streamId, self.soundId)
+end
+
+function CompetitionSoundEvent:readStream(streamId, connection)
+	self.soundId = streamReadString(streamId)
+	self:run(connection)
+end
+
+-- Назначение: проигрывает полученный от сервера звук только на локальном клиенте.
+function CompetitionSoundEvent:run(connection)
+	if not connection:getIsServer() then return end
+	if g_competitionManager ~= nil then
+		g_competitionManager:playNotificationSound(self.soundId)
+	end
+end
+
+
 CompetitionManager = {}
 local CompetitionManager_mt = Class(CompetitionManager)
 
@@ -59,6 +95,17 @@ function CompetitionManager.new(customMt)
 
 	self.welcomeShown = false
 	self.welcomeClosed = false
+
+	-- Реестр локальных 2D-звуков уведомлений.
+	-- Для добавления нового сигнала достаточно зарегистрировать новый soundId здесь
+	-- и вызвать broadcastNotificationSound(soundId) в нужной точке логики.
+	self.notificationSounds = {
+		gogogo = {
+			filename = "sounds/gogogo.ogg",
+			sampleName = "FarmersCompetition_gogogo",
+			sample = nil
+		}
+	}
 
 	self.security = CompetitionSecurity.new(self)
 	self.ui = CompetitionUI.new(self)
@@ -120,6 +167,7 @@ end
 function CompetitionManager:deleteMap()
 	self.mapLoaded = false
 	self.security:restorePreStartTime(true)
+	self:deleteNotificationSounds()
 	g_messageCenter:unsubscribeAll(self)
 	if self.readyActionEventId ~= nil and g_inputBinding ~= nil then g_inputBinding:removeActionEvent(self.readyActionEventId) end
 end
@@ -378,6 +426,86 @@ function CompetitionManager:isFarmInCompetitionMask(farmId)
 end
 
 -------------------------------------------------------------------------------
+-- ЗВУКОВЫЕ УВЕДОМЛЕНИЯ
+-------------------------------------------------------------------------------
+
+-- Назначение: лениво загружает локальный 2D sample по зарегистрированному soundId.
+function CompetitionManager:getNotificationSoundSample(soundId)
+	if not CompetitionUtils.getIsClient() then return nil end
+
+	local definition = self.notificationSounds ~= nil and self.notificationSounds[soundId] or nil
+	if definition == nil then
+		CompetitionUtils.warning("Неизвестный soundId уведомления: %s", tostring(soundId))
+		return nil
+	end
+
+	if definition.sample ~= nil and definition.sample ~= 0 then
+		return definition.sample
+	end
+
+	local filename = Utils.getFilename(definition.filename, g_currentModDirectory or "")
+	local sample = createSample(definition.sampleName or ("FarmersCompetition_" .. tostring(soundId)))
+	if sample == nil or sample == 0 then
+		CompetitionUtils.error("Не удалось создать sample soundId=%s", tostring(soundId))
+		return nil
+	end
+
+	if not loadSample(sample, filename, false) then
+		delete(sample)
+		CompetitionUtils.error(
+			"Не удалось загрузить звук soundId=%s filename=%s",
+			tostring(soundId),
+			tostring(filename)
+		)
+		return nil
+	end
+
+	-- Уведомление не является позиционным звуком мира; отправляем его в GUI audio group.
+	if AudioGroup ~= nil and AudioGroup.GUI ~= nil and setSampleGroup ~= nil then
+		setSampleGroup(sample, AudioGroup.GUI)
+	end
+
+	definition.sample = sample
+	return sample
+end
+
+-- Назначение: локально проигрывает зарегистрированный звук-уведомление один раз.
+function CompetitionManager:playNotificationSound(soundId)
+	if not CompetitionUtils.getIsClient() then return false end
+
+	local sample = self:getNotificationSoundSample(soundId)
+	if sample == nil then return false end
+
+	playSample(sample, 1, 1, 0, 0, 0)
+	CompetitionUtils.info("Проигран звук уведомления soundId=%s", tostring(soundId))
+	return true
+end
+
+-- Назначение: сервер рассылает soundId всем удалённым клиентам и отдельно
+-- проигрывает тот же звук локальному клиенту listen-server/хоста.
+function CompetitionManager:broadcastNotificationSound(soundId)
+	if not CompetitionUtils.getIsServer() then return end
+
+	if g_server ~= nil then
+		g_server:broadcastEvent(CompetitionSoundEvent.new(soundId), false)
+	end
+
+	if CompetitionUtils.getIsClient() then
+		self:playNotificationSound(soundId)
+	end
+end
+
+-- Назначение: освобождает созданные аудио samples при выгрузке карты.
+function CompetitionManager:deleteNotificationSounds()
+	for _, definition in pairs(self.notificationSounds or {}) do
+		if definition.sample ~= nil and definition.sample ~= 0 then
+			delete(definition.sample)
+			definition.sample = nil
+		end
+	end
+end
+
+-------------------------------------------------------------------------------
 -- ИГРОВАЯ ЛОГИКА И СЕТЬ
 -------------------------------------------------------------------------------
 function CompetitionManager:onPlayerFarmChanged(player)
@@ -620,6 +748,7 @@ function CompetitionManager:resumeCompetitionAfterLoad()
 	self.resumePending = false
 	self.state = CompetitionUtils.STATE.RUNNING
 	self:teleportCompetitionPlayersToTeamStarts()
+	self:broadcastNotificationSound("gogogo")
 	self.competitionClockSyncTimer = 0
 	self.baselineScanRequested = false
 	self.baselineScanInProgress = false
@@ -674,6 +803,7 @@ function CompetitionManager:finishCompetitionStart()
 	self.state = CompetitionUtils.STATE.RUNNING
 	self.competitionElapsedMs = 0
 	self:teleportCompetitionPlayersToTeamStarts()
+	self:broadcastNotificationSound("gogogo")
 	self.security:restorePreStartTime(false)
 	
 	CompetitionUtils.info("БАЗОВЫЙ СКАН ЗАВЕРШЕН. СОРЕВНОВАНИЕ НАЧАЛОСЬ! Маска команд: %d", self.competitionTeamMask)
