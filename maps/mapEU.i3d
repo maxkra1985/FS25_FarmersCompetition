@@ -1548,7 +1548,7 @@
   </Shapes>
 
   <Scene>
-    <Camera name="persp" translation="95.0055 165.985 -553.643" rotation="-38.5527 -3.59906 1.60115e-05" visibility="false" nodeId="246" fov="60" nearClip="0.1" farClip="6000" orthographicHeight="25"/>
+    <Camera name="persp" translation="75.9332 185.134 -553.558" rotation="-38.0943 36.05 2.65978e-05" visibility="false" nodeId="246" fov="60" nearClip="0.1" farClip="6000" orthographicHeight="25"/>
     <Light name="sun" translation="0 400 0" rotation="-47.2604 -28.1861 -0" objectMask="0x83ff0000" nodeId="247" type="directional" color="1 1 1" emitDiffuse="true" emitSpecular="true" castShadowMap="true" depthMapBias="0.001" depthMapSlopeScaleBias="2" depthMapSlopeClamp="0.001" depthMapResolution="2048" shadowFarDistance="1000" shadowExtrusionDistance="200" softShadowsLightSize="0.5" softShadowsLightDistance="15" softShadowsDepthBiasFactor="1" softShadowsMaxPenumbraSize="0.5" numShadowMapSplits="5" shadowMapSplitDistancesParameter="0.9" lastShadowMapSplitBboxMin="-1024,-128,-1024" lastShadowMapSplitBboxMax="1024,148,1024" range="10000" scattering="true"/>
     <TerrainTransformGroup name="terrain" static="true" collisionFilterGroup="0x100" collisionFilterMask="0xfffff9c3" nodeId="249" heightMapId="1" patchSize="65" maxLODDistance="750" heightScale="255" unitsPerPixel="1" lodBlendStart="200" lodBlendEnd="300" lodTextureSize="2048" lodBlendStartDynamic="50" lodBlendEndDynamic="65" detailLodBlendDelta="5" materialId="77" castShadowMap="true" occNumLODs="1" occMaxLODDistance="300" occPatchSize="65" occLevel="2" occDistanceWeight="1" occMaxAdjacentFaces="10">
       <OccluderLods>
@@ -6859,17 +6859,17 @@
         <Shape name="col" translation="30 0 -30.0001" scale="1 1 30" shapeId="138" static="true" collisionFilterGroup="0x3e" collisionFilterMask="0xfffffbff" density="0.0001" nodeId="22220" castsShadows="true" receiveShadows="true" nonRenderable="true" materialIds="36"/>
         <Shape name="col" translation="30 0 -30.0001" rotation="180 -90 180" scale="1 1 30" shapeId="138" static="true" collisionFilterGroup="0x3e" collisionFilterMask="0xfffffbff" density="0.0001" nodeId="22221" castsShadows="true" receiveShadows="true" nonRenderable="true" materialIds="36"/>
         <Shape name="col" translation="30 0 30" rotation="180 -90 180" scale="1 1 30" shapeId="138" static="true" collisionFilterGroup="0x3e" collisionFilterMask="0xfffffbff" density="0.0001" nodeId="22222" castsShadows="true" receiveShadows="true" nonRenderable="true" materialIds="36"/>
-        <Shape name="wall_11_8m_roundHole_1_35m" translation="-0.885184 2.81125e-06 4.31254" shapeId="118" static="true" clipDistance="500" nodeId="23736" castsShadows="true" receiveShadows="true" doubleSided="true" materialIds="10">
-          <Shape name="wall_3_8m_solid" translation="-5.842 0 -1.95527" rotation="-0 90 0" shapeId="120" static="true" collisionFilterGroup="0x103c" collisionFilterMask="0xfffffbff" clipDistance="500" nodeId="22223" castsShadows="true" receiveShadows="true" doubleSided="true" materialIds="10"/>
-          <Shape name="wall_3_8m_rectHole_1_3x0_7" translation="-5.842 0 -5.75505" rotation="0 -90 0" shapeId="119" static="true" clipDistance="500" nodeId="23774" castsShadows="true" receiveShadows="true" doubleSided="true" materialIds="10"/>
-          <Shape name="wall_3_8m_solid" translation="5.842 0 -5.755" rotation="-0 90 0" shapeId="120" static="true" collisionFilterGroup="0x103c" collisionFilterMask="0xfffffbff" clipDistance="500" nodeId="23791" castsShadows="true" receiveShadows="true" doubleSided="true" materialIds="10"/>
-          <Shape name="wall_3_8m_rectHole_1_3x0_7" translation="5.842 0 -1.955" rotation="0 -90 0" shapeId="119" static="true" clipDistance="500" nodeId="23792" castsShadows="true" receiveShadows="true" doubleSided="true" materialIds="10"/>
-          <Shape name="wall_11_8m_roundHole_1_35m" translation="0 0 -7.716" shapeId="118" static="true" clipDistance="500" nodeId="23809" castsShadows="true" receiveShadows="true" doubleSided="true" materialIds="10"/>
+        <Shape name="wall_11_8m_roundHole_1_35m" translation="-0.885184 2.81125e-06 4.31254" shapeId="118" static="true" collisionFilterGroup="0x3e" collisionFilterMask="0xfffffbff" clipDistance="500" nodeId="23736" castsShadows="true" receiveShadows="true" doubleSided="true" materialIds="10">
+          <Shape name="wall_3_8m_solid" translation="-5.842 0 -1.95527" rotation="-0 90 0" shapeId="120" static="true" collisionFilterGroup="0x3e" collisionFilterMask="0xfffffbff" clipDistance="500" nodeId="22223" castsShadows="true" receiveShadows="true" doubleSided="true" materialIds="10"/>
+          <Shape name="wall_3_8m_rectHole_1_3x0_7" translation="-5.842 0 -5.75505" rotation="0 -90 0" shapeId="119" static="true" collisionFilterGroup="0x3e" collisionFilterMask="0xfffffbff" clipDistance="500" nodeId="23774" castsShadows="true" receiveShadows="true" doubleSided="true" materialIds="10"/>
+          <Shape name="wall_3_8m_solid" translation="5.842 0 -5.755" rotation="-0 90 0" shapeId="120" static="true" collisionFilterGroup="0x3e" collisionFilterMask="0xfffffbff" clipDistance="500" nodeId="23791" castsShadows="true" receiveShadows="true" doubleSided="true" materialIds="10"/>
+          <Shape name="wall_3_8m_rectHole_1_3x0_7" translation="5.842 0 -1.955" rotation="0 -90 0" shapeId="119" static="true" collisionFilterGroup="0x3e" collisionFilterMask="0xfffffbff" clipDistance="500" nodeId="23792" castsShadows="true" receiveShadows="true" doubleSided="true" materialIds="10"/>
+          <Shape name="wall_11_8m_roundHole_1_35m" translation="0 0 -7.716" shapeId="118" static="true" collisionFilterGroup="0x3e" collisionFilterMask="0xfffffbff" clipDistance="500" nodeId="23809" castsShadows="true" receiveShadows="true" doubleSided="true" materialIds="10"/>
           <Shape name="plane" translation="-5.90546 2.45527 -5.74679" rotation="90 -90 0" shapeId="83" nodeId="24076" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="91"/>
           <Shape name="plane" translation="-0.00396409 2.13359 -7.79721" rotation="-90 1.86693e-05 -180" shapeId="83" nodeId="24077" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="90"/>
           <Shape name="plane" translation="5.91211 2.48373 -1.96442" rotation="90 90 0" shapeId="83" nodeId="24134" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="91"/>
           <Shape name="plane" translation="-0.00396665 2.13359 0.0777102" rotation="-90 180 -180" shapeId="83" nodeId="24139" castsShadows="false" receiveShadows="false" distanceBlending="false" materialIds="90"/>
-          <Shape name="frontons_11_8x7_8_pair" translation="0 5 -3.842" scale="0.99 1 1" shapeId="405" static="true" clipDistance="500" nodeId="24146" castsShadows="true" receiveShadows="true" doubleSided="true" materialIds="10"/>
+          <Shape name="frontons_11_8x7_8_pair" translation="0 5 -3.842" scale="0.99 1 1" shapeId="405" static="true" collisionFilterGroup="0x3e" collisionFilterMask="0xfffffbff" clipDistance="500" nodeId="24146" castsShadows="true" receiveShadows="true" doubleSided="true" materialIds="10"/>
           <TransformGroup name="roof_11_8x7_8_gable" translation="0 5.05736 -3.842" nodeId="24150">
             <Shape name="corrugatedRoof" shapeId="406" static="true" clipDistance="500" nodeId="24151" castsShadows="true" receiveShadows="true" doubleSided="true" materialIds="48"/>
             <Shape name="roofUndersideAndTrim" shapeId="407" clipDistance="500" nodeId="24152" castsShadows="true" receiveShadows="true" doubleSided="true" materialIds="14"/>
@@ -7382,35 +7382,35 @@
       <Attribute name="size" type="integer" value="125"/>
     </UserAttribute>
     <UserAttribute nodeId="24038">
-      <Attribute name="fillType" type="string" value="GRASS"/>
+      <Attribute name="fillType" type="string" value="GRASS_WINDROW"/>
       <Attribute name="size" type="integer" value="125"/>
     </UserAttribute>
     <UserAttribute nodeId="24039">
-      <Attribute name="fillType" type="string" value="GRASS"/>
+      <Attribute name="fillType" type="string" value="GRASS_WINDROW"/>
       <Attribute name="size" type="integer" value="125"/>
     </UserAttribute>
     <UserAttribute nodeId="24040">
-      <Attribute name="fillType" type="string" value="GRASS"/>
+      <Attribute name="fillType" type="string" value="GRASS_WINDROW"/>
       <Attribute name="size" type="integer" value="125"/>
     </UserAttribute>
     <UserAttribute nodeId="24041">
-      <Attribute name="fillType" type="string" value="GRASS"/>
+      <Attribute name="fillType" type="string" value="GRASS_WINDROW"/>
       <Attribute name="size" type="integer" value="125"/>
     </UserAttribute>
     <UserAttribute nodeId="24042">
-      <Attribute name="fillType" type="string" value="GRASS"/>
+      <Attribute name="fillType" type="string" value="GRASS_WINDROW"/>
       <Attribute name="size" type="integer" value="125"/>
     </UserAttribute>
     <UserAttribute nodeId="24043">
-      <Attribute name="fillType" type="string" value="GRASS"/>
+      <Attribute name="fillType" type="string" value="GRASS_WINDROW"/>
       <Attribute name="size" type="integer" value="125"/>
     </UserAttribute>
     <UserAttribute nodeId="24044">
-      <Attribute name="fillType" type="string" value="GRASS"/>
+      <Attribute name="fillType" type="string" value="GRASS_WINDROW"/>
       <Attribute name="size" type="integer" value="125"/>
     </UserAttribute>
     <UserAttribute nodeId="24045">
-      <Attribute name="fillType" type="string" value="GRASS"/>
+      <Attribute name="fillType" type="string" value="GRASS_WINDROW"/>
       <Attribute name="size" type="integer" value="125"/>
     </UserAttribute>
     <UserAttribute nodeId="24046">

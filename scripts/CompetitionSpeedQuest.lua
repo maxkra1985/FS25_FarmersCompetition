@@ -17,7 +17,7 @@
 CompetitionSpeedQuest = {}
 local CompetitionSpeedQuest_mt = Class(CompetitionSpeedQuest)
 
-CompetitionSpeedQuest.VERSION = "0.1.10"
+CompetitionSpeedQuest.VERSION = "0.1.12"
 
 CompetitionSpeedQuest.STATE = {
     AVAILABLE = 0,
@@ -44,6 +44,7 @@ CompetitionSpeedQuest.REWARD_MAX_DURATION_SECONDS = 600
 CompetitionSpeedQuest.INIT_DELAY_MS = 1500
 CompetitionSpeedQuest.VEHICLE_DELETE_DELAY_MS = 1500
 CompetitionSpeedQuest.MOTOR_REFRESH_INTERVAL_MS = 500
+CompetitionSpeedQuest.ENTER_VEHICLE_TIMEOUT_MS = 5000
 -- Экспериментальный RPM boost: transport x3 -> RPM x1.5.
 CompetitionSpeedQuest.RPM_BOOST_DIVISOR = 2.0
 CompetitionSpeedQuest.START_ACTION_TEXT = "Начать испытание скорости"
@@ -247,40 +248,35 @@ function CompetitionSpeedQuestEnterVehicleEvent.emptyNew()
     return Event.new(CompetitionSpeedQuestEnterVehicleEvent_mt)
 end
 
-function CompetitionSpeedQuestEnterVehicleEvent.new(vehicle)
+function CompetitionSpeedQuestEnterVehicleEvent.new(vehicleUniqueId)
     local self = CompetitionSpeedQuestEnterVehicleEvent.emptyNew()
-    self.vehicle = vehicle
+    self.vehicleUniqueId = vehicleUniqueId or ""
     return self
 end
 
 function CompetitionSpeedQuestEnterVehicleEvent:writeStream(streamId, connection)
-    NetworkUtil.writeNodeObject(streamId, self.vehicle)
+    streamWriteString(streamId, self.vehicleUniqueId)
 end
 
 function CompetitionSpeedQuestEnterVehicleEvent:readStream(streamId, connection)
-    self.vehicle = NetworkUtil.readNodeObject(streamId)
+    self.vehicleUniqueId = streamReadString(streamId)
     self:run(connection)
 end
 
--- Назначение: сажает локального игрока на водительское место квестовой техники
--- через штатный Player:requestToEnterVehicle(), сохраняя обычную MP-синхронизацию FS25.
+-- Назначение: ставит удалённому клиенту отложенную посадку в квестовую технику.
+-- Сервер может завершить VehicleLoadingData раньше, чем этот Vehicle уже существует
+-- в локальном VehicleSystem клиента, поэтому передаём stable uniqueId.
 function CompetitionSpeedQuestEnterVehicleEvent:run(connection)
-    if not connection:getIsServer() or g_localPlayer == nil or self.vehicle == nil then
+    if not connection:getIsServer()
+        or g_competitionSpeedQuest == nil
+        or self.vehicleUniqueId == nil
+        or self.vehicleUniqueId == "" then
         return
     end
 
-    local currentVehicle = g_localPlayer:getCurrentVehicle()
-    if currentVehicle ~= nil and currentVehicle ~= self.vehicle then
-        g_localPlayer:leaveVehicle()
-    end
-
-    if g_localPlayer:getCurrentVehicle() ~= self.vehicle then
-        print(string.format(
-            "[FarmersCompetition][SpeedQuest] ENTER QUEST VEHICLE request config=%s",
-            tostring(self.vehicle.configFileName)
-        ))
-        g_localPlayer:requestToEnterVehicle(self.vehicle, true)
-    end
+    g_competitionSpeedQuest:setPendingEnterVehicle(
+        self.vehicleUniqueId
+    )
 end
 
 
@@ -450,6 +446,11 @@ function CompetitionSpeedQuest.new(customMt)
     self.questVehicleXml = nil
     self.questVehicle = nil
     self.pendingVehicleLoadingData = nil
+
+    -- Удалённый клиент ждёт появления сервером созданного Vehicle по uniqueId,
+    -- после чего отправляет штатный VehicleEnterRequestEvent через Player API.
+    self.pendingEnterVehicleUniqueId = nil
+    self.pendingEnterVehicleTimeoutMs = 0
 
     self.activeBoost = nil
     self.touchedMotors = setmetatable({}, {__mode = "k"})
@@ -1141,32 +1142,81 @@ function CompetitionSpeedQuest:sendPlayerBackToFarm(connection, farmId)
     end
 end
 
--- Назначение: посылает телепорт только игроку, который проходит квест.
+-- Назначение: сервер-авторитетно переносит только игрока, который проходит квест.
+-- Для удалённого клиента изменяется серверный Player, а его dirty state штатно
+-- синхронизирует позицию владельцу и остальным клиентам.
 function CompetitionSpeedQuest:sendTeleport(connection, x, y, z, yaw)
-    if connection ~= nil then
-        connection:sendEvent(CompetitionSpeedQuestTeleportEvent.new(x, y, z, yaw))
+    local player = nil
+
+    if connection ~= nil
+        and g_currentMission ~= nil
+        and g_currentMission.connectionsToPlayer ~= nil then
+        player = g_currentMission.connectionsToPlayer[connection]
     elseif g_localPlayer ~= nil then
-        if g_localPlayer:getCurrentVehicle() ~= nil then
-            g_localPlayer:leaveVehicle()
-        end
-        g_localPlayer:teleportTo(x, y, z, true, true)
-        if g_localPlayer.mover ~= nil then
-            g_localPlayer.mover:setMovementYaw(yaw)
-        end
-        if g_localPlayer.graphicsComponent ~= nil then
-            g_localPlayer.graphicsComponent:setModelYaw(yaw)
-        end
+        player = g_localPlayer
     end
+
+    if player == nil then
+        print(
+            "[FarmersCompetition][SpeedQuest] ERROR: Player для телепорта не найден"
+        )
+        return
+    end
+
+    local currentVehicle =
+        player.getCurrentVehicle ~= nil
+        and player:getCurrentVehicle()
+        or nil
+
+    if currentVehicle ~= nil and player.leaveVehicle ~= nil then
+        -- Сервер штатно рассылает VehicleLeaveEvent всем клиентам.
+        player:leaveVehicle(currentVehicle, false)
+    end
+
+    player:teleportTo(x, y, z, true, true)
+
+    if player.mover ~= nil then
+        player.mover:setMovementYaw(yaw)
+    end
+    if player.graphicsComponent ~= nil then
+        player.graphicsComponent:setModelYaw(yaw)
+    end
+
+    print(string.format(
+        "[FarmersCompetition][SpeedQuest] PLAYER TELEPORT userId=%s remote=%s x=%.2f y=%.2f z=%.2f",
+        tostring(player.userId),
+        tostring(connection ~= nil),
+        x,
+        y,
+        z
+    ))
 end
 
--- Назначение: отправляет игроку штатный запрос на посадку в квестовую технику.
+-- Назначение: запускает посадку игрока в квестовую технику.
+-- Для удалённого клиента передаётся uniqueId и ожидается локальная синхронизация Vehicle.
 function CompetitionSpeedQuest:sendEnterQuestVehicle(connection, vehicle)
     if vehicle == nil then
         return
     end
 
     if connection ~= nil then
-        connection:sendEvent(CompetitionSpeedQuestEnterVehicleEvent.new(vehicle))
+        local vehicleUniqueId =
+            vehicle.getUniqueId ~= nil
+            and vehicle:getUniqueId()
+            or vehicle.uniqueId
+
+        if vehicleUniqueId == nil or vehicleUniqueId == "" then
+            print(
+                "[FarmersCompetition][SpeedQuest] ERROR: у квестовой техники отсутствует uniqueId"
+            )
+            return
+        end
+
+        connection:sendEvent(
+            CompetitionSpeedQuestEnterVehicleEvent.new(
+                vehicleUniqueId
+            )
+        )
     elseif g_localPlayer ~= nil then
         local currentVehicle = g_localPlayer:getCurrentVehicle()
 
@@ -1181,6 +1231,68 @@ function CompetitionSpeedQuest:sendEnterQuestVehicle(connection, vehicle)
             ))
             g_localPlayer:requestToEnterVehicle(vehicle, true)
         end
+    end
+end
+
+-- Назначение: начинает на клиенте ожидание синхронизации квестовой техники.
+function CompetitionSpeedQuest:setPendingEnterVehicle(vehicleUniqueId)
+    self.pendingEnterVehicleUniqueId = vehicleUniqueId
+    self.pendingEnterVehicleTimeoutMs =
+        CompetitionSpeedQuest.ENTER_VEHICLE_TIMEOUT_MS
+
+    print(string.format(
+        "[FarmersCompetition][SpeedQuest] ENTER PENDING vehicleUniqueId=%s",
+        tostring(vehicleUniqueId)
+    ))
+end
+
+-- Назначение: после появления Vehicle по uniqueId отправляет штатный запрос посадки серверу.
+function CompetitionSpeedQuest:updatePendingEnterVehicle(dt)
+    if self.pendingEnterVehicleUniqueId == nil
+        or g_localPlayer == nil
+        or g_currentMission == nil
+        or g_currentMission.vehicleSystem == nil then
+        return
+    end
+
+    self.pendingEnterVehicleTimeoutMs =
+        self.pendingEnterVehicleTimeoutMs - dt
+
+    local vehicle =
+        g_currentMission.vehicleSystem:getVehicleByUniqueId(
+            self.pendingEnterVehicleUniqueId
+        )
+
+    if vehicle ~= nil then
+        local currentVehicle =
+            g_localPlayer:getCurrentVehicle()
+
+        if currentVehicle ~= nil and currentVehicle ~= vehicle then
+            g_localPlayer:leaveVehicle()
+        end
+
+        if g_localPlayer:getCurrentVehicle() ~= vehicle then
+            g_localPlayer:requestToEnterVehicle(vehicle, true)
+        end
+
+        print(string.format(
+            "[FarmersCompetition][SpeedQuest] ENTER REQUEST vehicleUniqueId=%s config=%s",
+            tostring(self.pendingEnterVehicleUniqueId),
+            tostring(vehicle.configFileName)
+        ))
+
+        self.pendingEnterVehicleUniqueId = nil
+        self.pendingEnterVehicleTimeoutMs = 0
+        return
+    end
+
+    if self.pendingEnterVehicleTimeoutMs <= 0 then
+        print(string.format(
+            "[FarmersCompetition][SpeedQuest] ERROR: ENTER timeout vehicleUniqueId=%s",
+            tostring(self.pendingEnterVehicleUniqueId)
+        ))
+        self.pendingEnterVehicleUniqueId = nil
+        self.pendingEnterVehicleTimeoutMs = 0
     end
 end
 
@@ -1448,21 +1560,26 @@ function CompetitionSpeedQuest:applyTransportBoostToMotor(motor)
         motor.maxForwardSpeed = (motor.maxForwardSpeedOrigin or motor.maxForwardSpeed) * transportMultiplier
         motor.maxBackwardSpeed = (motor.maxBackwardSpeedOrigin or motor.maxBackwardSpeed) * transportMultiplier
 
-        -- Диагностика 0.1.9: передаточные отношения оставляем полностью штатными.
-        -- Это позволяет проверить разгон и выбор стартовой передачи без нашего вмешательства.
-        motor.minForwardGearRatio = motor.minForwardGearRatioOrigin
-        motor.maxForwardGearRatio = motor.maxForwardGearRatioOrigin
-        motor.minBackwardGearRatio = motor.minBackwardGearRatioOrigin
-        motor.maxBackwardGearRatio = motor.maxBackwardGearRatioOrigin
+        if motor.minForwardGearRatioOrigin ~= nil then
+            motor.minForwardGearRatio = motor.minForwardGearRatioOrigin / transportMultiplier
+            motor.maxForwardGearRatio = motor.maxForwardGearRatioOrigin
+        end
+        if motor.minBackwardGearRatioOrigin ~= nil then
+            motor.minBackwardGearRatio = motor.minBackwardGearRatioOrigin / transportMultiplier
+            motor.maxBackwardGearRatio = motor.maxBackwardGearRatioOrigin
+        end
     else
         motor.maxForwardSpeed = (motor.maxBackwardSpeedOrigin or motor.maxForwardSpeed) * transportMultiplier
         motor.maxBackwardSpeed = (motor.maxForwardSpeedOrigin or motor.maxBackwardSpeed) * transportMultiplier
 
-        -- При реверсивном направлении также сохраняем штатные значения коробки.
-        motor.minForwardGearRatio = motor.minBackwardGearRatioOrigin
-        motor.maxForwardGearRatio = motor.maxBackwardGearRatioOrigin
-        motor.minBackwardGearRatio = motor.minForwardGearRatioOrigin
-        motor.maxBackwardGearRatio = motor.maxForwardGearRatioOrigin
+        if motor.minBackwardGearRatioOrigin ~= nil then
+            motor.minForwardGearRatio = motor.minBackwardGearRatioOrigin / transportMultiplier
+            motor.maxForwardGearRatio = motor.maxBackwardGearRatioOrigin
+        end
+        if motor.minForwardGearRatioOrigin ~= nil then
+            motor.minBackwardGearRatio = motor.minForwardGearRatioOrigin / transportMultiplier
+            motor.maxBackwardGearRatio = motor.maxForwardGearRatioOrigin
+        end
     end
 
     if physicalMotorChanged then
@@ -1663,9 +1780,41 @@ function CompetitionSpeedQuest.installSpeedHooks()
         end
     end
 
-    -- Диагностика 0.1.9:
-    -- VehicleMotor.getMinMaxGearRatio() намеренно не оборачивается.
-    -- Ступенчатые КПП используют свои штатные ratio на всех передачах.
+    -- Для ступенчатых КПП minForwardGearRatioOrigin == nil.
+    -- Их текущий физический gear ratio уменьшается динамически, расширяя диапазон скорости.
+    if VehicleMotor ~= nil and VehicleMotor.getMinMaxGearRatio ~= nil then
+        CompetitionSpeedQuest.originalGetMinMaxGearRatio = VehicleMotor.getMinMaxGearRatio
+
+        VehicleMotor.getMinMaxGearRatio = function(motor, ...)
+            local minRatio, maxRatio = CompetitionSpeedQuest.originalGetMinMaxGearRatio(motor, ...)
+            local quest = g_competitionSpeedQuest
+
+            if quest ~= nil then
+                local multiplier = quest:getTransportMultiplierForMotor(motor)
+                if multiplier > 1 then
+                    local isForward = maxRatio >= 0
+                    local hasVariableRatio
+
+                    if isForward then
+                        hasVariableRatio = motor.minForwardGearRatioOrigin ~= nil
+                    else
+                        hasVariableRatio = motor.minBackwardGearRatioOrigin ~= nil
+                    end
+
+                    if not hasVariableRatio then
+                        if minRatio ~= 0 then
+                            minRatio = minRatio / multiplier
+                        end
+                        if maxRatio ~= 0 then
+                            maxRatio = maxRatio / multiplier
+                        end
+                    end
+                end
+            end
+
+            return minRatio, maxRatio
+        end
+    end
 end
 
 
@@ -1831,6 +1980,8 @@ function CompetitionSpeedQuest:deleteMap()
         self:deleteQuestVehicle()
     end
 
+    self.pendingEnterVehicleUniqueId = nil
+    self.pendingEnterVehicleTimeoutMs = 0
     self.initialized = false
 end
 
@@ -1847,6 +1998,8 @@ function CompetitionSpeedQuest:consoleCommandResetQuest()
     self.activeUserId = nil
     self.activeConnection = nil
     self.startTimeMs = nil
+    self.pendingEnterVehicleUniqueId = nil
+    self.pendingEnterVehicleTimeoutMs = 0
     self.vehicleDeleteTimer = nil
 
     self:deleteQuestVehicle()
@@ -1873,6 +2026,11 @@ function CompetitionSpeedQuest:update(dt)
         if g_client ~= nil then
             g_client:getServerConnection():sendEvent(CompetitionSpeedQuestSyncRequestEvent.new())
         end
+    end
+
+    if g_currentMission ~= nil
+        and g_currentMission:getIsClient() then
+        self:updatePendingEnterVehicle(dt)
     end
 
     -- Основной CompetitionManager меняет WAITING/RUNNING независимо от квеста.

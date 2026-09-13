@@ -29,7 +29,7 @@
 CompetitionStorageQuest = {}
 local CompetitionStorageQuest_mt = Class(CompetitionStorageQuest)
 
-CompetitionStorageQuest.VERSION = "0.1.1"
+CompetitionStorageQuest.VERSION = "0.1.5"
 
 CompetitionStorageQuest.STATE = {
     AVAILABLE = 0,
@@ -45,6 +45,7 @@ CompetitionStorageQuest.MIN_ACCEPTED_OBJECTS = 5
 CompetitionStorageQuest.ASSET_DELETE_DELAY_MS = 1500
 CompetitionStorageQuest.ACCEPTED_OBJECT_DELETE_DELAY_MS = 50
 CompetitionStorageQuest.UNLOCK_Y_OFFSET = -200
+CompetitionStorageQuest.ENTER_VEHICLE_TIMEOUT_MS = 5000
 
 CompetitionStorageQuest.START_ACTION_TEXT = "Начать испытание склада"
 CompetitionStorageQuest.INPUT_ACTION_NAME = "FC_QUEST_ACTIVATE"
@@ -270,37 +271,36 @@ function CompetitionStorageQuestEnterVehicleEvent.emptyNew()
     return Event.new(CompetitionStorageQuestEnterVehicleEvent_mt)
 end
 
-function CompetitionStorageQuestEnterVehicleEvent.new(vehicle)
+function CompetitionStorageQuestEnterVehicleEvent.new(vehicleUniqueId)
     local self = CompetitionStorageQuestEnterVehicleEvent.emptyNew()
-    self.vehicle = vehicle
+    self.vehicleUniqueId = vehicleUniqueId or ""
     return self
 end
 
 function CompetitionStorageQuestEnterVehicleEvent:writeStream(streamId, connection)
-    NetworkUtil.writeNodeObject(streamId, self.vehicle)
+    streamWriteString(streamId, self.vehicleUniqueId)
 end
 
 function CompetitionStorageQuestEnterVehicleEvent:readStream(streamId, connection)
-    self.vehicle = NetworkUtil.readNodeObject(streamId)
+    self.vehicleUniqueId = streamReadString(streamId)
     self:run(connection)
 end
 
--- Назначение: штатно запрашивает посадку локального игрока на водительское место.
+-- Назначение: ставит клиенту отложенный запрос посадки.
+-- VehicleLoadingData завершает загрузку на сервере раньше, чем новая техника
+-- обязательно появится в VehicleSystem удалённого клиента, поэтому NodeObject
+-- в этот момент может ещё не разрешаться.
 function CompetitionStorageQuestEnterVehicleEvent:run(connection)
     if not connection:getIsServer()
-        or g_localPlayer == nil
-        or self.vehicle == nil then
+        or g_competitionStorageQuest == nil
+        or self.vehicleUniqueId == nil
+        or self.vehicleUniqueId == "" then
         return
     end
 
-    local currentVehicle = g_localPlayer:getCurrentVehicle()
-    if currentVehicle ~= nil and currentVehicle ~= self.vehicle then
-        g_localPlayer:leaveVehicle()
-    end
-
-    if g_localPlayer:getCurrentVehicle() ~= self.vehicle then
-        g_localPlayer:requestToEnterVehicle(self.vehicle, true)
-    end
+    g_competitionStorageQuest:setPendingEnterVehicle(
+        self.vehicleUniqueId
+    )
 end
 
 
@@ -563,6 +563,11 @@ function CompetitionStorageQuest.new(customMt)
     self.driverSpawnNode = nil
     self.cleanupTimer = nil
 
+    -- Клиент ждёт появления квестовой машины в локальном VehicleSystem,
+    -- затем отправляет штатный VehicleEnterRequestEvent через Player API.
+    self.pendingEnterVehicleUniqueId = nil
+    self.pendingEnterVehicleTimeoutMs = 0
+
     self.activeBoost = nil
 
     self.localAttemptUi = {
@@ -627,21 +632,42 @@ function CompetitionStorageQuest:findMarkerRecursive(node)
     return nil
 end
 
--- Назначение: рекурсивно собирает точки спавна техники, тюков и палет.
-function CompetitionStorageQuest:collectSpawnNodes(node)
+-- Назначение: рекурсивно собирает точки спавна техники внутри всей зоны boostStorage.
+-- spawnVehicle не обязаны находиться внутри группы spawns: эта группа предназначена для груза.
+function CompetitionStorageQuest:collectVehicleSpawnNodes(node)
+    if node == nil or node == 0 then
+        return
+    end
+
+    if getName(node) == "spawnVehicle" then
+        local vehicleXml = getUserAttribute(node, "vehicleXml")
+        if vehicleXml == nil or vehicleXml == "" then
+            -- Для совместимости принимаем и стандартное имя UserAttribute xmlFilename.
+            vehicleXml = getUserAttribute(node, "xmlFilename")
+        end
+
+        table.insert(self.vehicleSpawns, {
+            node = node,
+            vehicleXml = vehicleXml,
+            enterVehicle = getUserAttribute(node, "enterVehicle") == true
+        })
+    end
+
+    local childCount = getNumOfChildren(node)
+    for index = 0, childCount - 1 do
+        self:collectVehicleSpawnNodes(getChildAt(node, index))
+    end
+end
+
+-- Назначение: рекурсивно собирает точки спавна тюков и палет только внутри boostStorage -> spawns.
+function CompetitionStorageQuest:collectCargoSpawnNodes(node)
     if node == nil or node == 0 then
         return
     end
 
     local name = getName(node)
 
-    if name == "spawnVehicle" then
-        table.insert(self.vehicleSpawns, {
-            node = node,
-            vehicleXml = getUserAttribute(node, "vehicleXml"),
-            enterVehicle = getUserAttribute(node, "enterVehicle") == true
-        })
-    elseif name == "baleStraw" or name == "baleGrass" then
+    if name == "baleStraw" or name == "baleGrass" then
         table.insert(self.cargoSpawns, {
             node = node,
             kind = "bale",
@@ -660,7 +686,7 @@ function CompetitionStorageQuest:collectSpawnNodes(node)
 
     local childCount = getNumOfChildren(node)
     for index = 0, childCount - 1 do
-        self:collectSpawnNodes(getChildAt(node, index))
+        self:collectCargoSpawnNodes(getChildAt(node, index))
     end
 end
 
@@ -699,12 +725,28 @@ function CompetitionStorageQuest:scanScene(node)
         }
     end
 
-    if getName(node) == "boostStorage" and self.questRootNode == nil then
-        self.questRootNode = node
-        self.storageTriggerNode =
+    if getName(node) == "boostStorage" then
+        local candidateStorageTrigger =
             self:findChildRecursiveByName(node, "storageTrigger")
-        self.spawnsNode =
+        local candidateSpawns =
             self:findChildRecursiveByName(node, "spawns")
+
+        -- Если в сцене случайно есть несколько групп с одинаковым именем,
+        -- используем именно ту boostStorage, где присутствуют обе обязательные части.
+        if candidateStorageTrigger ~= nil and candidateSpawns ~= nil then
+            if self.questRootNode == nil then
+                self.questRootNode = node
+                self.storageTriggerNode = candidateStorageTrigger
+                self.spawnsNode = candidateSpawns
+            end
+        else
+            print(string.format(
+                "[FarmersCompetition][StorageQuest] CONFIG candidate boostStorage node=%s storageTrigger=%s spawns=%s",
+                tostring(node),
+                tostring(candidateStorageTrigger ~= nil),
+                tostring(candidateSpawns ~= nil)
+            ))
+        end
     end
 
     local childCount = getNumOfChildren(node)
@@ -718,7 +760,7 @@ function CompetitionStorageQuest:validateSpawnConfiguration()
     local valid = true
 
     if #self.vehicleSpawns == 0 then
-        print("[FarmersCompetition][StorageQuest] ERROR: в boostStorage/spawns нет spawnVehicle")
+        print("[FarmersCompetition][StorageQuest] ERROR: внутри boostStorage не найден spawnVehicle")
         valid = false
     end
 
@@ -772,6 +814,27 @@ function CompetitionStorageQuest:validateSpawnConfiguration()
         ))
     end
 
+    for index, spawnData in ipairs(self.vehicleSpawns) do
+        print(string.format(
+            "[FarmersCompetition][StorageQuest] CONFIG vehicleSpawn[%d] node=%s vehicleXml=%s enterVehicle=%s",
+            index,
+            tostring(spawnData.node),
+            tostring(spawnData.vehicleXml),
+            tostring(spawnData.enterVehicle)
+        ))
+    end
+
+    for index, spawnData in ipairs(self.cargoSpawns) do
+        print(string.format(
+            "[FarmersCompetition][StorageQuest] CONFIG cargoSpawn[%d] name=%s kind=%s fillType=%s size=%s",
+            index,
+            tostring(spawnData.name),
+            tostring(spawnData.kind),
+            tostring(spawnData.fillTypeName),
+            tostring(spawnData.size)
+        ))
+    end
+
     return valid
 end
 
@@ -811,14 +874,25 @@ function CompetitionStorageQuest:initialize()
         return false
     end
 
-    if self.questRootNode == nil
-        or self.storageTriggerNode == nil
-        or self.spawnsNode == nil then
-        print("[FarmersCompetition][StorageQuest] ERROR CONFIG: не найдены boostStorage/spawns/storageTrigger")
-        self.sceneConfigurationValid = false
+    self.sceneConfigurationValid =
+        self.questRootNode ~= nil
+        and self.storageTriggerNode ~= nil
+        and self.spawnsNode ~= nil
+
+    self.spawnConfigurationValid = false
+
+    if not self.sceneConfigurationValid then
+        print(string.format(
+            "[FarmersCompetition][StorageQuest] ERROR CONFIG STRUCTURE: boostStorage=%s spawns=%s storageTrigger=%s",
+            tostring(self.questRootNode ~= nil),
+            tostring(self.spawnsNode ~= nil),
+            tostring(self.storageTriggerNode ~= nil)
+        ))
     else
-        self:collectSpawnNodes(self.spawnsNode)
-        self.sceneConfigurationValid = self:validateSpawnConfiguration()
+        -- Техника находится в общей зоне boostStorage, а груз — в отдельной группе spawns.
+        self:collectVehicleSpawnNodes(self.questRootNode)
+        self:collectCargoSpawnNodes(self.spawnsNode)
+        self.spawnConfigurationValid = self:validateSpawnConfiguration()
     end
 
     if g_currentMission:getIsClient() then
@@ -845,13 +919,14 @@ function CompetitionStorageQuest:initialize()
     self:refreshTriggerPresentation()
 
     print(string.format(
-        "[FarmersCompetition][StorageQuest] Инициализация version=%s startTriggers=%d vehicles=%d cargo=%d unlockNodes=%d configValid=%s competitionRunning=%s",
+        "[FarmersCompetition][StorageQuest] Инициализация version=%s startTriggers=%d vehicles=%d cargo=%d unlockNodes=%d structureValid=%s spawnValid=%s competitionRunning=%s",
         CompetitionStorageQuest.VERSION,
         #self.startTriggers,
         #self.vehicleSpawns,
         #self.cargoSpawns,
         self:getUnlockNodeCount(),
         tostring(self.sceneConfigurationValid),
+        tostring(self.spawnConfigurationValid),
         tostring(self.lastCompetitionRunning)
     ))
 
@@ -943,9 +1018,10 @@ function CompetitionStorageQuest:refreshSingleTriggerActivatable(triggerData)
         triggerData.activatableRegistered = true
 
         print(string.format(
-            "[FarmersCompetition][StorageQuest] F1 activatable ON farmId=%d configValid=%s unlockNode=%s",
+            "[FarmersCompetition][StorageQuest] F1 activatable ON farmId=%d structureValid=%s spawnValid=%s unlockNode=%s",
             triggerData.farmId,
             tostring(self.sceneConfigurationValid),
+            tostring(self.spawnConfigurationValid),
             tostring(self.unlockNodes[triggerData.farmId] ~= nil)
         ))
     elseif not shouldRegister and triggerData.activatableRegistered then
@@ -1060,8 +1136,21 @@ function CompetitionStorageQuest:handleStartRequest(
     -- Ошибки квестовой зоны/наград диагностируем здесь, а не через исчезновение E.
     if not self.sceneConfigurationValid then
         print(string.format(
-            "[FarmersCompetition][StorageQuest] START REJECT CONFIG farmId=%d: boostStorage/spawns/storageTrigger настроены не полностью",
-            farmId
+            "[FarmersCompetition][StorageQuest] START REJECT CONFIG STRUCTURE farmId=%d boostStorage=%s spawns=%s storageTrigger=%s",
+            farmId,
+            tostring(self.questRootNode ~= nil),
+            tostring(self.spawnsNode ~= nil),
+            tostring(self.storageTriggerNode ~= nil)
+        ))
+        return
+    end
+
+    if not self.spawnConfigurationValid then
+        print(string.format(
+            "[FarmersCompetition][StorageQuest] START REJECT CONFIG SPAWNS farmId=%d vehicles=%d cargo=%d",
+            farmId,
+            #self.vehicleSpawns,
+            #self.cargoSpawns
         ))
         return
     end
@@ -1166,6 +1255,13 @@ function CompetitionStorageQuest:spawnQuestBale(spawnData, farmId)
         )
     end
 
+    -- UserAttribute size на карте удобно задавать в сантиметрах (например 125),
+    -- тогда как BaleManager хранит и сравнивает диаметр в метрах (1.25).
+    -- Для совместимости сначала пробуем значение как есть, затем для size >= 10
+    -- автоматически переводим сантиметры в метры.
+    local requestedSize = spawnData.size
+    local resolvedDiameter = requestedSize
+
     local baleXml =
         g_baleManager:getBaleXMLFilename(
             fillTypeIndex,
@@ -1173,15 +1269,31 @@ function CompetitionStorageQuest:spawnQuestBale(spawnData, farmId)
             nil,
             nil,
             nil,
-            spawnData.size,
+            resolvedDiameter,
             nil
         )
 
+    if baleXml == nil and requestedSize >= 10 then
+        resolvedDiameter = requestedSize / 100
+
+        baleXml =
+            g_baleManager:getBaleXMLFilename(
+                fillTypeIndex,
+                true,
+                nil,
+                nil,
+                nil,
+                resolvedDiameter,
+                nil
+            )
+    end
+
     if baleXml == nil then
         return nil, string.format(
-            "не найден круглый тюк fillType=%s diameter=%.2f",
+            "не найден круглый тюк fillType=%s size=%s (проверен diameter=%.2f м)",
             tostring(spawnData.fillTypeName),
-            spawnData.size
+            tostring(requestedSize),
+            resolvedDiameter
         )
     end
 
@@ -1221,10 +1333,11 @@ function CompetitionStorageQuest:spawnQuestBale(spawnData, farmId)
     table.insert(self.temporaryCargo, bale)
 
     print(string.format(
-        "[FarmersCompetition][StorageQuest] BALE SPAWN name=%s fillType=%s size=%.2f farmId=%d",
+        "[FarmersCompetition][StorageQuest] BALE SPAWN name=%s fillType=%s size=%s diameter=%.2fm farmId=%d",
         tostring(spawnData.name),
         tostring(spawnData.fillTypeName),
-        spawnData.size,
+        tostring(spawnData.size),
+        resolvedDiameter,
         farmId
     ))
 
@@ -1279,7 +1392,8 @@ function CompetitionStorageQuest:spawnQuestPallet(
             attemptId = attemptId,
             kind = "pallet",
             spawnData = spawnData,
-            fillTypeIndex = fillTypeIndex
+            fillTypeIndex = fillTypeIndex,
+            farmId = farmId
         }
     )
 
@@ -1428,14 +1542,43 @@ function CompetitionStorageQuest:onTemporaryObjectLoaded(
     end
 
     if arguments.kind == "pallet" then
+        -- PalletSpawner FS25 тоже создаёт палету пустой и заполняет её отдельным
+        -- addFillUnitFillLevel(). Для квеста сразу доводим палету до полной ёмкости.
+        local fillUnitIndex =
+            object.spec_pallet ~= nil
+            and object.spec_pallet.fillUnitIndex
+            or 1
+        local capacity =
+            object.getFillUnitCapacity ~= nil
+            and object:getFillUnitCapacity(fillUnitIndex)
+            or 0
+
+        if object.emptyAllFillUnits ~= nil then
+            object:emptyAllFillUnits(true)
+        end
+
+        local appliedFillLevel = 0
+        if capacity > 0 and object.addFillUnitFillLevel ~= nil then
+            appliedFillLevel = object:addFillUnitFillLevel(
+                arguments.farmId or self.activeFarmId,
+                fillUnitIndex,
+                capacity,
+                arguments.fillTypeIndex,
+                ToolType.UNDEFINED
+            )
+        end
+
         object.competitionQuestStorageObject = true
         self.questObjects[object] = true
         table.insert(self.temporaryCargo, object)
 
         print(string.format(
-            "[FarmersCompetition][StorageQuest] PALLET SPAWN fillType=%s farmId=%d",
+            "[FarmersCompetition][StorageQuest] PALLET SPAWN fillType=%s farmId=%d fillUnit=%d capacity=%.1f filled=%.1f",
             tostring(arguments.spawnData.fillTypeName),
-            self.activeFarmId
+            arguments.farmId or self.activeFarmId,
+            fillUnitIndex,
+            capacity,
+            appliedFillLevel or 0
         ))
     else
         table.insert(self.temporaryVehicles, object)
@@ -1793,7 +1936,9 @@ function CompetitionStorageQuest:sendPlayerBackToFarm(connection, farmId)
     end
 end
 
--- Назначение: телепортирует только проходящего квест игрока.
+-- Назначение: сервер-авторитетно переносит только проходящего квест игрока.
+-- Для удалённого клиента меняем серверный Player: его dirty state штатно
+-- синхронизирует позицию обратно владельцу и остальным клиентам.
 function CompetitionStorageQuest:sendTeleport(
     connection,
     x,
@@ -1801,32 +1946,54 @@ function CompetitionStorageQuest:sendTeleport(
     z,
     yaw
 )
-    if connection ~= nil then
-        connection:sendEvent(
-            CompetitionStorageQuestTeleportEvent.new(
-                x,
-                y,
-                z,
-                yaw
-            )
-        )
+    local player = nil
+
+    if connection ~= nil
+        and g_currentMission ~= nil
+        and g_currentMission.connectionsToPlayer ~= nil then
+        player = g_currentMission.connectionsToPlayer[connection]
     elseif g_localPlayer ~= nil then
-        if g_localPlayer:getCurrentVehicle() ~= nil then
-            g_localPlayer:leaveVehicle()
-        end
-
-        g_localPlayer:teleportTo(x, y, z, true, true)
-
-        if g_localPlayer.mover ~= nil then
-            g_localPlayer.mover:setMovementYaw(yaw)
-        end
-        if g_localPlayer.graphicsComponent ~= nil then
-            g_localPlayer.graphicsComponent:setModelYaw(yaw)
-        end
+        player = g_localPlayer
     end
+
+    if player == nil then
+        print(
+            "[FarmersCompetition][StorageQuest] ERROR: Player для телепорта не найден"
+        )
+        return
+    end
+
+    local currentVehicle =
+        player.getCurrentVehicle ~= nil
+        and player:getCurrentVehicle()
+        or nil
+
+    if currentVehicle ~= nil and player.leaveVehicle ~= nil then
+        -- На сервере VehicleLeaveEvent рассылается штатно всем клиентам.
+        player:leaveVehicle(currentVehicle, false)
+    end
+
+    player:teleportTo(x, y, z, true, true)
+
+    if player.mover ~= nil then
+        player.mover:setMovementYaw(yaw)
+    end
+    if player.graphicsComponent ~= nil then
+        player.graphicsComponent:setModelYaw(yaw)
+    end
+
+    print(string.format(
+        "[FarmersCompetition][StorageQuest] PLAYER TELEPORT userId=%s remote=%s x=%.2f y=%.2f z=%.2f",
+        tostring(player.userId),
+        tostring(connection ~= nil),
+        x,
+        y,
+        z
+    ))
 end
 
--- Назначение: сажает проходящего игрока в выбранную квестовую технику.
+-- Назначение: запускает посадку проходящего игрока в квестовую технику.
+-- Удалённому клиенту передаём uniqueId и ждём локальной синхронизации Vehicle.
 function CompetitionStorageQuest:sendEnterQuestVehicle(
     connection,
     vehicle
@@ -1836,8 +2003,22 @@ function CompetitionStorageQuest:sendEnterQuestVehicle(
     end
 
     if connection ~= nil then
+        local vehicleUniqueId =
+            vehicle.getUniqueId ~= nil
+            and vehicle:getUniqueId()
+            or vehicle.uniqueId
+
+        if vehicleUniqueId == nil or vehicleUniqueId == "" then
+            print(
+                "[FarmersCompetition][StorageQuest] ERROR: у квестовой техники отсутствует uniqueId"
+            )
+            return
+        end
+
         connection:sendEvent(
-            CompetitionStorageQuestEnterVehicleEvent.new(vehicle)
+            CompetitionStorageQuestEnterVehicleEvent.new(
+                vehicleUniqueId
+            )
         )
     elseif g_localPlayer ~= nil then
         local currentVehicle =
@@ -1850,6 +2031,68 @@ function CompetitionStorageQuest:sendEnterQuestVehicle(
         if g_localPlayer:getCurrentVehicle() ~= vehicle then
             g_localPlayer:requestToEnterVehicle(vehicle, true)
         end
+    end
+end
+
+-- Назначение: начинает на клиенте ожидание синхронизации квестовой техники.
+function CompetitionStorageQuest:setPendingEnterVehicle(vehicleUniqueId)
+    self.pendingEnterVehicleUniqueId = vehicleUniqueId
+    self.pendingEnterVehicleTimeoutMs =
+        CompetitionStorageQuest.ENTER_VEHICLE_TIMEOUT_MS
+
+    print(string.format(
+        "[FarmersCompetition][StorageQuest] ENTER PENDING vehicleUniqueId=%s",
+        tostring(vehicleUniqueId)
+    ))
+end
+
+-- Назначение: после появления Vehicle по uniqueId отправляет штатный запрос посадки серверу.
+function CompetitionStorageQuest:updatePendingEnterVehicle(dt)
+    if self.pendingEnterVehicleUniqueId == nil
+        or g_localPlayer == nil
+        or g_currentMission == nil
+        or g_currentMission.vehicleSystem == nil then
+        return
+    end
+
+    self.pendingEnterVehicleTimeoutMs =
+        self.pendingEnterVehicleTimeoutMs - dt
+
+    local vehicle =
+        g_currentMission.vehicleSystem:getVehicleByUniqueId(
+            self.pendingEnterVehicleUniqueId
+        )
+
+    if vehicle ~= nil then
+        local currentVehicle =
+            g_localPlayer:getCurrentVehicle()
+
+        if currentVehicle ~= nil and currentVehicle ~= vehicle then
+            g_localPlayer:leaveVehicle()
+        end
+
+        if g_localPlayer:getCurrentVehicle() ~= vehicle then
+            g_localPlayer:requestToEnterVehicle(vehicle, true)
+        end
+
+        print(string.format(
+            "[FarmersCompetition][StorageQuest] ENTER REQUEST vehicleUniqueId=%s config=%s",
+            tostring(self.pendingEnterVehicleUniqueId),
+            tostring(vehicle.configFileName)
+        ))
+
+        self.pendingEnterVehicleUniqueId = nil
+        self.pendingEnterVehicleTimeoutMs = 0
+        return
+    end
+
+    if self.pendingEnterVehicleTimeoutMs <= 0 then
+        print(string.format(
+            "[FarmersCompetition][StorageQuest] ERROR: ENTER timeout vehicleUniqueId=%s",
+            tostring(self.pendingEnterVehicleUniqueId)
+        ))
+        self.pendingEnterVehicleUniqueId = nil
+        self.pendingEnterVehicleTimeoutMs = 0
     end
 end
 
@@ -2105,6 +2348,8 @@ function CompetitionStorageQuest:deleteMap()
     end
 
     self.localAttemptUi.active = false
+    self.pendingEnterVehicleUniqueId = nil
+    self.pendingEnterVehicleTimeoutMs = 0
     self.activeBoost = nil
     self:applyUnlockState(0)
 
@@ -2146,6 +2391,8 @@ function CompetitionStorageQuest:consoleCommandResetQuest()
     self.attemptEndsAtMs = nil
     self.cleanupTimer = nil
     self.acceptedCount = 0
+    self.pendingEnterVehicleUniqueId = nil
+    self.pendingEnterVehicleTimeoutMs = 0
 
     self:applyUnlockState(0)
     self:deleteAttemptAssets()
@@ -2176,6 +2423,11 @@ function CompetitionStorageQuest:update(dt)
                 CompetitionStorageQuestSyncRequestEvent.new()
             )
         end
+    end
+
+    if g_currentMission ~= nil
+        and g_currentMission:getIsClient() then
+        self:updatePendingEnterVehicle(dt)
     end
 
     local competitionRunning = self:getIsCompetitionRunning()
