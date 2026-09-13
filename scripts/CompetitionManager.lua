@@ -398,18 +398,83 @@ function CompetitionManager:onPlayerFarmChanged(player)
 	end
 end
 
-function CompetitionManager:teleportLocalPlayerToTeam(farmId)
-	if g_localPlayer == nil then return false end
+-- Возвращает мировую стартовую точку указанной соревновательной фермы.
+function CompetitionManager:getTeamStartPosition(farmId)
 	local config = self:getCompetitionFarmConfig(farmId)
-	if config == nil or config.spawnX == nil then return false end
-	
+	if config == nil or config.spawnX == nil then return nil end
+
 	local x, z = config.spawnX, -40
 	local terrainY = getTerrainHeightAtWorldPos(g_terrainNode, x, 0, z)
 	local y = terrainY + 0.2
-	
-	if g_localPlayer.teleportTo ~= nil then g_localPlayer:teleportTo(x, y, z, true, false)
-	elseif g_localPlayer.rootNode ~= nil and g_localPlayer.rootNode ~= 0 then setWorldTranslation(g_localPlayer.rootNode, x, y, z) end
-	
+	return x, y, z
+end
+
+-- Телепортирует конкретного Player в стартовую точку его команды.
+-- На сервере PlayerMover:setPosition() поднимает dirty flag, поэтому новая позиция
+-- штатно синхронизируется владельцу игрока и остальным клиентам.
+function CompetitionManager:teleportPlayerToTeamStart(player, farmId)
+	if player == nil or not CompetitionUtils.isCompetitionFarmId(farmId) then return false end
+
+	local x, y, z = self:getTeamStartPosition(farmId)
+	if x == nil then return false end
+
+	local currentVehicle = player.getCurrentVehicle ~= nil and player:getCurrentVehicle() or nil
+	if currentVehicle ~= nil and player.leaveVehicle ~= nil then
+		-- Штатная высадка нужна до переноса, иначе состояние driving может вернуть игрока к машине.
+		player:leaveVehicle(currentVehicle, false)
+	end
+
+	if player.teleportTo ~= nil then
+		player:teleportTo(x, y, z, true, true)
+	elseif player.rootNode ~= nil and player.rootNode ~= 0 then
+		setWorldTranslation(player.rootNode, x, y, z)
+	else
+		return false
+	end
+
+	CompetitionUtils.info(
+		"Игрок userId=%s farmId=%d телепортирован на старт команды (%.2f, %.2f, %.2f)",
+		tostring(player.userId),
+		farmId,
+		x,
+		y,
+		z
+	)
+	return true
+end
+
+-- В момент перехода соревнования в RUNNING возвращает всех игроков команд 1-4
+-- на стартовые точки. Администраторы и игроки остальных ферм не затрагиваются.
+function CompetitionManager:teleportCompetitionPlayersToTeamStarts()
+	if not CompetitionUtils.getIsServer() or g_currentMission == nil then return end
+
+	local processedPlayers = {}
+
+	local function teleportPlayer(player)
+		if player == nil or processedPlayers[player] then return end
+		processedPlayers[player] = true
+
+		local farmId = player.farmId
+		if CompetitionUtils.isCompetitionFarmId(farmId) then
+			self:teleportPlayerToTeamStart(player, farmId)
+		end
+	end
+
+	-- Listen-server / одиночный хост.
+	teleportPlayer(g_localPlayer)
+
+	-- Все удалённые клиенты на сервере.
+	for _, player in pairs(g_currentMission.connectionsToPlayer or {}) do
+		teleportPlayer(player)
+	end
+end
+
+function CompetitionManager:teleportLocalPlayerToTeam(farmId)
+	if g_localPlayer == nil then return false end
+
+	local success = self:teleportPlayerToTeamStart(g_localPlayer, farmId)
+	if not success then return false end
+
 	self.lastTeleportedFarmId = farmId
 	self.pendingTeleportFarmId = nil
 	return true
@@ -554,6 +619,7 @@ function CompetitionManager:resumeCompetitionAfterLoad()
 	self:reattachProgressStorageTargets()
 	self.resumePending = false
 	self.state = CompetitionUtils.STATE.RUNNING
+	self:teleportCompetitionPlayersToTeamStarts()
 	self.competitionClockSyncTimer = 0
 	self.baselineScanRequested = false
 	self.baselineScanInProgress = false
@@ -607,6 +673,7 @@ function CompetitionManager:finishCompetitionStart()
 	self.competitionTeamMask = self:captureCompetitionTeamMask()
 	self.state = CompetitionUtils.STATE.RUNNING
 	self.competitionElapsedMs = 0
+	self:teleportCompetitionPlayersToTeamStarts()
 	self.security:restorePreStartTime(false)
 	
 	CompetitionUtils.info("БАЗОВЫЙ СКАН ЗАВЕРШЕН. СОРЕВНОВАНИЕ НАЧАЛОСЬ! Маска команд: %d", self.competitionTeamMask)
