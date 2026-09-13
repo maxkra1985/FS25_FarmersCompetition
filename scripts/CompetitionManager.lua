@@ -75,6 +75,11 @@ function CompetitionManager.new(customMt)
 	self.progressBaselineCaptured = false
 	
 	self.progressByFarmId = {}
+
+	-- Серверный реестр уже обработанных достижений 100%.
+	-- Он нужен только для подавления повторного sounds/done.ogg при следующих сканах.
+	self.progressCompletionNotifiedByFarmId = {}
+
 	self.progressBaselineByFarmId = {}
 	self.progressStorageByFarmId = {}
 	self.expectedHarvestByFarmId = {}
@@ -108,6 +113,11 @@ function CompetitionManager.new(customMt)
 		gong = {
 			filename = "sounds/gong.ogg",
 			sampleName = "FarmersCompetition_gong",
+			sample = nil
+		},
+		done = {
+			filename = "sounds/done.ogg",
+			sampleName = "FarmersCompetition_done",
 			sample = nil
 		}
 	}
@@ -500,6 +510,69 @@ function CompetitionManager:broadcastNotificationSound(soundId)
 	end
 end
 
+-- Назначение: адресно отправляет звуковое уведомление игрокам одной команды
+-- и всем игрокам административной фермы №5. Остальные команды событие не получают.
+function CompetitionManager:sendNotificationSoundToFarmAndAdmins(soundId, targetFarmId)
+	if not CompetitionUtils.getIsServer()
+		or targetFarmId == nil
+		or targetFarmId < 1
+		or targetFarmId > 4 then
+		return
+	end
+
+	local adminFarmId = CompetitionUtils.ADMIN_FARM_ID
+	local localUserId = CompetitionUtils.getLocalUserId()
+	local sentConnections = {}
+	local remoteRecipients = 0
+	local localRecipient = false
+
+	-- Listen-server/хост не должен получать сетевое событие обратно самому себе:
+	-- если он находится в нужной команде или у администраторов, играем локально.
+	if CompetitionUtils.getIsClient() and g_localPlayer ~= nil then
+		local localFarmId = g_localPlayer.farmId
+		if localFarmId == targetFarmId or localFarmId == adminFarmId then
+			self:playNotificationSound(soundId)
+			localRecipient = true
+		end
+	end
+
+	if g_currentMission == nil
+		or g_currentMission.userManager == nil
+		or g_farmManager == nil then
+		return
+	end
+
+	for _, user in ipairs(g_currentMission.userManager:getUsers() or {}) do
+		local userId = user:getId()
+
+		-- Локального пользователя listen-server уже обработали выше.
+		if userId ~= localUserId then
+			local farm = g_farmManager:getFarmByUserId(userId)
+			local farmId = farm ~= nil and farm.farmId or nil
+
+			if farmId == targetFarmId or farmId == adminFarmId then
+				local connection = user:getConnection()
+
+				-- Одна connection теоретически может представлять несколько User,
+				-- поэтому не отправляем одно и то же событие в неё повторно.
+				if connection ~= nil and sentConnections[connection] ~= true then
+					connection:sendEvent(CompetitionSoundEvent.new(soundId))
+					sentConnections[connection] = true
+					remoteRecipients = remoteRecipients + 1
+				end
+			end
+		end
+	end
+
+	CompetitionUtils.info(
+		"Адресный звук soundId=%s targetFarmId=%d remoteConnections=%d localRecipient=%s",
+		tostring(soundId),
+		targetFarmId,
+		remoteRecipients,
+		tostring(localRecipient)
+	)
+end
+
 -- Назначение: освобождает созданные аудио samples при выгрузке карты.
 function CompetitionManager:deleteNotificationSounds()
 	for _, definition in pairs(self.notificationSounds or {}) do
@@ -772,6 +845,7 @@ function CompetitionManager:resumeCompetitionAfterLoad()
 	end
 
 	self:reattachProgressStorageTargets()
+	self:seedProgressCompletionNotifications()
 	self.resumePending = false
 	self.state = CompetitionUtils.STATE.RUNNING
 	self:scheduleQuestAvailabilityDelays("competitionResume")
@@ -828,6 +902,7 @@ function CompetitionManager:finishCompetitionStart()
 	end
 
 	self.competitionTeamMask = self:captureCompetitionTeamMask()
+	self:resetProgressCompletionNotifications()
 	self.state = CompetitionUtils.STATE.RUNNING
 	self.competitionElapsedMs = 0
 	self:scheduleQuestAvailabilityDelays("competitionStart")
@@ -1099,6 +1174,103 @@ function CompetitionManager:setSubtaskProgress(farmId, taskId, subtaskId, value,
 	taskData.subtasks[subtaskId] = newValue
 end
 
+-- Назначение: полностью очищает отметки уже озвученных завершений.
+-- Вызывается перед новым соревнованием, где все достижения должны считаться заново.
+function CompetitionManager:resetProgressCompletionNotifications()
+	self.progressCompletionNotifiedByFarmId = {}
+end
+
+-- Назначение: помечает текущие 100%-ные элементы как уже обработанные без звука.
+-- Используется при загрузке сохранения, чтобы не повторять старые уведомления.
+function CompetitionManager:seedProgressCompletionNotifications()
+	self.progressCompletionNotifiedByFarmId = {}
+
+	for farmId = 1, 4 do
+		local farmData = self.progressByFarmId[farmId]
+		local notified = {}
+
+		if farmData ~= nil and farmData.tasks ~= nil then
+			for _, task in ipairs(self.TASKS) do
+				local taskData = farmData.tasks[task.id]
+
+				if taskData ~= nil then
+					for _, subtask in ipairs(task.subtasks) do
+						local percent = taskData.subtasks[subtask.id] or 0
+						if percent >= 100 then
+							notified["subtask:" .. subtask.id] = true
+						end
+					end
+
+					if (taskData.overall or 0) >= 100 then
+						notified["task:" .. task.id] = true
+					end
+				end
+			end
+		end
+
+		self.progressCompletionNotifiedByFarmId[farmId] = notified
+	end
+end
+
+-- Назначение: после серверного пересчёта выявляет новые достижения 100%.
+-- Если одновременно завершились несколько элементов одной команды, они все
+-- помечаются обработанными, но done.ogg проигрывается этой аудитории один раз.
+function CompetitionManager:checkProgressCompletionNotifications(farmId)
+	if not CompetitionUtils.getIsServer()
+		or self.state ~= CompetitionUtils.STATE.RUNNING
+		or farmId == nil
+		or farmId < 1
+		or farmId > 4 then
+		return
+	end
+
+	local farmData = self.progressByFarmId[farmId]
+	if farmData == nil or farmData.tasks == nil then return end
+
+	self.progressCompletionNotifiedByFarmId =
+		self.progressCompletionNotifiedByFarmId or {}
+
+	local notified = self.progressCompletionNotifiedByFarmId[farmId]
+	if notified == nil then
+		notified = {}
+		self.progressCompletionNotifiedByFarmId[farmId] = notified
+	end
+
+	local completedNow = {}
+
+	for _, task in ipairs(self.TASKS) do
+		local taskData = farmData.tasks[task.id]
+
+		if taskData ~= nil then
+			for _, subtask in ipairs(task.subtasks) do
+				local key = "subtask:" .. subtask.id
+				local percent = taskData.subtasks[subtask.id] or 0
+
+				if percent >= 100 and notified[key] ~= true then
+					notified[key] = true
+					table.insert(completedNow, key)
+				end
+			end
+
+			local taskKey = "task:" .. task.id
+			if (taskData.overall or 0) >= 100 and notified[taskKey] ~= true then
+				notified[taskKey] = true
+				table.insert(completedNow, taskKey)
+			end
+		end
+	end
+
+	if #completedNow > 0 then
+		self:sendNotificationSoundToFarmAndAdmins("done", farmId)
+
+		CompetitionUtils.info(
+			"PROGRESS DONE farmId=%d completed=%s",
+			farmId,
+			table.concat(completedNow, ",")
+		)
+	end
+end
+
 function CompetitionManager:recalculateProgressAggregates(farmId)
 	local farmData = self:ensureProgressFarmData(farmId)
 	local taskSum = 0; local taskCount = 0
@@ -1114,6 +1286,10 @@ function CompetitionManager:recalculateProgressAggregates(farmId)
 		taskCount = taskCount + 1
 	end
 	farmData.overall = taskCount > 0 and taskSum / taskCount or 0
+
+	-- На клиентах эта функция также вызывается после ProgressSyncEvent,
+	-- но сама проверка внутри выполняется только на сервере в состоянии RUNNING.
+	self:checkProgressCompletionNotifications(farmId)
 end
 
 function CompetitionManager:captureCompetitionProgressBaseline()
